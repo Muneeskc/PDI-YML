@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luxon TATA - Yard Management System (YMS)</title>
+    <!-- HTML5 Barcode Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- JsBarcode Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #2563eb;
+            --primary-bg: #eff6ff;
+            --success: #059669;
+            --success-bg: #ecfdf5;
+            --warning: #d97706;
+            --warning-bg: #fffbeb;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --dark: #0f172a;
+            --slate: #475569;
+            --light: #f1f5f9;
+            --white: #ffffff;
+            --border: #cbd5e1;
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--light); color: var(--dark); padding-bottom: 80px; }
+
+        .app-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: var(--white);
+            padding: 12px 16px;
+            position: sticky; top: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .brand-box { display: flex; align-items: center; gap: 10px; }
+        .brand-icon { width: 38px; height: 38px; background: var(--primary-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; }
+        .brand-title { font-size: 16px; font-weight: 800; }
+        .brand-sub { font-size: 11px; color: #93c5fd; }
+
+        .nav-tabs {
+            background: var(--white); display: flex; overflow-x: auto; gap: 6px; padding: 10px 12px;
+            border-bottom: 1px solid var(--border); position: sticky; top: 62px; z-index: 90;
+        }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            border: 1px solid var(--border); background: var(--white); color: var(--slate);
+            padding: 9px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .tab-btn.active { background: var(--primary-light); color: var(--white); border-color: var(--primary-light); }
+
+        .container { max-width: 850px; margin: 0 auto; padding: 14px; }
+        .module-section { display: none; }
+        .module-section.active { display: block; }
+
+        .card { background: var(--white); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; }
+        .card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(5, 1fr); } }
+        .stat-card { background: var(--white); padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; cursor: pointer; }
+        .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate); }
+        .stat-val { font-size: 24px; font-weight: 800; margin-top: 4px; }
+
+        .scanner-container { border: 2px dashed var(--primary-light); background: var(--primary-bg); border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 14px; }
+        .camera-viewport { width: 100%; max-width: 380px; margin: 0 auto 10px auto; border-radius: 8px; overflow: hidden; background: #000; display: none; }
+        .scanner-btn-group { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 14px; }
+        @media(min-width: 550px) { .form-row { grid-template-columns: 1fr 1fr; } }
+
+        label { display: block; font-size: 12px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 6px; }
+        input[type="text"], select, textarea { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+        .mono-input { font-family: monospace; font-weight: 800; text-transform: uppercase; }
+
+        .btn { border: none; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-full { width: 100%; padding: 13px; font-size: 14px; }
+        .btn-primary { background: var(--primary-light); color: var(--white); }
+        .btn-success { background: var(--success); color: var(--white); }
+        .btn-warning { background: var(--warning); color: var(--white); }
+        .btn-danger { background: var(--danger); color: var(--white); }
+        .btn-dark { background: var(--dark); color: var(--white); }
+        .btn-outline { background: var(--white); color: var(--dark); border: 1px solid var(--border); }
+
+        .photo-section-card { border: 1.5px dashed #94a3b8; border-radius: 12px; padding: 12px; background: #f8fafc; margin-bottom: 12px; }
+        .photo-section-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+        .photo-section-title { font-size: 12px; font-weight: 800; color: var(--dark); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+        
+        .btn-cam-mini { background: var(--primary-light); color: white; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-gal-mini { background: var(--white); color: var(--dark); border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+
+        .multi-photo-grid { display: flex; flex-wrap: wrap; gap: 8px; min-height: 42px; align-items: center; }
+        .empty-photo-hint { font-size: 11px; color: #64748b; font-style: italic; }
+        .thumb-wrapper { position: relative; width: 72px; height: 72px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #fff; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-remove { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%; background: rgba(220,38,38,0.9); color: white; border: none; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
+        .badge-ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
+        .badge-hold { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
+        .badge-out { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+
+        .vehicle-list { display: flex; flex-direction: column; gap: 10px; }
+        .vehicle-item { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background: var(--white); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .v-info h4 { font-family: monospace; font-size: 15px; font-weight: 800; color: var(--primary); }
+        .v-info p { font-size: 12px; color: var(--slate); margin-top: 2px; }
+
+        .alert-box { padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 12px; display: none; }
+        .alert-error { background: var(--danger-bg); color: var(--danger); border: 1px solid #fca5a5; }
+        .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #6ee7b7; }
+        .alert-warn { background: var(--warning-bg); color: var(--warning); border: 1px solid #fcd34d; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
+        .modal-card { background: var(--white); width: 100%; max-width: 520px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+    </style>
+</head>
+<body>
+
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="brand-box">
+            <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
+            <div>
+                <div class="brand-title">LUXON TATA YMS</div>
+                <div class="brand-sub">Photos Only & Telegram Bot Ready</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-outline" style="padding:6px 12px; font-size:11px; background:rgba(255,255,255,0.15); color:white; border:none;" onclick="openSettingsModal()">
+                <i class="fa-solid fa-gear"></i> Settings
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <button class="tab-btn active" id="tabbtn-dashboard" onclick="openModule('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+        <button class="tab-btn" id="tabbtn-inward" onclick="openModule('inward')"><i class="fa-solid fa-barcode"></i> 1. Inward</button>
+        <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> 2. PDI & Photos</button>
+        <button class="tab-btn" id="tabbtn-location" onclick="openModule('location')"><i class="fa-solid fa-location-dot"></i> 3. Location</button>
+        <button class="tab-btn" id="tabbtn-outward" onclick="openModule('outward')"><i class="fa-solid fa-truck-arrow-right"></i> 4. Outward</button>
+    </nav>
+
+    <div class="container">
+
+        <!-- DASHBOARD -->
+        <section id="mod-dashboard" class="module-section active">
+            <div class="stats-grid">
+                <div class="stat-card" onclick="filterDashboardList('ALL')">
+                    <div class="stat-label">In Yard</div>
+                    <div class="stat-val" id="count-total" style="color: var(--primary);">0</div>
+                </div>
+                <div class="stat-card" onclick="filterDashboardList('Pending PDI')">
+                    <div class="stat-label">Pending PDI</div>
+                    <div class="stat-val" id="count-pending" style="color: var(--warning);">0</div>
+                </div>
+                <div class="stat-card" onclick="filterDashboardList('PDI OK')">
+                    <div class="stat-label">PDI OK</div>
+                    <div class="stat-val" id="count-pdiok" style="color: var(--success);">0</div>
+                </div>
+                <div class="stat-card" onclick="filterDashboardList('HOLD')">
+                    <div class="stat-label">On Hold</div>
+                    <div class="stat-val" id="count-hold" style="color: var(--danger);">0</div>
+                </div>
+                <div class="stat-card" onclick="filterDashboardList('Outward')">
+                    <div class="stat-label">Outward</div>
+                    <div class="stat-val" id="count-outward" style="color: var(--slate);">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Active Yard Stock</span></div>
+                    <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:150px;">
+                </div>
+                <div id="dash-vehicle-list" class="vehicle-list"></div>
+            </div>
+        </section>
+
+        <!-- INWARD -->
+        <section id="mod-inward" class="module-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-barcode"></i> Vehicle Inward & Barcode</div>
+                </div>
+
+                <div class="scanner-container">
+                    <div id="inward-camera-reader" class="camera-viewport"></div>
+                    <i class="fa-solid fa-qrcode" style="font-size:24px; color:var(--primary-light); margin-bottom:4px;"></i>
+                    <h4 style="font-size:13px;">Scan Barcode Sticker</h4>
+                    <div class="scanner-btn-group">
+                        <button type="button" class="btn btn-primary" onclick="toggleCameraScanner('inward')"><i class="fa-solid fa-camera"></i> Live Scan</button>
+                        <label class="btn btn-dark" style="margin:0; text-transform:none;"><i class="fa-solid fa-image"></i> Upload Photo<input type="file" accept="image/*" style="display:none;" onchange="scanBarcodeFromFile(event, 'inward')"></label>
+                    </div>
+                </div>
+
+                <div id="inward-status-alert" class="alert-box"></div>
+
+                <div class="form-group">
+                    <label>Chassis Number / VIN *</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="in-chassis" class="mono-input" placeholder="Scan or type chassis..." oninput="onInwardChassisInput()">
+                        <button type="button" class="btn btn-outline" onclick="generateBarcode('inward')" title="Generate Barcode"><i class="fa-solid fa-barcode"></i></button>
+                    </div>
+                </div>
+
+                <!-- Barcode View & Print Box -->
+                <div id="inward-barcode-box" style="display:none; text-align:center; background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:12px;">
+                    <svg id="inward-barcode-svg"></svg>
+                    <div><button class="btn btn-primary" style="font-size:11px; padding:4px 8px; margin-top:6px;" onclick="downloadBarcode('inward-barcode-svg', document.getElementById('in-chassis').value)">Download Barcode</button></div>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label>Vehicle Model *</label>
+                        <input type="text" id="in-model" list="tata-models" placeholder="Model name">
+                        <datalist id="tata-models"><option value="Tata Punch"><option value="Tata Punch.ev"><option value="Tata Nexon"><option value="Tata Nexon.ev"><option value="Tata Curvv"><option value="Tata Tiago"><option value="Tata Harrier"><option value="Tata Safari"></datalist>
+                    </div>
+                    <div>
+                        <label>Color Code *</label>
+                        <input type="text" id="in-color" placeholder="Color name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Initial Yard Location *</label>
+                    <select id="in-location">
+                        <option value="Main Yard - Inward Bay">Main Yard - Inward Bay</option>
+                        <option value="Kottakkal Yard">Kottakkal Yard</option>
+                        <option value="Changanakkal Yard">Changanakkal Yard</option>
+                        <option value="Malappuram Yard">Malappuram Yard</option>
+                    </select>
+                </div>
+
+                <div class="photo-section-card">
+                    <div class="photo-section-header">
+                        <div class="photo-section-title"><i class="fa-solid fa-camera"></i> Inward Photos (Optional)</div>
+                        <div class="photo-action-btns">
+                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'inward')"></label>
+                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'inward')"></label>
+                        </div>
+                    </div>
+                    <div class="multi-photo-grid" id="grid-inward"><span class="empty-photo-hint">No photos added.</span></div>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-full" onclick="submitInward()"><i class="fa-solid fa-check"></i> Complete Inward</button>
+            </div>
+        </section>
+
+        <!-- PDI INSPECTION (PHOTOS ONLY) -->
+        <section id="mod-pdi" class="module-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> PDI Inspection & Photo Check</div>
+                </div>
+
+                <div class="scanner-container" style="padding:10px;">
+                    <div id="pdi-camera-reader" class="camera-viewport"></div>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <select id="pdi-select" onchange="onSelectPdiVehicle(this.value)" style="flex:1;"><option value="">-- Select Pending PDI Vehicle --</option></select>
+                        <button type="button" class="btn btn-primary" onclick="toggleCameraScanner('pdi')"><i class="fa-solid fa-barcode"></i> Scan</button>
+                    </div>
+                </div>
+
+                <div id="pdi-banner" style="display:none; background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div id="pdi-b-chassis" style="font-family:monospace; font-weight:800; color:var(--primary);"></div>
+                            <div id="pdi-b-model" style="font-size:12px; font-weight:700;"></div>
+                        </div>
+                        <button class="btn btn-outline" style="font-size:11px; padding:4px 8px;" onclick="generateBarcode('pdi')"><i class="fa-solid fa-barcode"></i> Barcode</button>
+                    </div>
+                    <div id="pdi-barcode-box" style="margin-top:8px; margin-bottom:0; display:none;"><svg id="pdi-barcode-svg"></svg></div>
+                </div>
+
+                <!-- 1. All-Round Photos -->
+                <div class="photo-section-card">
+                    <div class="photo-section-header">
+                        <div class="photo-section-title"><i class="fa-solid fa-car"></i> 1. Vehicle All-Round Photos (Multiple) *</div>
+                        <div class="photo-action-btns">
+                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
+                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
+                        </div>
+                    </div>
+                    <div class="multi-photo-grid" id="grid-pdi_vehicle"><span class="empty-photo-hint">Add photos.</span></div>
+                </div>
+
+                <!-- 2. Check Sheet Photos -->
+                <div class="photo-section-card">
+                    <div class="photo-section-header">
+                        <div class="photo-section-title"><i class="fa-solid fa-file-lines"></i> 2. PDI Check Sheet Photos *</div>
+                        <div class="photo-action-btns">
+                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_checksheet')"></label>
+                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_checksheet')"></label>
+                        </div>
+                    </div>
+                    <div class="multi-photo-grid" id="grid-pdi_checksheet"><span class="empty-photo-hint">Add check sheet photos.</span></div>
+                </div>
+
+                <!-- 3. Chassis Number Photos -->
+                <div class="photo-section-card">
+                    <div class="photo-section-header">
+                        <div class="photo-section-title"><i class="fa-solid fa-hashtag"></i> 3. Chassis / VIN Photos *</div>
+                        <div class="photo-action-btns">
+                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
+                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
+                        </div>
+                    </div>
+                    <div class="multi-photo-grid" id="grid-pdi_chassis"><span class="empty-photo-hint">Add chassis photos.</span></div>
+                </div>
+
+                <!-- 4. Form 22 / Form 28 Photos -->
+                <div class="photo-section-card">
+                    <div class="photo-section-header">
+                        <div class="photo-section-title"><i class="fa-solid fa-file-contract"></i> 4. Form 22 / Form 28 Photos *</div>
+                        <div class="photo-action-btns">
+                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form28')"></label>
+                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form28')"></label>
+                        </div>
+                    </div>
+                    <div class="multi-photo-grid" id="grid-pdi_form28"><span class="empty-photo-hint">Add document photos.</span></div>
+                </div>
+
+                <!-- 5. Battery Photos -->
+                <div class="photo-section-card">
+                    <div class="photo-section-header">
+                        <div class="photo-section-title"><i class="fa-solid fa-car-battery"></i> 5. Battery & Voltage Photos *</div>
+                        <div class="photo-action-btns">
+                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
+                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
+                        </div>
+                    </div>
+                    <div class="multi-photo-grid" id="grid-pdi_battery"><span class="empty-photo-hint">Add battery photos.</span></div>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label>Speedometer Test (km/h & Odo) *</label>
+                        <input type="text" id="pdi-speed" placeholder="e.g. Tested 20 km/h - OK">
+                    </div>
+                    <div>
+                        <label>PDI Status (OK / HOLD) *</label>
+                        <select id="pdi-decision" onchange="toggleHoldUI()">
+                            <option value="PDI OK">PDI OK (Ready)</option>
+                            <option value="HOLD">HOLD Vehicle (Issue Found)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label>Next Yard Location *</label>
+                        <select id="pdi-next-loc">
+                            <option value="PDI OK - Ready Bay">PDI OK - Ready Bay</option>
+                            <option value="Kottakkal Yard">Kottakkal Yard</option>
+                            <option value="Hold / Repair Bay">Hold / Repair Bay</option>
+                            <option value="Showroom Display">Showroom Display</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Remarks / Hold Reason</label>
+                        <input type="text" id="pdi-remarks" placeholder="Optional notes or hold reason...">
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-success btn-full" onclick="submitPdiAndTelegram()"><i class="fa-solid fa-paper-plane"></i> Submit PDI & Send PDF to Telegram</button>
+            </div>
+        </section>
+
+        <!-- LOCATION -->
+        <section id="mod-location" class="module-section">
+            <div class="card">
+                <div class="card-header"><div class="card-title"><i class="fa-solid fa-location-dot"></i> Yard Location & Hold Manager</div></div>
+                <input type="text" id="loc-search" placeholder="Search chassis..." oninput="renderLocationList()" style="margin-bottom:12px;">
+                <div id="loc-editor" style="display:none; background:#eff6ff; border:1px solid var(--primary-light); border-radius:10px; padding:12px; margin-bottom:12px;">
+                    <div id="loc-ed-chassis" style="font-family:monospace; font-weight:800; color:var(--primary); margin-bottom:6px;"></div>
+                    <div class="form-row">
+                        <div><label>New Location</label><input type="text" id="loc-ed-new" placeholder="New location..."></div>
+                        <div>
+                            <label>Status</label>
+                            <select id="loc-ed-status">
+                                <option value="KEEP">Keep Status</option>
+                                <option value="HOLD">Put ON HOLD</option>
+                                <option value="PDI OK">Release -> PDI OK</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveLocationUpdate()">Update Location</button>
+                </div>
+                <div id="loc-list" class="vehicle-list"></div>
+            </div>
+        </section>
+
+        <!-- OUTWARD -->
+        <section id="mod-outward" class="module-section">
+            <div class="card">
+                <div class="card-header"><div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> Vehicle Outward Dispatch</div></div>
+                <input type="text" id="out-search" placeholder="Search chassis..." oninput="renderOutwardList()" style="margin-bottom:12px;">
+                <div id="out-editor" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:12px; margin-bottom:12px;">
+                    <div id="out-ed-chassis" style="font-family:monospace; font-weight:800; color:var(--danger); margin-bottom:6px;"></div>
+                    <div class="form-row">
+                        <div><label>Destination / Showroom *</label><input type="text" id="out-ed-dest" placeholder="Showroom name"></div>
+                        <div><label>Driver Name</label><input type="text" id="out-ed-driver" placeholder="Driver"></div>
+                    </div>
+                    <button class="btn btn-danger" onclick="confirmOutward()">Confirm Dispatch</button>
+                </div>
+                <div id="out-list" class="vehicle-list"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-card">
+            <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-gear"></i> System & Telegram Settings</div>
+                <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeSettingsModal()">✕</button>
+            </div>
+            <div class="form-group">
+                <label>Google Apps Script Web App URL</label>
+                <input type="text" id="cfg-scripturl" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+            <div class="form-group">
+                <label>Telegram Bot Token</label>
+                <input type="text" id="cfg-token" placeholder="9043876419:AAEKnIedVt0rcOPxtfJiJvmtWX32z7mvBZA">
+            </div>
+            <div class="form-group">
+                <label>Telegram Chat ID</label>
+                <input type="text" id="cfg-chatid" placeholder="-1004478595920">
+            </div>
+            <button class="btn btn-primary btn-full" onclick="saveSettings()">Save Settings</button>
+        </div>
+    </div>
+
+    <script>
+        let vehiclesDB = JSON.parse(localStorage.getItem('luxon_yms_photos_db')) || [];
+        let botConfig = JSON.parse(localStorage.getItem('luxon_yms_bot_cfg')) || { 
+            scriptUrl: 'https://script.google.com/macros/s/AKfycbyhtIDnBmd4yvJNYd60CpUqs5klkdwu97O8svx6PffXlmbmI8KuyZnDulPFALoAuUTdvQ/exec',
+            token: '9043876419:AAEKnIedVt0rcOPxtfJiJvmtWX32z7mvBZA', 
+            chatId: '-1004478595920' 
+        };
+
+        let photoBuckets = {
+            inward: [],
+            pdi_vehicle: [],
+            pdi_checksheet: [],
+            pdi_chassis: [],
+            pdi_form28: [],
+            pdi_battery: []
+        };
+
+        let currentPdiChassis = '';
+        let currentLocChassis = '';
+        let currentOutChassis = '';
+        let currentDashFilter = 'ALL';
+        let qrScanner = null;
+        let activeScannerMode = null;
+
+        window.onload = function() { renderDashboard(); renderAllGrids(); };
+
+        function openModule(name) {
+            stopScanner();
+            ['dashboard', 'inward', 'pdi', 'location', 'outward'].forEach(m => {
+                document.getElementById('mod-' + m).classList.remove('active');
+                document.getElementById('tabbtn-' + m).classList.remove('active');
+            });
+            document.getElementById('mod-' + name).classList.add('active');
+            document.getElementById('tabbtn-' + name).classList.add('active');
+            if (name === 'dashboard') renderDashboard();
+            if (name === 'pdi') populatePdiSelect();
+            if (name === 'location') renderLocationList();
+            if (name === 'outward') renderOutwardList();
+        }
+
+        // Barcode Generation
+        function generateBarcode(ctx) {
+            const chassis = ctx === 'inward' ? document.getElementById('in-chassis').value.trim().toUpperCase() : currentPdiChassis;
+            if (!chassis) { alert('Enter chassis number first.'); return; }
+            const boxId = ctx === 'inward' ? 'inward-barcode-box' : 'pdi-barcode-box';
+            const svgId = ctx === 'inward' ? 'inward-barcode-svg' : 'pdi-barcode-svg';
+            document.getElementById(boxId).style.display = 'block';
+            if (typeof JsBarcode !== 'undefined') {
+                JsBarcode("#" + svgId, chassis, { format: "CODE128", width: 2, height: 50, displayValue: true });
+            }
+        }
+
+        function downloadBarcode(svgId, name) {
+            const svg = document.getElementById(svgId);
+            const data = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement("canvas");
+            const img = new Image();
+            img.onload = function() {
+                canvas.width = img.width + 20; canvas.height = img.height + 20;
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage(img, 10, 10);
+                const a = document.createElement("a");
+                a.download = `Barcode_${name || 'Chassis'}.png`;
+                a.href = canvas.toDataURL("image/png");
+                a.click();
+            };
+            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(data)));
+        }
+
+        // Camera Scanner
+        function toggleCameraScanner(mode) {
+            const readerId = mode === 'inward' ? 'inward-camera-reader' : 'pdi-camera-reader';
+            const vp = document.getElementById(readerId);
+            if (activeScannerMode === mode && qrScanner) { stopScanner(); return; }
+            stopScanner();
+            vp.style.display = 'block';
+            activeScannerMode = mode;
+            if (typeof Html5Qrcode === 'undefined') { alert('Scanner offline.'); vp.style.display = 'none'; return; }
+            qrScanner = new Html5Qrcode(readerId);
+            qrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 100 } },
+                (txt) => { handleScanResult(txt, mode); stopScanner(); }, () => {}
+            ).catch(() => { vp.style.display = 'none'; activeScannerMode = null; alert('Camera permission needed.'); });
+        }
+
+        function stopScanner() {
+            ['inward-camera-reader', 'pdi-camera-reader'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.style.display = 'none';
+            });
+            if (qrScanner) { qrScanner.stop().then(() => { qrScanner.clear(); qrScanner = null; }).catch(() => { qrScanner = null; }); }
+            activeScannerMode = null;
+        }
+
+        function scanBarcodeFromFile(event, mode) {
+            const file = event.target.files[0]; if (!file) return;
+            const temp = new Html5Qrcode("inward-camera-reader");
+            temp.scanFile(file, true).then(txt => handleScanResult(txt, mode)).catch(() => alert('Could not read barcode from image.'));
+            event.target.value = '';
+        }
+
+        function handleScanResult(text, mode) {
+            let clean = text.trim().toUpperCase();
+            const mat = clean.match(/MAT[A-Z0-9]{14}/);
+            let chassis = mat ? mat[0] : clean.split(/[\s|,;/]+/)[0];
+            if (mode === 'inward') {
+                document.getElementById('in-chassis').value = chassis;
+                onInwardChassisInput();
+            } else if (mode === 'pdi') {
+                onSelectPdiVehicle(chassis);
+            }
+        }
+
+        // Image Compression
+        function compressImg(file, cb) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const max = 800; let w = img.width, h = img.height;
+                    if (w > h && w > max) { h = Math.round(h * max / w); w = max; }
+                    else if (h > max) { w = Math.round(w * max / h); h = max; }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    cb(canvas.toDataURL('image/jpeg', 0.6));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleMultiPhoto(e, bucket) {
+            const files = e.target.files; if (!files.length) return;
+            Array.from(files).forEach(f => {
+                compressImg(f, url => {
+                    photoBuckets[bucket].push(url);
+                    renderGrid(bucket);
+                });
+            });
+            e.target.value = '';
+        }
+
+        function removePhoto(bucket, idx) {
+            photoBuckets[bucket].splice(idx, 1);
+            renderGrid(bucket);
+        }
+
+        function renderGrid(bucket) {
+            const g = document.getElementById('grid-' + bucket); if (!g) return;
+            const arr = photoBuckets[bucket];
+            if (!arr.length) { g.innerHTML = `<span class="empty-photo-hint">No photos added.</span>`; return; }
+            g.innerHTML = arr.map((src, i) => `
+                <div class="thumb-wrapper">
+                    <img src="${src}" alt="photo">
+                    <button type="button" class="thumb-remove" onclick="removePhoto('${bucket}', ${i})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function renderAllGrids() { Object.keys(photoBuckets).forEach(b => renderGrid(b)); }
+
+        // Inward logic
+        function onInwardChassisInput() {
+            const c = document.getElementById('in-chassis').value.trim().toUpperCase();
+            const alertEl = document.getElementById('inward-status-alert');
+            if (!c) { alertEl.style.display = 'none'; return; }
+            const ex = vehiclesDB.find(v => v.chassis === c);
+            if (ex && ex.status !== 'Outward') {
+                alertEl.className = 'alert-box alert-error'; alertEl.style.display = 'block';
+                alertEl.innerHTML = `DUPLICATE BLOCKED: Chassis ${c} is already in yard at ${ex.location}.`;
+            } else {
+                alertEl.className = 'alert-box alert-success'; alertEl.style.display = 'block';
+                alertEl.innerHTML = `Chassis ${c} verified clean for inward.`;
+            }
+        }
+
+        function submitInward() {
+            const chassis = document.getElementById('in-chassis').value.trim().toUpperCase();
+            const model = document.getElementById('in-model').value.trim();
+            const color = document.getElementById('in-color').value.trim();
+            const location = document.getElementById('in-location').value;
+
+            if (!chassis || !model) { alert('Enter Chassis and Model.'); return; }
+            const exIdx = vehiclesDB.findIndex(v => v.chassis === chassis);
+            if (exIdx !== -1 && vehiclesDB[exIdx].status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
+
+            const inwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+            const rec = {
+                chassis, model, color: color || 'Standard', location,
+                status: 'Pending PDI',
+                inwardTime,
+                photos: [...photoBuckets.inward],
+                pdiData: null, remarks: ''
+            };
+
+            if (exIdx !== -1) vehiclesDB[exIdx] = rec; else vehiclesDB.unshift(rec);
+            saveDB();
+
+            // Sync with Google Sheet via Apps Script
+            if (botConfig.scriptUrl) {
+                fetch(botConfig.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'INWARD', inwardTime, chassis, model, color: color || 'Standard', location, status: 'Pending PDI' })
+                }).catch(err => console.log('Sheet sync error:', err));
+            }
+
+            document.getElementById('in-chassis').value = '';
+            document.getElementById('in-model').value = '';
+            document.getElementById('in-color').value = '';
+            photoBuckets.inward = []; renderGrid('inward');
+            alert(`Inward successful for ${chassis}!`);
+            openModule('dashboard');
+        }
+
+        // Dashboard
+        function filterDashboardList(f) {
+            currentDashFilter = f;
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const inYard = vehiclesDB.filter(v => v.status !== 'Outward');
+            document.getElementById('count-total').innerText = inYard.length;
+            document.getElementById('count-pending').innerText = vehiclesDB.filter(v => v.status === 'Pending PDI').length;
+            document.getElementById('count-pdiok').innerText = vehiclesDB.filter(v => v.status === 'PDI OK').length;
+            document.getElementById('count-hold').innerText = vehiclesDB.filter(v => v.status === 'HOLD').length;
+            document.getElementById('count-outward').innerText = vehiclesDB.filter(v => v.status === 'Outward').length;
+
+            const q = document.getElementById('dash-search').value.trim().toUpperCase();
+            let list = currentDashFilter === 'ALL' ? inYard : vehiclesDB.filter(v => v.status === currentDashFilter);
+            if (q) list = list.filter(v => v.chassis.includes(q));
+
+            const c = document.getElementById('dash-vehicle-list');
+            if (!list.length) { c.innerHTML = `<div style="text-align:center; padding:20px; color:var(--slate);">No vehicles found.</div>`; return; }
+
+            c.innerHTML = list.map(v => `
+                <div class="vehicle-item">
+                    <div class="v-info">
+                        <h4>${v.chassis}</h4>
+                        <p><b>${v.model}</b> • ${v.color}</p>
+                        <p><i class="fa-solid fa-location-dot"></i> ${v.location}</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':v.status=='HOLD'?'badge-hold':'badge-out'}">${v.status}</span>
+                        ${v.status!='Outward'?`<div style="margin-top:6px;"><button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button></div>`:''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function jumpPdi(c) { openModule('pdi'); onSelectPdiVehicle(c); }
+
+        // PDI Logic
+        function populatePdiSelect() {
+            const sel = document.getElementById('pdi-select');
+            const active = vehiclesDB.filter(v => v.status !== 'Outward');
+            sel.innerHTML = `<option value="">-- Select Pending PDI (${active.length}) --</option>` +
+                active.map(v => `<option value="${v.chassis}" ${v.chassis===currentPdiChassis?'selected':''}>[${v.status}] ${v.chassis} - ${v.model}</option>`).join('');
+        }
+
+        function onSelectPdiVehicle(c) {
+            const v = vehiclesDB.find(item => item.chassis === c || item.chassis.endsWith(c));
+            if (!v) { document.getElementById('pdi-banner').style.display = 'none'; currentPdiChassis = ''; return; }
+            currentPdiChassis = v.chassis;
+            document.getElementById('pdi-select').value = v.chassis;
+            document.getElementById('pdi-banner').style.display = 'block';
+            document.getElementById('pdi-barcode-box').style.display = 'none';
+            document.getElementById('pdi-b-chassis').innerText = v.chassis;
+            document.getElementById('pdi-b-model').innerText = `${v.model} (${v.color})`;
+
+            if (v.pdiData) {
+                document.getElementById('pdi-speed').value = v.pdiData.speed || '';
+                document.getElementById('pdi-remarks').value = v.remarks || '';
+                photoBuckets.pdi_vehicle = [...(v.pdiData.vehiclePhotos || [])];
+                photoBuckets.pdi_checksheet = [...(v.pdiData.checksheetPhotos || [])];
+                photoBuckets.pdi_chassis = [...(v.pdiData.chassisPhotos || [])];
+                photoBuckets.pdi_form28 = [...(v.pdiData.form28Photos || [])];
+                photoBuckets.pdi_battery = [...(v.pdiData.batteryPhotos || [])];
+            } else {
+                photoBuckets.pdi_vehicle = [...(v.photos || [])];
+                photoBuckets.pdi_checksheet = []; photoBuckets.pdi_chassis = []; photoBuckets.pdi_form28 = []; photoBuckets.pdi_battery = [];
+            }
+            renderAllGrids();
+        }
+
+        function toggleHoldUI() {
+            const dec = document.getElementById('pdi-decision').value;
+            document.getElementById('pdi-next-loc').value = dec === 'HOLD' ? 'Hold / Repair Bay' : 'PDI OK - Ready Bay';
+        }
+
+        // Submit PDI & Send PDF to Telegram
+        async function submitPdiAndTelegram() {
+            if (!currentPdiChassis) { alert('Select a vehicle first.'); return; }
+            const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
+            if (!v) return;
+
+            const speed = document.getElementById('pdi-speed').value.trim();
+            const decision = document.getElementById('pdi-decision').value;
+            const nextLoc = document.getElementById('pdi-next-loc').value;
+            const remarks = document.getElementById('pdi-remarks').value.trim();
+
+            v.status = decision;
+            v.location = nextLoc;
+            v.remarks = remarks;
+            v.pdiTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+            v.pdiData = {
+                speed: speed || 'Tested - OK',
+                vehiclePhotos: [...photoBuckets.pdi_vehicle],
+                checksheetPhotos: [...photoBuckets.pdi_checksheet],
+                chassisPhotos: [...photoBuckets.pdi_chassis],
+                form28Photos: [...photoBuckets.pdi_form28],
+                batteryPhotos: [...photoBuckets.pdi_battery]
+            };
+            saveDB();
+
+            // Sync with Google Sheet via Apps Script
+            if (botConfig.scriptUrl) {
+                fetch(botConfig.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime: v.pdiTime, chassis: v.chassis, model: v.model, color: v.color, status: decision, speed: v.pdiData.speed, location: nextLoc, remarks })
+                }).catch(err => console.log('Sheet sync error:', err));
+            }
+
+            if (typeof window.jspdf === 'undefined') { alert('PDI Saved!'); openModule('dashboard'); return; }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 26, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(14);
+            doc.text('LUXON TATA - PDI INSPECTION REPORT', 12, 11);
+            doc.setFontSize(10);
+            doc.text(`Chassis: ${v.chassis} | Status: ${v.status} | Time: ${v.pdiTime}`, 12, 19);
+
+            doc.setTextColor(15, 23, 42); doc.setFontSize(10);
+            let y = 35;
+            doc.text(`Model: ${v.model} (${v.color})`, 12, y); doc.text(`Speed Test: ${v.pdiData.speed}`, 110, y); y += 6;
+            doc.text(`Location: ${v.location}`, 12, y); doc.text(`Remarks: ${v.remarks || 'None'}`, 110, y); y += 12;
+
+            function addCatToPDF(title, arr) {
+                if (!arr || !arr.length) return;
+                if (y > 230) { doc.addPage(); y = 15; }
+                doc.setFontSize(10); doc.setTextColor(30, 64, 175);
+                doc.text(`${title} (${arr.length}):`, 12, y); y += 4;
+                let x = 12;
+                arr.forEach((img, idx) => {
+                    if (y > 235) { doc.addPage(); y = 15; x = 12; }
+                    try { doc.addImage(img, 'JPEG', x, y, 55, 40); } catch(e){}
+                    x += 59;
+                    if ((idx + 1) % 3 === 0) { x = 12; y = y + 44; }
+                });
+                if (arr.length % 3 !== 0) y += 44;
+                y += 6;
+            }
+
+            addCatToPDF('PDI Check Sheet Photos', v.pdiData.checksheetPhotos);
+            addCatToPDF('Chassis Photos', v.pdiData.chassisPhotos);
+            addCatToPDF('Form 22 / 28 Photos', v.pdiData.form28Photos);
+            addCatToPDF('Battery Photos', v.pdiData.batteryPhotos);
+            addCatToPDF('Vehicle All-Round Photos', v.pdiData.vehiclePhotos);
+
+            const pdfName = `PDI_${v.chassis}.pdf`;
+            doc.save(pdfName);
+
+            // Send to Telegram
+            if (botConfig.token && botConfig.chatId) {
+                try {
+                    const blob = doc.output('blob');
+                    const fd = new FormData();
+                    fd.append('chat_id', botConfig.chatId);
+                    fd.append('document', blob, pdfName);
+                    fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${v.status}\nLocation: ${v.location}`);
+                    await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
+                    alert('PDF successfully sent to Telegram!');
+                } catch(e) {
+                    alert('PDF downloaded, but Telegram send failed.');
+                }
+            } else {
+                alert('PDI Saved & PDF Downloaded locally.');
+            }
+            openModule('dashboard');
+        }
+
+        // Location
+        function renderLocationList() {
+            const q = document.getElementById('loc-search').value.trim().toUpperCase();
+            let list = vehiclesDB.filter(v => v.status !== 'Outward');
+            if (q) list = list.filter(v => v.chassis.includes(q));
+            document.getElementById('loc-list').innerHTML = list.map(v => `
+                <div class="vehicle-item" onclick="openLocEd('${v.chassis}')" style="cursor:pointer;">
+                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • <b>${v.location}</b></p></div>
+                    <span class="badge ${v.status=='HOLD'?'badge-hold':'badge-ok'}">${v.status}</span>
+                </div>
+            `).join('') || '<div style="text-align:center; color:var(--slate);">No vehicles.</div>';
+        }
+
+        function openLocEd(c) {
+            currentLocChassis = c;
+            const v = vehiclesDB.find(x => x.chassis === c);
+            document.getElementById('loc-editor').style.display = 'block';
+            document.getElementById('loc-ed-chassis').innerText = `${v.chassis} (${v.model})`;
+            document.getElementById('loc-ed-new').value = v.location;
+        }
+
+        function saveLocationUpdate() {
+            const v = vehiclesDB.find(x => x.chassis === currentLocChassis);
+            const newLoc = document.getElementById('loc-ed-new').value.trim();
+            const st = document.getElementById('loc-ed-status').value;
+            if (newLoc) v.location = newLoc;
+            if (st !== 'KEEP') v.status = st;
+            saveDB();
+
+            if (botConfig.scriptUrl) {
+                fetch(botConfig.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, color: v.color, location: v.location, status: v.status, remarks: v.remarks })
+                }).catch(err => console.log('Sheet sync error:', err));
+            }
+
+            document.getElementById('loc-editor').style.display = 'none';
+            renderLocationList();
+            alert('Location updated!');
+        }
+
+        // Outward
+        function renderOutwardList() {
+            const q = document.getElementById('out-search').value.trim().toUpperCase();
+            let list = vehiclesDB.filter(v => v.status !== 'Outward');
+            if (q) list = list.filter(v => v.chassis.includes(q));
+            document.getElementById('out-list').innerHTML = list.map(v => `
+                <div class="vehicle-item" onclick="openOutEd('${v.chassis}')" style="cursor:pointer;">
+                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div>
+                    <span class="badge badge-pending">Ready</span>
+                </div>
+            `).join('') || '<div style="text-align:center; color:var(--slate);">No vehicles.</div>';
+        }
+
+        function openOutEd(c) {
+            currentOutChassis = c;
+            const v = vehiclesDB.find(x => x.chassis === c);
+            document.getElementById('out-editor').style.display = 'block';
+            document.getElementById('out-ed-chassis').innerText = `Dispatch: ${v.chassis} (${v.model})`;
+        }
+
+        function confirmOutward() {
+            const v = vehiclesDB.find(x => x.chassis === currentOutChassis);
+            const dest = document.getElementById('out-ed-dest').value.trim();
+            const driver = document.getElementById('out-ed-driver').value.trim();
+            if (!dest) { alert('Enter destination.'); return; }
+            v.status = 'Outward';
+            v.location = `Outward -> ${dest}`;
+            const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+            saveDB();
+
+            if (botConfig.scriptUrl) {
+                fetch(botConfig.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'OUTWARD', outwardTime, chassis: v.chassis, model: v.model, color: v.color, outwardDest: dest, outwardDriver: driver })
+                }).catch(err => console.log('Sheet sync error:', err));
+            }
+
+            document.getElementById('out-editor').style.display = 'none';
+            renderOutwardList();
+            alert(`Outward confirmed for ${v.chassis}!`);
+            openModule('dashboard');
+        }
+
+        // Settings
+        function openSettingsModal() {
+            document.getElementById('cfg-scripturl').value = botConfig.scriptUrl;
+            document.getElementById('cfg-token').value = botConfig.token;
+            document.getElementById('cfg-chatid').value = botConfig.chatId;
+            document.getElementById('settings-modal').style.display = 'flex';
+        }
+        function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+        function saveSettings() {
+            botConfig.scriptUrl = document.getElementById('cfg-scripturl').value.trim();
+            botConfig.token = document.getElementById('cfg-token').value.trim();
+            botConfig.chatId = document.getElementById('cfg-chatid').value.trim();
+            localStorage.setItem('luxon_yms_bot_cfg', JSON.stringify(botConfig));
+            closeSettingsModal();
+            alert('Settings saved!');
+        }
+
+        function saveDB() { localStorage.setItem('luxon_yms_photos_db', JSON.stringify(vehiclesDB)); }
+    </script>
+</body>
+</html>
