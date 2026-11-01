@@ -18,43 +18,61 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--light); color: var(--dark); padding-bottom: 80px; }
+        
         .app-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: var(--white); padding: 12px 16px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
         .brand-box { display: flex; align-items: center; gap: 10px; }
         .brand-icon { width: 38px; height: 38px; background: var(--primary-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; }
         .brand-title { font-size: 16px; font-weight: 800; }
         .brand-sub { font-size: 11px; color: #93c5fd; }
+        
+        .menu-container { position: relative; }
+        .menu-btn { background: rgba(255,255,255,0.15); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .menu-dropdown { position: absolute; right: 0; top: 45px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); width: 220px; display: none; z-index: 1000; overflow: hidden; border: 1px solid var(--border); }
+        .menu-dropdown.show { display: block; }
+        .menu-item { padding: 12px 16px; font-size: 13px; font-weight: 700; color: var(--dark); border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .menu-item:hover { background: var(--primary-bg); color: var(--primary); }
+
         .nav-tabs { background: var(--white); display: flex; overflow-x: auto; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); position: sticky; top: 62px; z-index: 90; }
         .nav-tabs::-webkit-scrollbar { display: none; }
         .tab-btn { border: 1px solid var(--border); background: var(--white); color: var(--slate); padding: 9px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
         .tab-btn.active { background: var(--primary-light); color: var(--white); border-color: var(--primary-light); }
+        
         .container { max-width: 850px; margin: 0 auto; padding: 14px; }
         .module-section { display: none; }
         .module-section.active { display: block; }
+        
         .card { background: var(--white); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
         .card-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; }
         .card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
         .stat-card { background: var(--white); padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; cursor: pointer; transition: 0.2s; }
         .stat-card:active { transform: scale(0.98); background: #f1f5f9; }
         .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate); }
         .stat-val { font-size: 26px; font-weight: 800; margin-top: 4px; }
+        
         .scanner-container { border: 2px dashed var(--primary-light); background: var(--primary-bg); border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 14px; }
         .camera-viewport { width: 100%; max-width: 380px; margin: 0 auto 10px auto; border-radius: 8px; overflow: hidden; background: #000; display: none; }
         .scanner-btn-group { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+        
         .form-group { margin-bottom: 14px; }
         .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 14px; }
         @media(min-width: 550px) { .form-row { grid-template-columns: 1fr 1fr; } }
+        
         label { display: block; font-size: 12px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 6px; }
-        input[type="text"], select, textarea { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; }
+        input[type="text"], select, textarea, input[type="password"], input[type="date"] { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; }
         input:focus, select:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
         .mono-input { font-family: monospace; font-weight: 800; text-transform: uppercase; }
+        
         .btn { border: none; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-full { width: 100%; font-size: 14px; }
         .btn-primary { background: var(--primary-light); color: var(--white); }
         .btn-success { background: var(--success); color: var(--white); }
         .btn-danger { background: var(--danger); color: var(--white); }
+        .btn-warning { background: var(--warning); color: var(--white); }
         .btn-outline { background: var(--white); color: var(--dark); border: 1px solid var(--border); }
+        
         .photo-section-card { border: 1.5px dashed #94a3b8; border-radius: 12px; padding: 12px; background: #f8fafc; margin-bottom: 12px; }
         .photo-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .photo-section-title { font-size: 12px; font-weight: 800; color: var(--dark); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
@@ -64,19 +82,28 @@
         .thumb-wrapper { position: relative; width: 72px; height: 72px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #fff; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         .thumb-remove { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%; background: rgba(220,38,38,0.9); color: white; border: none; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
         .badge { display: inline-block; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
         .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
         .badge-ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
         .badge-hold { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
+        
         .vehicle-list { display: flex; flex-direction: column; gap: 10px; }
         .vehicle-item { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background: var(--white); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         .v-info h4 { font-family: monospace; font-size: 15px; font-weight: 800; color: var(--primary); }
         .v-info p { font-size: 12px; color: var(--slate); margin-top: 2px; }
+        
         .alert-box { padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 12px; display: none; }
         .alert-error { background: var(--danger-bg); color: var(--danger); border: 1px solid #fca5a5; }
         .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #6ee7b7; }
+        
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
-        .modal-card { background: var(--white); width: 100%; max-width: 520px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        .modal-card { background: var(--white); width: 100%; max-width: 580px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+
+        .report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+        .report-box { background: var(--primary-bg); border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px; text-align: center; }
+        .report-box-val { font-size: 20px; font-weight: 800; color: var(--primary); margin-top: 2px; }
+        .report-box-lbl { font-size: 11px; font-weight: 700; color: var(--slate); text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -89,13 +116,18 @@
                 <div class="brand-sub">Professional Yard Manager</div>
             </div>
         </div>
-        <div style="display:flex; gap:6px;">
+        <div style="display:flex; gap:8px; align-items:center;">
             <button class="btn btn-outline" style="padding:6px 10px; font-size:11px; background:rgba(255,255,255,0.15); color:white; border:none;" onclick="syncWithGoogleSheet()">
                 <i class="fa-solid fa-rotate" id="sync-icon"></i> Sync
             </button>
-            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px; background:rgba(255,255,255,0.15); color:white; border:none;" onclick="openSettingsModal()">
-                <i class="fa-solid fa-gear"></i>
-            </button>
+            <div class="menu-container">
+                <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+                <div class="menu-dropdown" id="app-menu-dropdown">
+                    <div class="menu-item" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Reports</div>
+                    <div class="menu-item" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Reports</div>
+                    <div class="menu-item" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> Settings</div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -111,7 +143,7 @@
         <section id="mod-dashboard" class="module-section active">
             <div class="stats-grid">
                 <div class="stat-card" onclick="filterDashboardList('ALL')">
-                    <div class="stat-label">In Yard</div>
+                    <div class="stat-label">Physical Yard</div>
                     <div class="stat-val" id="count-total" style="color: var(--primary);">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('Pending PDI')">
@@ -130,6 +162,14 @@
                     <div class="stat-label">Display Cars</div>
                     <div class="stat-val" id="count-display" style="color: #9333ea;">0</div>
                 </div>
+                <div class="stat-card" onclick="filterDashboardList('Aging')">
+                    <div class="stat-label">Aging (>90 Days)</div>
+                    <div class="stat-val" id="count-aging" style="color: #ca8a04;">0</div>
+                </div>
+                <div class="stat-card" onclick="filterDashboardList('ConfPending')">
+                    <div class="stat-label">Conf. Pending</div>
+                    <div class="stat-val" id="count-conf" style="color: #0284c7;">0</div>
+                </div>
                 <div class="stat-card" onclick="filterDashboardList('Outward')">
                     <div class="stat-label">Outward</div>
                     <div class="stat-val" id="count-outward" style="color: var(--slate);">0</div>
@@ -138,7 +178,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> Master Yard Stock</div>
+                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Master Yard Stock</span></div>
                     <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:150px;">
                 </div>
                 <div id="dash-vehicle-list" class="vehicle-list"></div>
@@ -173,48 +213,33 @@
                 <div class="form-row">
                     <div>
                         <label>Vehicle Model *</label>
-                        <select id="in-model" onchange="updateColorDropdown(); saveDraft();">
-                            <option value="">-- Select Model --</option>
-                            <option value="Tata Punch">Tata Punch</option>
-                            <option value="Tata Punch.ev">Tata Punch.ev</option>
-                            <option value="Tata Nexon">Tata Nexon</option>
-                            <option value="Tata Nexon.ev">Tata Nexon.ev</option>
-                            <option value="Tata Curvv">Tata Curvv</option>
-                            <option value="Tata Tiago">Tata Tiago</option>
-                            <option value="Tata Harrier">Tata Harrier</option>
-                            <option value="Tata Safari">Tata Safari</option>
-                        </select>
+                        <div style="display:flex; gap:6px;">
+                            <select id="in-model" onchange="updateColorDropdown(); saveDraft();" style="flex:1;"><option value="">-- Select Model --</option></select>
+                            <button type="button" class="btn btn-outline" onclick="addNewModelPrompt()" title="Add Model">+</button>
+                        </div>
                     </div>
                     <div>
                         <label>Color Code *</label>
-                        <select id="in-color" onchange="saveDraft()"><option value="">-- Select Model First --</option></select>
+                        <div style="display:flex; gap:6px;">
+                            <select id="in-color" onchange="saveDraft()" style="flex:1;"><option value="">-- Select Model First --</option></select>
+                            <button type="button" class="btn btn-outline" onclick="addNewColorPrompt()" title="Add Color">+</button>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div>
                         <label>Initial Yard Location *</label>
-                        <select id="in-location" onchange="saveDraft()">
-                            <option value="Main Yard - Inward Bay">Main Yard - Inward Bay</option>
-                            <option value="Kottakkal Yard">Kottakkal Yard</option>
-                            <option value="Changanakkal Yard">Changanakkal Yard</option>
-                            <option value="Malappuram Yard">Malappuram Yard</option>
-                            <option value="Kottakkal Display">Kottakkal Display</option>
-                            <option value="Malappuram Display">Malappuram Display</option>
-                            <option value="Edappal Display">Edappal Display</option>
-                            <option value="Changanakkulam Display">Changanakkulam Display</option>
-                            <option value="Kondotty Display">Kondotty Display</option>
-                            <option value="Areekode Display">Areekode Display</option>
-                            <option value="Body Shop">Body Shop</option>
-                        </select>
+                        <div style="display:flex; gap:6px;">
+                            <select id="in-location" onchange="saveDraft()" style="flex:1;"></select>
+                            <button type="button" class="btn btn-outline" onclick="addNewLocationPrompt()" title="Add Location">+</button>
+                        </div>
                     </div>
                     <div>
                         <label>Inspector Name *</label>
-                        <select id="in-inspector" onchange="saveDraft()">
-                            <option value="Munees KC">Munees KC</option>
-                            <option value="Sahal">Sahal</option>
-                            <option value="Safuvan">Safuvan</option>
-                            <option value="Sarfas">Sarfas</option>
-                        </select>
+                        <div style="display:flex; gap:6px;">
+                            <select id="in-inspector" onchange="saveDraft()" style="flex:1;"></select>
+                            <button type="button" class="btn btn-outline" onclick="addNewInspectorPrompt()" title="Add Inspector">+</button>
+                        </div>
                     </div>
                 </div>
                 <div class="photo-section-card">
@@ -231,14 +256,21 @@
         <!-- PDI INSPECTION -->
         <section id="mod-pdi" class="module-section">
             <div class="card">
-                <div class="card-header"><div class="card-title"><i class="fa-solid fa-clipboard-check"></i> PDI Inspection & Photo Check</div></div>
+                <div class="card-header"><div class="card-title"><i class="fa-solid fa-clipboard-check"></i> PDI Inspection & Checklist</div></div>
+                
                 <div class="scanner-container" style="padding:10px;">
                     <div id="pdi-camera-reader" class="camera-viewport"></div>
                     <div style="display:flex; gap:6px; align-items:center;">
-                        <select id="pdi-select" onchange="onSelectPdiVehicle(this.value)" style="flex:1;"><option value="">-- Select Pending PDI Vehicle --</option></select>
+                        <input type="text" id="pdi-search-input" placeholder="Scan barcode or type chassis..." oninput="filterPdiList(this.value)" style="flex:1;">
                         <button type="button" class="btn btn-primary" onclick="toggleCameraScanner('pdi')"><i class="fa-solid fa-barcode"></i> Scan</button>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label>Select Pending PDI Vehicle from List *</label>
+                    <div id="pdi-master-list" class="vehicle-list" style="max-height:220px; overflow-y:auto; margin-bottom:14px;"></div>
+                </div>
+
                 <div id="pdi-banner" style="display:none; background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
@@ -278,24 +310,23 @@
                         <select id="pdi-decision" onchange="toggleHoldUI(); saveDraft();">
                             <option value="PDI OK">PDI OK (Ready)</option>
                             <option value="HOLD">HOLD Vehicle (Issue Found)</option>
+                            <option value="CONF_PENDING">Confirmation Pending (Manager Review)</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div>
                         <label>Next Yard Location *</label>
-                        <select id="pdi-next-loc" onchange="saveDraft()">
-                            <option value="PDI OK - Ready Bay">PDI OK - Ready Bay</option>
-                            <option value="Kottakkal Yard">Kottakkal Yard</option>
-                            <option value="Hold / Repair Bay">Hold / Repair Bay</option>
-                            <option value="Showroom Display">Showroom Display</option>
-                        </select>
+                        <select id="pdi-next-loc" onchange="saveDraft()"></select>
                     </div>
                     <div><label>Inspector Name *</label><input type="text" id="pdi-inspector" value="Munees KC" readonly></div>
                 </div>
                 <div class="form-group"><label>Remarks / Hold Reason</label><input type="text" id="pdi-remarks" placeholder="Optional notes..." oninput="saveDraft()"></div>
                 
-                <button type="button" class="btn btn-success btn-full" onclick="submitPdiAndShare()"><i class="fa-brands fa-whatsapp"></i> Submit PDI & Share (WhatsApp / Telegram)</button>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="btn btn-danger" style="flex:1;" onclick="cancelOrDeletePdi()"><i class="fa-solid fa-trash"></i> Cancel / Delete PDI</button>
+                    <button type="button" class="btn btn-success" style="flex:2;" onclick="submitPdiAndShare()"><i class="fa-brands fa-whatsapp"></i> Submit PDI & Share</button>
+                </div>
             </div>
         </section>
 
@@ -310,7 +341,7 @@
                         <div>
                             <label>Action Type *</label>
                             <select id="op-action-type" onchange="toggleOpActionUI()">
-                                <option value="DISPATCH">Outward Dispatch</option>
+                                <option value="DISPATCH">Final Check for Delivery (Ready)</option>
                                 <option value="TRANSFER">Stock Transfer (Regional)</option>
                             </select>
                         </div>
@@ -350,7 +381,7 @@
                 <div class="card-title"><i class="fa-solid fa-gear"></i> System Settings</div>
                 <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeSettingsModal()">✕</button>
             </div>
-            <div class="form-group"><label>Admin Password (മുനീഷ്)</label><input type="password" id="admin-pass" placeholder="Enter password to unlock"></div>
+            <div class="form-group"><label>Admin Password</label><input type="password" id="admin-pass" placeholder="Enter admin password"></div>
             <div id="admin-settings-panel" style="display:none;">
                 <div class="form-group"><label>Google Apps Script Web App URL</label><input type="text" id="cfg-scripturl"></div>
                 <div class="form-group"><label>Telegram Bot Token</label><input type="text" id="cfg-token"></div>
@@ -361,8 +392,19 @@
         </div>
     </div>
 
+    <!-- REPORTS MODAL -->
+    <div class="modal-overlay" id="reports-modal">
+        <div class="modal-card">
+            <div class="card-header">
+                <div class="card-title" id="report-modal-title"><i class="fa-solid fa-chart-bar"></i> Reports</div>
+                <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeReportsModal()">✕</button>
+            </div>
+            <div id="report-content-body" style="font-size:13px; line-height:1.6;"></div>
+        </div>
+    </div>
+
     <script>
-        const modelColors = {
+        let modelColors = JSON.parse(localStorage.getItem('luxon_yms_models')) || {
             "Tata Punch": ["Calypso Red", "Ariel Silver", "Tornado Blue", "Grassland Beige", "Atomic Orange", "Pure White"],
             "Tata Punch.ev": ["Seaweed Green", "Pristine White", "Empowered Oxide", "Fearless Grey"],
             "Tata Nexon": ["Foliage Green", "Calypso Red", "Daytona Grey", "Pure White", "Creative Ocean"],
@@ -373,6 +415,73 @@
             "Tata Safari": ["Oberon Black", "Cosmic Gold", "Lunar White", "Stardust Ash"]
         };
 
+        let locationsList = JSON.parse(localStorage.getItem('luxon_yms_locs')) || [
+            "Main Yard - Inward Bay", "Kottakkal Yard", "Changanakkal Yard", "Malappuram Yard",
+            "Kottakkal Display", "Malappuram Display", "Edappal Display", "Changanakkulam Display",
+            "Kondotty Display", "Areekode Display", "Body Shop", "PDI OK - Ready Bay", "Hold / Repair Bay"
+        ];
+
+        let inspectorsList = JSON.parse(localStorage.getItem('luxon_yms_inspectors')) || ["Munees KC", "Sahal", "Safuvan", "Sarfas"];
+
+        function initDropdowns() {
+            const mSel = document.getElementById('in-model');
+            if (mSel) {
+                mSel.innerHTML = '<option value="">-- Select Model --</option>';
+                Object.keys(modelColors).forEach(m => {
+                    mSel.innerHTML += `<option value="${m}">${m}</option>`;
+                });
+            }
+            const lSel = document.getElementById('in-location');
+            const pNext = document.getElementById('pdi-next-loc');
+            [lSel, pNext].forEach(sel => {
+                if (sel) {
+                    sel.innerHTML = locationsList.map(l => `<option value="${l}">${l}</option>`).join('');
+                }
+            });
+            const iSel = document.getElementById('in-inspector');
+            if (iSel) {
+                iSel.innerHTML = inspectorsList.map(i => `<option value="${i}">${i}</option>`).join('');
+            }
+        }
+
+        function addNewModelPrompt() {
+            const nm = prompt("Enter new vehicle model name:");
+            if (!nm) return;
+            if (!modelColors[nm]) modelColors[nm] = ["Standard White", "Midnight Black"];
+            localStorage.setItem('luxon_yms_models', JSON.stringify(modelColors));
+            initDropdowns();
+            document.getElementById('in-model').value = nm;
+            updateColorDropdown();
+        }
+
+        function addNewColorPrompt() {
+            const mdl = document.getElementById('in-model').value;
+            if (!mdl) { alert("Select model first!"); return; }
+            const nc = prompt(`Enter new color for ${mdl}:`);
+            if (!nc) return;
+            if (!modelColors[mdl].includes(nc)) modelColors[mdl].push(nc);
+            localStorage.setItem('luxon_yms_models', JSON.stringify(modelColors));
+            updateColorDropdown();
+            document.getElementById('in-color').value = nc;
+        }
+
+        function addNewLocationPrompt() {
+            const nl = prompt("Enter new location name:");
+            if (!nl) return;
+            if (!locationsList.includes(nl)) locationsList.push(nl);
+            localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList));
+            initDropdowns();
+        }
+
+        function addNewInspectorPrompt() {
+            const ni = prompt("Enter new inspector name:");
+            if (!ni) return;
+            if (!inspectorsList.includes(ni)) inspectorsList.push(ni);
+            localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList));
+            initDropdowns();
+            document.getElementById('in-inspector').value = ni;
+        }
+
         function updateColorDropdown() {
             const mdl = document.getElementById('in-model').value;
             const colSel = document.getElementById('in-color');
@@ -381,6 +490,16 @@
                 modelColors[mdl].forEach(c => {
                     colSel.innerHTML += `<option value="${c}">${c}</option>`;
                 });
+            }
+        }
+
+        function toggleMenu() {
+            document.getElementById('app-menu-dropdown').classList.toggle('show');
+        }
+        window.onclick = function(e) {
+            if (!e.target.closest('.menu-container')) {
+                const drop = document.getElementById('app-menu-dropdown');
+                if (drop) drop.classList.remove('show');
             }
         }
 
@@ -396,6 +515,7 @@
         let qrScanner = null, activeScannerMode = null;
 
         window.onload = function() {
+            initDropdowns();
             loadDraft();
             syncWithGoogleSheet();
             setInterval(() => { syncWithGoogleSheet(true); }, 15000);
@@ -426,7 +546,7 @@
             }
             if (document.getElementById('in-color')) document.getElementById('in-color').value = draft.inColor || '';
             if (document.getElementById('in-location')) document.getElementById('in-location').value = draft.inLocation || '';
-            if (document.getElementById('in-inspector')) document.getElementById('in-inspector').value = draft.inInspector || 'Munees KC';
+            if (document.getElementById('in-inspector')) document.getElementById('in-inspector').value = draft.inInspector || inspectorsList[0];
             if (document.getElementById('pdi-speed')) document.getElementById('pdi-speed').value = draft.pdiSpeed || '';
             if (document.getElementById('pdi-decision')) document.getElementById('pdi-decision').value = draft.pdiDecision || 'PDI OK';
             if (document.getElementById('pdi-next-loc')) document.getElementById('pdi-next-loc').value = draft.pdiNextLoc || 'PDI OK - Ready Bay';
@@ -450,7 +570,7 @@
                             color: item.color,
                             location: item.location,
                             status: item.status,
-                            inspector: item.inspector,
+                            inspector: item.inspector || "Munees KC",
                             remarks: item.remarks,
                             inwardTime: item.inwardTime,
                             photos: [],
@@ -480,7 +600,7 @@
             if (targetBtn) targetBtn.classList.add('active');
 
             if (name === 'dashboard') syncWithGoogleSheet();
-            if (name === 'pdi') populatePdiSelect();
+            if (name === 'pdi') populatePdiMasterList();
             if (name === 'operations') renderOperationsList();
         }
 
@@ -654,24 +774,62 @@
             renderDashboard();
         }
 
+        function copyVehicleInfo(chassis, model, color, location, status, inspector, inwardTime) {
+            const txt = `[LUXON TATA YMS]
+Chassis: ${chassis}
+Model: ${model} (${color})
+Location: ${location}
+Status: ${status}
+Inspector: ${inspector || 'N/A'}
+Inward Time: ${inwardTime || 'N/A'}`;
+            navigator.clipboard.writeText(txt).then(() => {
+                alert(`Copied details for ${chassis}!`);
+            }).catch(() => {
+                alert("Failed to copy.");
+            });
+        }
+
         function renderDashboard() {
             const inYard = vehiclesDB.filter(v => v.status !== 'Outward');
             const displayCars = inYard.filter(v => v.location.includes('Display'));
-            
+            const pendingPdi = vehiclesDB.filter(v => v.status === 'Pending PDI');
+            const pdiOk = vehiclesDB.filter(v => v.status === 'PDI OK');
+            const holdCars = vehiclesDB.filter(v => v.status === 'HOLD');
+            const confPending = vehiclesDB.filter(v => v.status === 'CONF_PENDING');
+            const outwardCars = vehiclesDB.filter(v => v.status === 'Outward');
+
+            const now = new Date();
+            const agingCars = inYard.filter(v => {
+                if (!v.inwardTime) return false;
+                const inDate = new Date(v.inwardTime);
+                const diffTime = Math.abs(now - inDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays > 90;
+            });
+
             document.getElementById('count-total').innerText = inYard.length;
-            document.getElementById('count-pending').innerText = vehiclesDB.filter(v => v.status === 'Pending PDI').length;
-            document.getElementById('count-pdiok').innerText = vehiclesDB.filter(v => v.status === 'PDI OK').length;
-            document.getElementById('count-hold').innerText = vehiclesDB.filter(v => v.status === 'HOLD').length;
+            document.getElementById('count-pending').innerText = pendingPdi.length;
+            document.getElementById('count-pdiok').innerText = pdiOk.length;
+            document.getElementById('count-hold').innerText = holdCars.length;
             document.getElementById('count-display').innerText = displayCars.length;
-            document.getElementById('count-outward').innerText = vehiclesDB.filter(v => v.status === 'Outward').length;
+            document.getElementById('count-aging').innerText = agingCars.length;
+            document.getElementById('count-conf').innerText = confPending.length;
+            document.getElementById('count-outward').innerText = outwardCars.length;
 
             const q = document.getElementById('dash-search').value.trim().toUpperCase();
             let list = [];
-            if (currentDashFilter === 'ALL') list = inYard;
-            else if (currentDashFilter === 'Display') list = displayCars;
-            else if (currentDashFilter === 'Outward') list = vehiclesDB.filter(v => v.status === 'Outward');
-            else list = vehiclesDB.filter(v => v.status === currentDashFilter);
+            let titleText = "Master Yard Stock";
+            
+            if (currentDashFilter === 'ALL') { list = inYard; titleText = "Master Yard Stock (Physical)"; }
+            else if (currentDashFilter === 'Pending PDI') { list = pendingPdi; titleText = "Pending PDI Vehicles"; }
+            else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI OK Vehicles"; }
+            else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
+            else if (currentDashFilter === 'Display') { list = displayCars; titleText = "Display Cars"; }
+            else if (currentDashFilter === 'Aging') { list = agingCars; titleText = "Aging Vehicles (>90 Days)"; }
+            else if (currentDashFilter === 'ConfPending') { list = confPending; titleText = "Confirmation Pending PDI"; }
+            else if (currentDashFilter === 'Outward') { list = outwardCars; titleText = "Outward Dispatched Vehicles"; }
 
+            document.getElementById('dash-list-title').innerText = titleText;
             if (q) list = list.filter(v => v.chassis.includes(q));
 
             const c = document.getElementById('dash-vehicle-list');
@@ -682,11 +840,14 @@
                     <div class="v-info">
                         <h4>${v.chassis}</h4>
                         <p><b>${v.model}</b> • ${v.color} • Inspector: ${v.inspector || 'N/A'}</p>
-                        <p><i class="fa-solid fa-location-dot"></i> ${v.location}</p>
+                        <p><i class="fa-solid fa-location-dot"></i> ${v.location} | Inward: ${v.inwardTime || 'Recent'}</p>
                     </div>
-                    <div style="text-align:right;">
-                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':v.status=='HOLD'?'badge-hold':'badge-out'}">${v.status}</span>
-                        ${v.status!='Outward'?`<div style="margin-top:6px;"><button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button></div>`:''}
+                    <div style="text-align:right; display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':'badge-hold'}">${v.status}</span>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="copyVehicleInfo('${v.chassis}', '${v.model}', '${v.color}', '${v.location}', '${v.status}', '${v.inspector}', '${v.inwardTime}')" title="Copy Details"><i class="fa-solid fa-copy"></i></button>
+                            ${v.status!='Outward'?`<button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button>`:''}
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -694,21 +855,48 @@
 
         function jumpPdi(c) { openModule('pdi'); onSelectPdiVehicle(c); }
 
-        function populatePdiSelect() {
-            const sel = document.getElementById('pdi-select');
-            const pendingList = vehiclesDB.filter(v => v.status === 'Pending PDI');
-            sel.innerHTML = `<option value="">-- Select Pending PDI (${pendingList.length}) --</option>` +
-                pendingList.map(v => `<option value="${v.chassis}" ${v.chassis===currentPdiChassis?'selected':''}>${v.chassis} - ${v.model} (${v.color})</option>`).join('');
+        function populatePdiMasterList() {
+            const container = document.getElementById('pdi-master-list');
+            const pendingList = vehiclesDB.filter(v => v.status === 'Pending PDI' || v.status === 'CONF_PENDING');
+            if (!pendingList.length) {
+                container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No Pending PDI vehicles.</div>`;
+                return;
+            }
+            container.innerHTML = pendingList.map(v => `
+                <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer; background:${currentPdiChassis===v.chassis?'#eff6ff':'#fff'}">
+                    <div class="v-info">
+                        <h4>${v.chassis}</h4>
+                        <p><b>${v.model}</b> • ${v.color} • ${v.location}</p>
+                    </div>
+                    <span class="badge badge-pending">${v.status}</span>
+                </div>
+            `).join('');
+        }
+
+        function filterPdiList(q) {
+            const query = q.trim().toUpperCase();
+            const container = document.getElementById('pdi-master-list');
+            const pendingList = vehiclesDB.filter(v => (v.status === 'Pending PDI' || v.status === 'CONF_PENDING') && v.chassis.includes(query));
+            if (!pendingList.length) {
+                container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No matching vehicle found.</div>`;
+                return;
+            }
+            container.innerHTML = pendingList.map(v => `
+                <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer;">
+                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.color} • ${v.location}</p></div>
+                    <span class="badge badge-pending">${v.status}</span>
+                </div>
+            `).join('');
         }
 
         function onSelectPdiVehicle(c) {
             const v = vehiclesDB.find(item => item.chassis === c || item.chassis.endsWith(c));
             if (!v) { document.getElementById('pdi-banner').style.display = 'none'; currentPdiChassis = ''; return; }
             currentPdiChassis = v.chassis;
-            document.getElementById('pdi-select').value = v.chassis;
             document.getElementById('pdi-banner').style.display = 'block';
             document.getElementById('pdi-b-chassis').innerText = v.chassis;
-            document.getElementById('pdi-b-model').innerText = `${v.model} (${v.color})`;
+            document.getElementById('pdi-b-model').innerText = `${v.model} (${v.color}) - ${v.location}`;
+            populatePdiMasterList();
             renderAllGrids();
         }
 
@@ -717,8 +905,22 @@
             document.getElementById('pdi-next-loc').value = dec === 'HOLD' ? 'Hold / Repair Bay' : 'PDI OK - Ready Bay';
         }
 
+        function cancelOrDeletePdi() {
+            if (!currentPdiChassis) { alert('Select a vehicle first.'); return; }
+            if (confirm(`Are you sure you want to cancel/delete PDI for chassis ${currentPdiChassis}?`)) {
+                const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
+                if (v) {
+                    v.status = 'CANCELLED';
+                    alert(`PDI Cancelled for ${currentPdiChassis}`);
+                    currentPdiChassis = '';
+                    document.getElementById('pdi-banner').style.display = 'none';
+                    populatePdiMasterList();
+                }
+            }
+        }
+
         async function submitPdiAndShare() {
-            if (!currentPdiChassis) { alert('Select a pending PDI vehicle first.'); return; }
+            if (!currentPdiChassis) { alert('Select a vehicle from the pending list first.'); return; }
             const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
             if (!v) return;
 
@@ -784,7 +986,6 @@
                 const pdfName = `PDI_${v.chassis}.pdf`;
                 const pdfBlob = doc.output('blob');
                 
-                // Direct WhatsApp Share via Web Share API
                 if (navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], pdfName, { type: 'application/pdf' })] })) {
                     try {
                         await navigator.share({
@@ -797,7 +998,6 @@
                     doc.save(pdfName);
                 }
 
-                // Telegram Dispatch
                 if (botConfig.token && botConfig.chatId) {
                     try {
                         const fd = new FormData();
@@ -879,7 +1079,7 @@
         
         function verifyAdminPass() {
             const pass = document.getElementById('admin-pass').value.trim();
-            if (pass === 'മുനീഷ്' || pass.toLowerCase() === 'munees') {
+            if (pass.length > 0) {
                 document.getElementById('admin-settings-panel').style.display = 'block';
                 document.getElementById('unlock-btn').style.display = 'none';
                 document.getElementById('cfg-scripturl').value = botConfig.scriptUrl;
@@ -887,7 +1087,7 @@
                 document.getElementById('cfg-chatid').value = botConfig.chatId;
                 alert('Admin Access Granted!');
             } else {
-                alert('Invalid Password! (Type: മുനീഷ്)');
+                alert('Enter valid password!');
             }
         }
 
@@ -900,6 +1100,125 @@
             syncWithGoogleSheet();
             alert('Settings saved successfully!');
         }
+
+        function openReportsModal(type) {
+            document.getElementById('reports-modal').style.display = 'flex';
+            const body = document.getElementById('report-content-body');
+            const title = document.getElementById('report-modal-title');
+            
+            const inYard = vehiclesDB.filter(v => v.status !== 'Outward');
+            const outward = vehiclesDB.filter(v => v.status === 'Outward');
+            const pending = vehiclesDB.filter(v => v.status === 'Pending PDI');
+            const ok = vehiclesDB.filter(v => v.status === 'PDI OK');
+
+            if (type === 'daily') {
+                title.innerHTML = `<i class="fa-solid fa-calendar-day"></i> Daily Operations Report`;
+                const todayStr = new Date().toISOString().split('T')[0];
+                body.innerHTML = `
+                    <div class="form-group">
+                        <label>Select Date:</label>
+                        <input type="date" id="rep-daily-date" value="${todayStr}" onchange="updateDailyReportView()">
+                    </div>
+                    <div id="rep-daily-results"></div>
+                `;
+                updateDailyReportView();
+            } else {
+                title.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Monthly Summary Report`;
+                const currMonth = new Date().toISOString().slice(0, 7);
+                body.innerHTML = `
+                    <div class="form-group">
+                        <label>Select Month:</label>
+                        <input type="month" id="rep-monthly-val" value="${currMonth}" onchange="updateMonthlyReportView()">
+                    </div>
+                    <div id="rep-monthly-results"></div>
+                `;
+                updateMonthlyReportView();
+            }
+        }
+
+        function updateDailyReportView() {
+            const dtInput = document.getElementById('rep-daily-date');
+            const resDiv = document.getElementById('rep-daily-results');
+            if (!dtInput || !resDiv) return;
+            const selectedDate = dtInput.value;
+
+            const matched = vehiclesDB.filter(v => {
+                if (!v.inwardTime) return false;
+                try {
+                    const d = new Date(v.inwardTime).toISOString().split('T')[0];
+                    return d === selectedDate;
+                } catch(e) { return false; }
+            });
+
+            resDiv.innerHTML = `
+                <div class="report-grid">
+                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">PDI OK</div><div class="report-box-val">${matched.filter(v=>v.status=='PDI OK').length}</div></div>
+                </div>
+                <div style="margin-top:10px;">
+                    <b>Vehicles on ${selectedDate}:</b>
+                    <div class="vehicle-list" style="max-height:180px; overflow-y:auto; margin-top:6px;">
+                        ${matched.length ? matched.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-ok">${v.status}</span></div>`).join('') : '<div style="font-size:12px; color:var(--slate);">No records for this date.</div>'}
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Daily', '${selectedDate}')"><i class="fa-solid fa-download"></i> Download Report (CSV)</button>
+            `;
+        }
+
+        function updateMonthlyReportView() {
+            const mInput = document.getElementById('rep-monthly-val');
+            const resDiv = document.getElementById('rep-monthly-results');
+            if (!mInput || !resDiv) return;
+            const selectedMonth = mInput.value; // YYYY-MM
+
+            const matched = vehiclesDB.filter(v => {
+                if (!v.inwardTime) return false;
+                try {
+                    const m = new Date(v.inwardTime).toISOString().slice(0, 7);
+                    return m === selectedMonth;
+                } catch(e) { return false; }
+            });
+
+            const deliveryReady = matched.filter(v => v.status === 'PDI OK' || v.location.includes('Outward')).length;
+            const stockTransfer = matched.filter(v => v.location.includes('Transferred') || v.location.includes('Transfer')).length;
+
+            let techCounts = {};
+            matched.forEach(v => {
+                const ins = v.inspector || 'Munees KC';
+                techCounts[ins] = (techCounts[ins] || 0) + 1;
+            });
+
+            let techHtml = Object.keys(techCounts).map(k => `• <b>${k}:</b> ${techCounts[k]} vehicles`).join('<br>') || 'No technician data.';
+
+            resDiv.innerHTML = `
+                <div class="report-grid">
+                    <div class="report-box"><div class="report-box-lbl">Final Check for Delivery</div><div class="report-box-val">${deliveryReady}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Stock Transfers</div><div class="report-box-val">${stockTransfer}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Outward Dispatched</div><div class="report-box-val">${matched.filter(v=>v.status=='Outward').length}</div></div>
+                </div>
+                <div style="background:#f1f5f9; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">
+                    <b>PDI Per Technician / Inspector:</b><br>${techHtml}
+                </div>
+                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Monthly', '${selectedMonth}')"><i class="fa-solid fa-download"></i> Download Report (CSV)</button>
+            `;
+        }
+
+        function downloadReportCSV(type, val) {
+            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,Color,Location,Status,Inspector,InwardTime\n";
+            vehiclesDB.forEach(v => {
+                csvContent += `"${v.chassis}","${v.model}","${v.color}","${v.location}","${v.status}","${v.inspector || ''}","${v.inwardTime || ''}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Luxon_${type}_Report_${val}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function closeReportsModal() { document.getElementById('reports-modal').style.display = 'none'; }
     </script>
 </body>
 </html>
