@@ -123,7 +123,6 @@
         .alert-box { padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 12px; display: none; }
         .alert-error { background: var(--danger-bg); color: var(--danger); border: 1px solid #fca5a5; }
         .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #6ee7b7; }
-        .alert-warn { background: var(--warning-bg); color: var(--warning); border: 1px solid #fcd34d; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
         .modal-card { background: var(--white); width: 100%; max-width: 520px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
@@ -137,12 +136,15 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub">Photos Only & Telegram Bot Ready</div>
+                <div class="brand-sub">Auto-Sync Live Data Active</div>
             </div>
         </div>
-        <div>
-            <button class="btn btn-outline" style="padding:6px 12px; font-size:11px; background:rgba(255,255,255,0.15); color:white; border:none;" onclick="openSettingsModal()">
-                <i class="fa-solid fa-gear"></i> Settings
+        <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px; background:rgba(255,255,255,0.15); color:white; border:none;" onclick="syncWithGoogleSheet()">
+                <i class="fa-solid fa-rotate"></i> Sync
+            </button>
+            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px; background:rgba(255,255,255,0.15); color:white; border:none;" onclick="openSettingsModal()">
+                <i class="fa-solid fa-gear"></i>
             </button>
         </div>
     </header>
@@ -185,7 +187,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Active Yard Stock</span></div>
+                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> Active Yard Stock</div>
                     <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:150px;">
                 </div>
                 <div id="dash-vehicle-list" class="vehicle-list"></div>
@@ -219,7 +221,6 @@
                     </div>
                 </div>
 
-                <!-- Barcode View & Print Box -->
                 <div id="inward-barcode-box" style="display:none; text-align:center; background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:12px;">
                     <svg id="inward-barcode-svg"></svg>
                     <div><button class="btn btn-primary" style="font-size:11px; padding:4px 8px; margin-top:6px;" onclick="downloadBarcode('inward-barcode-svg', document.getElementById('in-chassis').value)">Download Barcode</button></div>
@@ -262,7 +263,7 @@
             </div>
         </section>
 
-        <!-- PDI INSPECTION (PHOTOS ONLY) -->
+        <!-- PDI INSPECTION -->
         <section id="mod-pdi" class="module-section">
             <div class="card">
                 <div class="card-header">
@@ -291,11 +292,8 @@
                 <!-- 1. All-Round Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
-                        <div class="photo-section-title"><i class="fa-solid fa-car"></i> 1. Vehicle All-Round Photos (Multiple) *</div>
-                        <div class="photo-action-btns">
-                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
-                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
-                        </div>
+                        <div class="photo-section-title"><i class="fa-solid fa-car"></i> 1. Vehicle All-Round Photos *</div>
+                        <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Add<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
                     </div>
                     <div class="multi-photo-grid" id="grid-pdi_vehicle"><span class="empty-photo-hint">Add photos.</span></div>
                 </div>
@@ -304,10 +302,7 @@
                 <div class="photo-section-card">
                     <div class="photo-section-header">
                         <div class="photo-section-title"><i class="fa-solid fa-file-lines"></i> 2. PDI Check Sheet Photos *</div>
-                        <div class="photo-action-btns">
-                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_checksheet')"></label>
-                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_checksheet')"></label>
-                        </div>
+                        <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Add<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_checksheet')"></label>
                     </div>
                     <div class="multi-photo-grid" id="grid-pdi_checksheet"><span class="empty-photo-hint">Add check sheet photos.</span></div>
                 </div>
@@ -316,10 +311,7 @@
                 <div class="photo-section-card">
                     <div class="photo-section-header">
                         <div class="photo-section-title"><i class="fa-solid fa-hashtag"></i> 3. Chassis / VIN Photos *</div>
-                        <div class="photo-action-btns">
-                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
-                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
-                        </div>
+                        <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Add<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
                     </div>
                     <div class="multi-photo-grid" id="grid-pdi_chassis"><span class="empty-photo-hint">Add chassis photos.</span></div>
                 </div>
@@ -328,10 +320,7 @@
                 <div class="photo-section-card">
                     <div class="photo-section-header">
                         <div class="photo-section-title"><i class="fa-solid fa-file-contract"></i> 4. Form 22 / Form 28 Photos *</div>
-                        <div class="photo-action-btns">
-                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form28')"></label>
-                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form28')"></label>
-                        </div>
+                        <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Add<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form28')"></label>
                     </div>
                     <div class="multi-photo-grid" id="grid-pdi_form28"><span class="empty-photo-hint">Add document photos.</span></div>
                 </div>
@@ -339,22 +328,19 @@
                 <!-- 5. Battery Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
-                        <div class="photo-section-title"><i class="fa-solid fa-car-battery"></i> 5. Battery & Voltage Photos *</div>
-                        <div class="photo-action-btns">
-                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
-                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
-                        </div>
+                        <div class="photo-section-title"><i class="fa-solid fa-car-battery"></i> 5. Battery Photos *</div>
+                        <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Add<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
                     </div>
                     <div class="multi-photo-grid" id="grid-pdi_battery"><span class="empty-photo-hint">Add battery photos.</span></div>
                 </div>
 
                 <div class="form-row">
                     <div>
-                        <label>Speedometer Test (km/h & Odo) *</label>
+                        <label>Speedometer Test *</label>
                         <input type="text" id="pdi-speed" placeholder="e.g. Tested 20 km/h - OK">
                     </div>
                     <div>
-                        <label>PDI Status (OK / HOLD) *</label>
+                        <label>PDI Status *</label>
                         <select id="pdi-decision" onchange="toggleHoldUI()">
                             <option value="PDI OK">PDI OK (Ready)</option>
                             <option value="HOLD">HOLD Vehicle (Issue Found)</option>
@@ -374,7 +360,7 @@
                     </div>
                     <div>
                         <label>Remarks / Hold Reason</label>
-                        <input type="text" id="pdi-remarks" placeholder="Optional notes or hold reason...">
+                        <input type="text" id="pdi-remarks" placeholder="Optional notes...">
                     </div>
                 </div>
 
@@ -456,23 +442,55 @@
             chatId: '-1004478595920' 
         };
 
-        let photoBuckets = {
-            inward: [],
-            pdi_vehicle: [],
-            pdi_checksheet: [],
-            pdi_chassis: [],
-            pdi_form28: [],
-            pdi_battery: []
+        let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form28: [], pdi_battery: [] };
+        let currentPdiChassis = '', currentLocChassis = '', currentOutChassis = '', currentDashFilter = 'ALL';
+        let qrScanner = null, activeScannerMode = null;
+
+        window.onload = function() { 
+            syncWithGoogleSheet(); 
         };
 
-        let currentPdiChassis = '';
-        let currentLocChassis = '';
-        let currentOutChassis = '';
-        let currentDashFilter = 'ALL';
-        let qrScanner = null;
-        let activeScannerMode = null;
-
-        window.onload = function() { renderDashboard(); renderAllGrids(); };
+        // Auto-Sync with Google Sheet on start
+        function syncWithGoogleSheet() {
+            if (!botConfig.scriptUrl) { renderDashboard(); renderAllGrids(); return; }
+            fetch(botConfig.scriptUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        // Merge sheet data with local db
+                        data.forEach(serverItem => {
+                            let localIdx = vehiclesDB.findIndex(v => v.chassis === serverItem.chassis);
+                            if (localIdx !== -1) {
+                                vehiclesDB[localIdx].model = serverItem.model;
+                                vehiclesDB[localIdx].color = serverItem.color;
+                                vehiclesDB[localIdx].location = serverItem.location;
+                                vehiclesDB[localIdx].status = serverItem.status;
+                                vehiclesDB[localIdx].remarks = serverItem.remarks;
+                            } else {
+                                vehiclesDB.push({
+                                    chassis: serverItem.chassis,
+                                    model: serverItem.model,
+                                    color: serverItem.color,
+                                    location: serverItem.location,
+                                    status: serverItem.status,
+                                    remarks: serverItem.remarks,
+                                    inwardTime: serverItem.inwardTime,
+                                    photos: [],
+                                    pdiData: null
+                                });
+                            }
+                        });
+                        saveDB();
+                    }
+                    renderDashboard();
+                    renderAllGrids();
+                })
+                .catch(err => {
+                    console.log('Offline mode / Sync error:', err);
+                    renderDashboard();
+                    renderAllGrids();
+                });
+        }
 
         function openModule(name) {
             stopScanner();
@@ -482,7 +500,7 @@
             });
             document.getElementById('mod-' + name).classList.add('active');
             document.getElementById('tabbtn-' + name).classList.add('active');
-            if (name === 'dashboard') renderDashboard();
+            if (name === 'dashboard') { syncWithGoogleSheet(); }
             if (name === 'pdi') populatePdiSelect();
             if (name === 'location') renderLocationList();
             if (name === 'outward') renderOutwardList();
@@ -544,7 +562,7 @@
         function scanBarcodeFromFile(event, mode) {
             const file = event.target.files[0]; if (!file) return;
             const temp = new Html5Qrcode("inward-camera-reader");
-            temp.scanFile(file, true).then(txt => handleScanResult(txt, mode)).catch(() => alert('Could not read barcode from image.'));
+            temp.scanFile(file, true).then(txt => handleScanResult(txt, mode)).catch(() => alert('Could not read barcode.'));
             event.target.value = '';
         }
 
@@ -647,7 +665,6 @@
             if (exIdx !== -1) vehiclesDB[exIdx] = rec; else vehiclesDB.unshift(rec);
             saveDB();
 
-            // Sync with Google Sheet via Apps Script
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST',
@@ -741,7 +758,6 @@
             document.getElementById('pdi-next-loc').value = dec === 'HOLD' ? 'Hold / Repair Bay' : 'PDI OK - Ready Bay';
         }
 
-        // Submit PDI & Send PDF to Telegram
         async function submitPdiAndTelegram() {
             if (!currentPdiChassis) { alert('Select a vehicle first.'); return; }
             const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
@@ -766,7 +782,6 @@
             };
             saveDB();
 
-            // Sync with Google Sheet via Apps Script
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST',
@@ -816,7 +831,6 @@
             const pdfName = `PDI_${v.chassis}.pdf`;
             doc.save(pdfName);
 
-            // Send to Telegram
             if (botConfig.token && botConfig.chatId) {
                 try {
                     const blob = doc.output('blob');
@@ -829,8 +843,6 @@
                 } catch(e) {
                     alert('PDF downloaded, but Telegram send failed.');
                 }
-            } else {
-                alert('PDI Saved & PDF Downloaded locally.');
             }
             openModule('dashboard');
         }
@@ -937,7 +949,8 @@
             botConfig.chatId = document.getElementById('cfg-chatid').value.trim();
             localStorage.setItem('luxon_yms_bot_cfg', JSON.stringify(botConfig));
             closeSettingsModal();
-            alert('Settings saved!');
+            syncWithGoogleSheet();
+            alert('Settings saved & synced!');
         }
 
         function saveDB() { localStorage.setItem('luxon_yms_photos_db', JSON.stringify(vehiclesDB)); }
