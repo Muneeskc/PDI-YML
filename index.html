@@ -14,7 +14,7 @@
             --primary: #1e40af; --primary-light: #2563eb; --primary-bg: #eff6ff;
             --success: #059669; --success-bg: #ecfdf5; --warning: #d97706; --warning-bg: #fffbeb;
             --danger: #dc2626; --danger-bg: #fef2f2; --dark: #0f172a; --slate: #475569;
-            --light: #f1f5f9; --white: #ffffff; --border: #cbd5e1; --radius: 14px;
+            --light: #f8fafc; --white: #ffffff; --border: #cbd5e1; --radius: 14px;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--light); color: var(--dark); padding-bottom: 80px; }
@@ -34,10 +34,11 @@
         .card-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; }
         .card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(5, 1fr); } }
-        .stat-card { background: var(--white); padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; cursor: pointer; }
+        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+        .stat-card { background: var(--white); padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; cursor: pointer; transition: 0.2s; }
+        .stat-card:active { transform: scale(0.98); background: #f1f5f9; }
         .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate); }
-        .stat-val { font-size: 24px; font-weight: 800; margin-top: 4px; }
+        .stat-val { font-size: 26px; font-weight: 800; margin-top: 4px; }
         .scanner-container { border: 2px dashed var(--primary-light); background: var(--primary-bg); border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 14px; }
         .camera-viewport { width: 100%; max-width: 380px; margin: 0 auto 10px auto; border-radius: 8px; overflow: hidden; background: #000; display: none; }
         .scanner-btn-group { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
@@ -46,18 +47,16 @@
         @media(min-width: 550px) { .form-row { grid-template-columns: 1fr 1fr; } }
         label { display: block; font-size: 12px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 6px; }
         input[type="text"], select, textarea { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+        input:focus, select:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
         .mono-input { font-family: monospace; font-weight: 800; text-transform: uppercase; }
-        .btn { border: none; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-full { width: 100%; padding: 13px; font-size: 14px; }
+        .btn { border: none; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-full { width: 100%; font-size: 14px; }
         .btn-primary { background: var(--primary-light); color: var(--white); }
         .btn-success { background: var(--success); color: var(--white); }
-        .btn-warning { background: var(--warning); color: var(--white); }
         .btn-danger { background: var(--danger); color: var(--white); }
-        .btn-dark { background: var(--dark); color: var(--white); }
         .btn-outline { background: var(--white); color: var(--dark); border: 1px solid var(--border); }
         .photo-section-card { border: 1.5px dashed #94a3b8; border-radius: 12px; padding: 12px; background: #f8fafc; margin-bottom: 12px; }
-        .photo-section-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+        .photo-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .photo-section-title { font-size: 12px; font-weight: 800; color: var(--dark); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
         .btn-cam-mini { background: var(--primary-light); color: white; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
         .multi-photo-grid { display: flex; flex-wrap: wrap; gap: 8px; min-height: 42px; align-items: center; }
@@ -69,7 +68,6 @@
         .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
         .badge-ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
         .badge-hold { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
-        .badge-out { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
         .vehicle-list { display: flex; flex-direction: column; gap: 10px; }
         .vehicle-item { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background: var(--white); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         .v-info h4 { font-family: monospace; font-size: 15px; font-weight: 800; color: var(--primary); }
@@ -88,7 +86,7 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub">Live Google Sheet Sync Active</div>
+                <div class="brand-sub">Professional Yard Manager</div>
             </div>
         </div>
         <div style="display:flex; gap:6px;">
@@ -103,10 +101,9 @@
 
     <nav class="nav-tabs">
         <button class="tab-btn active" id="tabbtn-dashboard" onclick="openModule('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
-        <button class="tab-btn" id="tabbtn-inward" onclick="openModule('inward')"><i class="fa-solid fa-barcode"></i> 1. Inward</button>
-        <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> 2. PDI & Photos</button>
-        <button class="tab-btn" id="tabbtn-location" onclick="openModule('location')"><i class="fa-solid fa-location-dot"></i> 3. Location</button>
-        <button class="tab-btn" id="tabbtn-outward" onclick="openModule('outward')"><i class="fa-solid fa-truck-arrow-right"></i> 4. Outward</button>
+        <button class="tab-btn" id="tabbtn-inward" onclick="openModule('inward')"><i class="fa-solid fa-barcode"></i> Inward</button>
+        <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> PDI</button>
+        <button class="tab-btn" id="tabbtn-operations" onclick="openModule('operations')"><i class="fa-solid fa-truck-arrow-right"></i> Operations</button>
     </nav>
 
     <div class="container">
@@ -129,6 +126,10 @@
                     <div class="stat-label">On Hold</div>
                     <div class="stat-val" id="count-hold" style="color: var(--danger);">0</div>
                 </div>
+                <div class="stat-card" onclick="filterDashboardList('Display')">
+                    <div class="stat-label">Display Cars</div>
+                    <div class="stat-val" id="count-display" style="color: #9333ea;">0</div>
+                </div>
                 <div class="stat-card" onclick="filterDashboardList('Outward')">
                     <div class="stat-label">Outward</div>
                     <div class="stat-val" id="count-outward" style="color: var(--slate);">0</div>
@@ -137,7 +138,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> Master Yard Stock (Sheet Live)</div>
+                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> Master Yard Stock</div>
                     <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:150px;">
                 </div>
                 <div id="dash-vehicle-list" class="vehicle-list"></div>
@@ -172,22 +173,49 @@
                 <div class="form-row">
                     <div>
                         <label>Vehicle Model *</label>
-                        <input type="text" id="in-model" list="tata-models" placeholder="Model name" oninput="saveDraft()">
-                        <datalist id="tata-models"><option value="Tata Punch"><option value="Tata Punch.ev"><option value="Tata Nexon"><option value="Tata Nexon.ev"><option value="Tata Curvv"><option value="Tata Tiago"><option value="Tata Harrier"><option value="Tata Safari"></datalist>
+                        <select id="in-model" onchange="updateColorDropdown(); saveDraft();">
+                            <option value="">-- Select Model --</option>
+                            <option value="Tata Punch">Tata Punch</option>
+                            <option value="Tata Punch.ev">Tata Punch.ev</option>
+                            <option value="Tata Nexon">Tata Nexon</option>
+                            <option value="Tata Nexon.ev">Tata Nexon.ev</option>
+                            <option value="Tata Curvv">Tata Curvv</option>
+                            <option value="Tata Tiago">Tata Tiago</option>
+                            <option value="Tata Harrier">Tata Harrier</option>
+                            <option value="Tata Safari">Tata Safari</option>
+                        </select>
                     </div>
                     <div>
                         <label>Color Code *</label>
-                        <input type="text" id="in-color" placeholder="Color name" oninput="saveDraft()">
+                        <select id="in-color" onchange="saveDraft()"><option value="">-- Select Model First --</option></select>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Initial Yard Location *</label>
-                    <select id="in-location" onchange="saveDraft()">
-                        <option value="Main Yard - Inward Bay">Main Yard - Inward Bay</option>
-                        <option value="Kottakkal Yard">Kottakkal Yard</option>
-                        <option value="Changanakkal Yard">Changanakkal Yard</option>
-                        <option value="Malappuram Yard">Malappuram Yard</option>
-                    </select>
+                <div class="form-row">
+                    <div>
+                        <label>Initial Yard Location *</label>
+                        <select id="in-location" onchange="saveDraft()">
+                            <option value="Main Yard - Inward Bay">Main Yard - Inward Bay</option>
+                            <option value="Kottakkal Yard">Kottakkal Yard</option>
+                            <option value="Changanakkal Yard">Changanakkal Yard</option>
+                            <option value="Malappuram Yard">Malappuram Yard</option>
+                            <option value="Kottakkal Display">Kottakkal Display</option>
+                            <option value="Malappuram Display">Malappuram Display</option>
+                            <option value="Edappal Display">Edappal Display</option>
+                            <option value="Changanakkulam Display">Changanakkulam Display</option>
+                            <option value="Kondotty Display">Kondotty Display</option>
+                            <option value="Areekode Display">Areekode Display</option>
+                            <option value="Body Shop">Body Shop</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Inspector Name *</label>
+                        <select id="in-inspector" onchange="saveDraft()">
+                            <option value="Munees KC">Munees KC</option>
+                            <option value="Sahal">Sahal</option>
+                            <option value="Safuvan">Safuvan</option>
+                            <option value="Sarfas">Sarfas</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="photo-section-card">
                     <div class="photo-section-header">
@@ -263,50 +291,54 @@
                             <option value="Showroom Display">Showroom Display</option>
                         </select>
                     </div>
-                    <div><label>Remarks / Hold Reason</label><input type="text" id="pdi-remarks" placeholder="Optional notes..." oninput="saveDraft()"></div>
+                    <div><label>Inspector Name *</label><input type="text" id="pdi-inspector" value="Munees KC" readonly></div>
                 </div>
-                <button type="button" class="btn btn-success btn-full" onclick="submitPdiAndTelegram()"><i class="fa-solid fa-paper-plane"></i> Submit PDI & Send PDF to Telegram</button>
+                <div class="form-group"><label>Remarks / Hold Reason</label><input type="text" id="pdi-remarks" placeholder="Optional notes..." oninput="saveDraft()"></div>
+                
+                <button type="button" class="btn btn-success btn-full" onclick="submitPdiAndShare()"><i class="fa-brands fa-whatsapp"></i> Submit PDI & Share (WhatsApp / Telegram)</button>
             </div>
         </section>
 
-        <!-- LOCATION -->
-        <section id="mod-location" class="module-section">
+        <!-- OPERATIONS & DISPATCH -->
+        <section id="mod-operations" class="module-section">
             <div class="card">
-                <div class="card-header"><div class="card-title"><i class="fa-solid fa-location-dot"></i> Yard Location & Hold Manager</div></div>
-                <input type="text" id="loc-search" placeholder="Search chassis..." oninput="renderLocationList()" style="margin-bottom:12px;">
-                <div id="loc-editor" style="display:none; background:#eff6ff; border:1px solid var(--primary-light); border-radius:10px; padding:12px; margin-bottom:12px;">
-                    <div id="loc-ed-chassis" style="font-family:monospace; font-weight:800; color:var(--primary); margin-bottom:6px;"></div>
+                <div class="card-header"><div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> Yard Operations & Dispatch</div></div>
+                <input type="text" id="op-search" placeholder="Search chassis..." oninput="renderOperationsList()" style="margin-bottom:12px;">
+                <div id="op-editor" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:12px; margin-bottom:12px;">
+                    <div id="op-ed-chassis" style="font-family:monospace; font-weight:800; color:var(--danger); margin-bottom:6px;"></div>
                     <div class="form-row">
-                        <div><label>New Location</label><input type="text" id="loc-ed-new" placeholder="New location..."></div>
                         <div>
-                            <label>Status</label>
-                            <select id="loc-ed-status">
-                                <option value="KEEP">Keep Status</option>
-                                <option value="HOLD">Put ON HOLD</option>
-                                <option value="PDI OK">Release -> PDI OK</option>
+                            <label>Action Type *</label>
+                            <select id="op-action-type" onchange="toggleOpActionUI()">
+                                <option value="DISPATCH">Outward Dispatch</option>
+                                <option value="TRANSFER">Stock Transfer (Regional)</option>
+                            </select>
+                        </div>
+                        <div id="op-dest-box">
+                            <label>Delivery Location *</label>
+                            <select id="op-ed-dest">
+                                <option value="Malappuram">Malappuram</option>
+                                <option value="Kottakkal">Kottakkal</option>
+                                <option value="Edappal">Edappal</option>
+                                <option value="Changanakkulam">Changanakkulam</option>
+                                <option value="Kondotty">Kondotty</option>
+                                <option value="Areekode">Areekode</option>
+                            </select>
+                        </div>
+                        <div id="op-region-box" style="display:none;">
+                            <label>Transfer Region *</label>
+                            <select id="op-ed-region">
+                                <option value="Ernakulam">Ernakulam</option>
+                                <option value="Kollam">Kollam</option>
+                                <option value="Trivandrum">Trivandrum</option>
+                                <option value="Pathanamthitta - Konni">Pathanamthitta - Konni</option>
+                                <option value="Dealer Yard">Dealer Yard</option>
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-primary" onclick="saveLocationUpdate()">Update Location</button>
+                    <button class="btn btn-danger btn-full" onclick="confirmOperationsDispatch()">Confirm & Update Sheet</button>
                 </div>
-                <div id="loc-list" class="vehicle-list"></div>
-            </div>
-        </section>
-
-        <!-- OUTWARD -->
-        <section id="mod-outward" class="module-section">
-            <div class="card">
-                <div class="card-header"><div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> Vehicle Outward Dispatch</div></div>
-                <input type="text" id="out-search" placeholder="Search chassis..." oninput="renderOutwardList()" style="margin-bottom:12px;">
-                <div id="out-editor" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:12px; margin-bottom:12px;">
-                    <div id="out-ed-chassis" style="font-family:monospace; font-weight:800; color:var(--danger); margin-bottom:6px;"></div>
-                    <div class="form-row">
-                        <div><label>Destination / Showroom *</label><input type="text" id="out-ed-dest" placeholder="Showroom name"></div>
-                        <div><label>Driver Name</label><input type="text" id="out-ed-driver" placeholder="Driver"></div>
-                    </div>
-                    <button class="btn btn-danger" onclick="confirmOutward()">Confirm Dispatch</button>
-                </div>
-                <div id="out-list" class="vehicle-list"></div>
+                <div id="op-list" class="vehicle-list"></div>
             </div>
         </section>
     </div>
@@ -315,17 +347,43 @@
     <div class="modal-overlay" id="settings-modal">
         <div class="modal-card">
             <div class="card-header">
-                <div class="card-title"><i class="fa-solid fa-gear"></i> System & Telegram Settings</div>
+                <div class="card-title"><i class="fa-solid fa-gear"></i> System Settings</div>
                 <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeSettingsModal()">✕</button>
             </div>
-            <div class="form-group"><label>Google Apps Script Web App URL</label><input type="text" id="cfg-scripturl"></div>
-            <div class="form-group"><label>Telegram Bot Token</label><input type="text" id="cfg-token"></div>
-            <div class="form-group"><label>Telegram Chat ID</label><input type="text" id="cfg-chatid"></div>
-            <button class="btn btn-primary btn-full" onclick="saveSettings()">Save Settings</button>
+            <div class="form-group"><label>Admin Password (മുനീഷ്)</label><input type="password" id="admin-pass" placeholder="Enter password to unlock"></div>
+            <div id="admin-settings-panel" style="display:none;">
+                <div class="form-group"><label>Google Apps Script Web App URL</label><input type="text" id="cfg-scripturl"></div>
+                <div class="form-group"><label>Telegram Bot Token</label><input type="text" id="cfg-token"></div>
+                <div class="form-group"><label>Telegram Chat ID</label><input type="text" id="cfg-chatid"></div>
+                <button class="btn btn-primary btn-full" onclick="saveSettings()">Save Settings</button>
+            </div>
+            <button class="btn btn-success btn-full" id="unlock-btn" onclick="verifyAdminPass()">Unlock Settings</button>
         </div>
     </div>
 
     <script>
+        const modelColors = {
+            "Tata Punch": ["Calypso Red", "Ariel Silver", "Tornado Blue", "Grassland Beige", "Atomic Orange", "Pure White"],
+            "Tata Punch.ev": ["Seaweed Green", "Pristine White", "Empowered Oxide", "Fearless Grey"],
+            "Tata Nexon": ["Foliage Green", "Calypso Red", "Daytona Grey", "Pure White", "Creative Ocean"],
+            "Tata Nexon.ev": ["Creative Ocean", "Pristine White", "Intense Teal", "Empowered Oxide"],
+            "Tata Curvv": ["Gold Essence", "Flame Red", "Pristine White", "Pure Grey", "Daytona Grey"],
+            "Tata Tiago": ["Flame Red", "Pearlescent White", "Midnight Plum", "Arizona Blue", "Opal White"],
+            "Tata Harrier": ["Coral Red", "Oberon Black", "Pebble Grey", "Lunar White", "Sunlit Yellow"],
+            "Tata Safari": ["Oberon Black", "Cosmic Gold", "Lunar White", "Stardust Ash"]
+        };
+
+        function updateColorDropdown() {
+            const mdl = document.getElementById('in-model').value;
+            const colSel = document.getElementById('in-color');
+            colSel.innerHTML = '<option value="">-- Select Color --</option>';
+            if (modelColors[mdl]) {
+                modelColors[mdl].forEach(c => {
+                    colSel.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+            }
+        }
+
         let vehiclesDB = [];
         let botConfig = JSON.parse(localStorage.getItem('luxon_yms_bot_cfg')) || { 
             scriptUrl: 'https://script.google.com/macros/s/AKfycbyhtIDnBmd4yvJNYd60CpUqs5klkdwu97O8svx6PffXlmbmI8KuyZnDulPFALoAuUTdvQ/exec',
@@ -334,13 +392,13 @@
         };
 
         let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form28: [], pdi_battery: [] };
-        let currentPdiChassis = '', currentLocChassis = '', currentOutChassis = '', currentDashFilter = 'ALL';
+        let currentPdiChassis = '', currentOpChassis = '', currentDashFilter = 'ALL';
         let qrScanner = null, activeScannerMode = null;
 
         window.onload = function() {
             loadDraft();
             syncWithGoogleSheet();
-            setInterval(() => { syncWithGoogleSheet(true); }, 15000); // Background sync every 15s
+            setInterval(() => { syncWithGoogleSheet(true); }, 15000);
         };
 
         function saveDraft() {
@@ -349,6 +407,7 @@
                 inModel: document.getElementById('in-model').value,
                 inColor: document.getElementById('in-color').value,
                 inLocation: document.getElementById('in-location').value,
+                inInspector: document.getElementById('in-inspector').value,
                 pdiSpeed: document.getElementById('pdi-speed').value,
                 pdiDecision: document.getElementById('pdi-decision').value,
                 pdiNextLoc: document.getElementById('pdi-next-loc').value,
@@ -361,9 +420,13 @@
             const draft = JSON.parse(localStorage.getItem('luxon_yms_draft'));
             if (!draft) return;
             if (document.getElementById('in-chassis')) document.getElementById('in-chassis').value = draft.inChassis || '';
-            if (document.getElementById('in-model')) document.getElementById('in-model').value = draft.inModel || '';
+            if (document.getElementById('in-model')) {
+                document.getElementById('in-model').value = draft.inModel || '';
+                updateColorDropdown();
+            }
             if (document.getElementById('in-color')) document.getElementById('in-color').value = draft.inColor || '';
             if (document.getElementById('in-location')) document.getElementById('in-location').value = draft.inLocation || '';
+            if (document.getElementById('in-inspector')) document.getElementById('in-inspector').value = draft.inInspector || 'Munees KC';
             if (document.getElementById('pdi-speed')) document.getElementById('pdi-speed').value = draft.pdiSpeed || '';
             if (document.getElementById('pdi-decision')) document.getElementById('pdi-decision').value = draft.pdiDecision || 'PDI OK';
             if (document.getElementById('pdi-next-loc')) document.getElementById('pdi-next-loc').value = draft.pdiNextLoc || 'PDI OK - Ready Bay';
@@ -372,7 +435,6 @@
 
         function clearDraft() { localStorage.removeItem('luxon_yms_draft'); }
 
-        // Master Sheet Sync (Ensures both browsers show identical live sheet data)
         function syncWithGoogleSheet(isBackground = false) {
             if (!botConfig.scriptUrl) { renderDashboard(); return; }
             const icon = document.getElementById('sync-icon');
@@ -388,6 +450,7 @@
                             color: item.color,
                             location: item.location,
                             status: item.status,
+                            inspector: item.inspector,
                             remarks: item.remarks,
                             inwardTime: item.inwardTime,
                             photos: [],
@@ -405,16 +468,20 @@
 
         function openModule(name) {
             stopScanner();
-            ['dashboard', 'inward', 'pdi', 'location', 'outward'].forEach(m => {
-                document.getElementById('mod-' + m).classList.remove('active');
-                document.getElementById('tabbtn-' + m).classList.remove('active');
+            ['dashboard', 'inward', 'pdi', 'operations'].forEach(m => {
+                const el = document.getElementById('mod-' + m);
+                const btn = document.getElementById('tabbtn-' + m);
+                if (el) el.classList.remove('active');
+                if (btn) btn.classList.remove('active');
             });
-            document.getElementById('mod-' + name).classList.add('active');
-            document.getElementById('tabbtn-' + name).classList.add('active');
-            if (name === 'dashboard') { syncWithGoogleSheet(); }
+            const targetMod = document.getElementById('mod-' + name);
+            const targetBtn = document.getElementById('tabbtn-' + name);
+            if (targetMod) targetMod.classList.add('active');
+            if (targetBtn) targetBtn.classList.add('active');
+
+            if (name === 'dashboard') syncWithGoogleSheet();
             if (name === 'pdi') populatePdiSelect();
-            if (name === 'location') renderLocationList();
-            if (name === 'outward') renderOutwardList();
+            if (name === 'operations') renderOperationsList();
         }
 
         function generateBarcode(ctx) {
@@ -556,8 +623,9 @@
             const model = document.getElementById('in-model').value.trim();
             const color = document.getElementById('in-color').value.trim();
             const location = document.getElementById('in-location').value;
+            const inspector = document.getElementById('in-inspector').value;
 
-            if (!chassis || !model) { alert('Enter Chassis and Model.'); return; }
+            if (!chassis || !model || !color) { alert('Enter Chassis, Model and Color.'); return; }
             const ex = vehiclesDB.find(v => v.chassis === chassis);
             if (ex && ex.status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
 
@@ -568,14 +636,14 @@
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'INWARD', inwardTime, chassis, model, color: color || 'Standard', location, status: 'Pending PDI' })
+                    body: JSON.stringify({ action: 'INWARD', inwardTime, chassis, model, color, location, inspector, status: 'Pending PDI' })
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
             clearDraft();
             document.getElementById('in-chassis').value = '';
             document.getElementById('in-model').value = '';
-            document.getElementById('in-color').value = '';
+            document.getElementById('in-color').innerHTML = '<option value="">-- Select Model First --</option>';
             photoBuckets.inward = []; renderGrid('inward');
             alert(`Inward successful for ${chassis}!`);
             setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
@@ -588,24 +656,32 @@
 
         function renderDashboard() {
             const inYard = vehiclesDB.filter(v => v.status !== 'Outward');
+            const displayCars = inYard.filter(v => v.location.includes('Display'));
+            
             document.getElementById('count-total').innerText = inYard.length;
             document.getElementById('count-pending').innerText = vehiclesDB.filter(v => v.status === 'Pending PDI').length;
             document.getElementById('count-pdiok').innerText = vehiclesDB.filter(v => v.status === 'PDI OK').length;
             document.getElementById('count-hold').innerText = vehiclesDB.filter(v => v.status === 'HOLD').length;
+            document.getElementById('count-display').innerText = displayCars.length;
             document.getElementById('count-outward').innerText = vehiclesDB.filter(v => v.status === 'Outward').length;
 
             const q = document.getElementById('dash-search').value.trim().toUpperCase();
-            let list = currentDashFilter === 'ALL' ? inYard : vehiclesDB.filter(v => v.status === currentDashFilter);
+            let list = [];
+            if (currentDashFilter === 'ALL') list = inYard;
+            else if (currentDashFilter === 'Display') list = displayCars;
+            else if (currentDashFilter === 'Outward') list = vehiclesDB.filter(v => v.status === 'Outward');
+            else list = vehiclesDB.filter(v => v.status === currentDashFilter);
+
             if (q) list = list.filter(v => v.chassis.includes(q));
 
             const c = document.getElementById('dash-vehicle-list');
-            if (!list.length) { c.innerHTML = `<div style="text-align:center; padding:20px; color:var(--slate);">No vehicles found from Sheet.</div>`; return; }
+            if (!list.length) { c.innerHTML = `<div style="text-align:center; padding:20px; color:var(--slate);">No vehicles found.</div>`; return; }
 
             c.innerHTML = list.map(v => `
                 <div class="vehicle-item">
                     <div class="v-info">
                         <h4>${v.chassis}</h4>
-                        <p><b>${v.model}</b> • ${v.color}</p>
+                        <p><b>${v.model}</b> • ${v.color} • Inspector: ${v.inspector || 'N/A'}</p>
                         <p><i class="fa-solid fa-location-dot"></i> ${v.location}</p>
                     </div>
                     <div style="text-align:right;">
@@ -620,9 +696,9 @@
 
         function populatePdiSelect() {
             const sel = document.getElementById('pdi-select');
-            const active = vehiclesDB.filter(v => v.status !== 'Outward');
-            sel.innerHTML = `<option value="">-- Select Pending PDI (${active.length}) --</option>` +
-                active.map(v => `<option value="${v.chassis}" ${v.chassis===currentPdiChassis?'selected':''}>[${v.status}] ${v.chassis} - ${v.model}</option>`).join('');
+            const pendingList = vehiclesDB.filter(v => v.status === 'Pending PDI');
+            sel.innerHTML = `<option value="">-- Select Pending PDI (${pendingList.length}) --</option>` +
+                pendingList.map(v => `<option value="${v.chassis}" ${v.chassis===currentPdiChassis?'selected':''}>${v.chassis} - ${v.model} (${v.color})</option>`).join('');
         }
 
         function onSelectPdiVehicle(c) {
@@ -641,8 +717,8 @@
             document.getElementById('pdi-next-loc').value = dec === 'HOLD' ? 'Hold / Repair Bay' : 'PDI OK - Ready Bay';
         }
 
-        async function submitPdiAndTelegram() {
-            if (!currentPdiChassis) { alert('Select a vehicle first.'); return; }
+        async function submitPdiAndShare() {
+            if (!currentPdiChassis) { alert('Select a pending PDI vehicle first.'); return; }
             const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
             if (!v) return;
 
@@ -650,10 +726,12 @@
             const decision = document.getElementById('pdi-decision').value;
             const nextLoc = document.getElementById('pdi-next-loc').value;
             const remarks = document.getElementById('pdi-remarks').value.trim();
+            const inspector = document.getElementById('pdi-inspector').value;
             const pdiTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
             v.status = decision;
             v.location = nextLoc;
+            v.inspector = inspector;
             v.remarks = remarks;
 
             if (botConfig.scriptUrl) {
@@ -661,7 +739,7 @@
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, chassis: v.chassis, model: v.model, color: v.color, status: decision, speed: speed || 'Tested - OK', location: nextLoc, remarks })
+                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, chassis: v.chassis, model: v.model, color: v.color, status: decision, speed: speed || 'Tested - OK', inspector, location: nextLoc, remarks })
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
@@ -674,7 +752,7 @@
                 doc.setTextColor(255, 255, 255); doc.setFontSize(14);
                 doc.text('LUXON TATA - PDI INSPECTION REPORT', 12, 11);
                 doc.setFontSize(10);
-                doc.text(`Chassis: ${v.chassis} | Status: ${v.status} | Time: ${pdiTime}`, 12, 19);
+                doc.text(`Chassis: ${v.chassis} | Status: ${v.status} | Inspector: ${inspector}`, 12, 19);
 
                 doc.setTextColor(15, 23, 42); doc.setFontSize(10);
                 let y = 35;
@@ -704,115 +782,115 @@
                 addCatToPDF('Vehicle All-Round Photos', photoBuckets.pdi_vehicle);
 
                 const pdfName = `PDI_${v.chassis}.pdf`;
-                doc.save(pdfName);
+                const pdfBlob = doc.output('blob');
+                
+                // Direct WhatsApp Share via Web Share API
+                if (navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], pdfName, { type: 'application/pdf' })] })) {
+                    try {
+                        await navigator.share({
+                            files: [new File([pdfBlob], pdfName, { type: 'application/pdf' })],
+                            title: 'PDI Inspection Report',
+                            text: `✅ PDI Report for Chassis: ${v.chassis} (${v.model}) - Status: ${v.status}`
+                        });
+                    } catch(e) {}
+                } else {
+                    doc.save(pdfName);
+                }
 
+                // Telegram Dispatch
                 if (botConfig.token && botConfig.chatId) {
                     try {
-                        const blob = doc.output('blob');
                         const fd = new FormData();
                         fd.append('chat_id', botConfig.chatId);
-                        fd.append('document', blob, pdfName);
-                        fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${v.status}\nLocation: ${nextLoc}`);
+                        fd.append('document', pdfBlob, pdfName);
+                        fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${v.status}\nInspector: ${inspector}`);
                         await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
                     } catch(e) {}
                 }
             }
 
-            alert('PDI Submitted & Sheet Updated!');
+            alert('PDI Submitted & Shared Successfully!');
             setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
         }
 
-        function renderLocationList() {
-            const q = document.getElementById('loc-search').value.trim().toUpperCase();
+        function renderOperationsList() {
+            const q = document.getElementById('op-search').value.trim().toUpperCase();
             let list = vehiclesDB.filter(v => v.status !== 'Outward');
             if (q) list = list.filter(v => v.chassis.includes(q));
-            document.getElementById('loc-list').innerHTML = list.map(v => `
-                <div class="vehicle-item" onclick="openLocEd('${v.chassis}')" style="cursor:pointer;">
-                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • <b>${v.location}</b></p></div>
-                    <span class="badge ${v.status=='HOLD'?'badge-hold':'badge-ok'}">${v.status}</span>
-                </div>
-            `).join('') || '<div style="text-align:center; color:var(--slate);">No vehicles.</div>';
-        }
-
-        function openLocEd(c) {
-            currentLocChassis = c;
-            const v = vehiclesDB.find(x => x.chassis === c);
-            document.getElementById('loc-editor').style.display = 'block';
-            document.getElementById('loc-ed-chassis').innerText = `${v.chassis} (${v.model})`;
-            document.getElementById('loc-ed-new').value = v.location;
-        }
-
-        function saveLocationUpdate() {
-            const v = vehiclesDB.find(x => x.chassis === currentLocChassis);
-            const newLoc = document.getElementById('loc-ed-new').value.trim();
-            const st = document.getElementById('loc-ed-status').value;
-            if (newLoc) v.location = newLoc;
-            if (st !== 'KEEP') v.status = st;
-
-            if (botConfig.scriptUrl) {
-                fetch(botConfig.scriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, color: v.color, location: v.location, status: v.status, remarks: v.remarks })
-                }).catch(err => console.log('Sheet sync error:', err));
-            }
-
-            document.getElementById('loc-editor').style.display = 'none';
-            alert('Location updated in Sheet!');
-            setTimeout(() => { syncWithGoogleSheet(); renderLocationList(); }, 1000);
-        }
-
-        function renderOutwardList() {
-            const q = document.getElementById('out-search').value.trim().toUpperCase();
-            let list = vehiclesDB.filter(v => v.status !== 'Outward');
-            if (q) list = list.filter(v => v.chassis.includes(q));
-            document.getElementById('out-list').innerHTML = list.map(v => `
-                <div class="vehicle-item" onclick="openOutEd('${v.chassis}')" style="cursor:pointer;">
+            document.getElementById('op-list').innerHTML = list.map(v => `
+                <div class="vehicle-item" onclick="openOpEd('${v.chassis}')" style="cursor:pointer;">
                     <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div>
-                    <span class="badge badge-pending">Ready</span>
+                    <span class="badge ${v.status=='PDI OK'?'badge-ok':'badge-pending'}">${v.status}</span>
                 </div>
             `).join('') || '<div style="text-align:center; color:var(--slate);">No vehicles.</div>';
         }
 
-        function openOutEd(c) {
-            currentOutChassis = c;
+        function openOpEd(c) {
+            currentOpChassis = c;
             const v = vehiclesDB.find(x => x.chassis === c);
-            document.getElementById('out-editor').style.display = 'block';
-            document.getElementById('out-ed-chassis').innerText = `Dispatch: ${v.chassis} (${v.model})`;
+            document.getElementById('op-editor').style.display = 'block';
+            document.getElementById('op-ed-chassis').innerText = `Operations: ${v.chassis} (${v.model})`;
         }
 
-        function confirmOutward() {
-            const v = vehiclesDB.find(x => x.chassis === currentOutChassis);
-            const dest = document.getElementById('out-ed-dest').value.trim();
-            const driver = document.getElementById('out-ed-driver').value.trim();
-            if (!dest) { alert('Enter destination.'); return; }
-            
-            const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-            v.status = 'Outward';
-            v.location = `Outward -> ${dest}`;
+        function toggleOpActionUI() {
+            const act = document.getElementById('op-action-type').value;
+            document.getElementById('op-dest-box').style.display = act === 'DISPATCH' ? 'block' : 'none';
+            document.getElementById('op-region-box').style.display = act === 'TRANSFER' ? 'block' : 'none';
+        }
 
-            if (botConfig.scriptUrl) {
-                fetch(botConfig.scriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'OUTWARD', outwardTime, chassis: v.chassis, model: v.model, color: v.color, outwardDest: dest, outwardDriver: driver })
-                }).catch(err => console.log('Sheet-sync error:', err));
+        function confirmOperationsDispatch() {
+            const v = vehiclesDB.find(x => x.chassis === currentOpChassis);
+            const act = document.getElementById('op-action-type').value;
+            const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+            if (act === 'DISPATCH') {
+                const dest = document.getElementById('op-ed-dest').value;
+                v.status = 'Outward';
+                v.location = `Outward -> ${dest}`;
+                if (botConfig.scriptUrl) {
+                    fetch(botConfig.scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'OUTWARD', outwardTime, chassis: v.chassis, model: v.model, color: v.color, outwardDest: dest, outwardDriver: "Driver" })
+                    }).catch(err => {});
+                }
+            } else {
+                const region = document.getElementById('op-ed-region').value;
+                v.location = `Transferred -> ${region}`;
+                v.status = 'HOLD';
+                if (botConfig.scriptUrl) {
+                    fetch(botConfig.scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'OPERATIONS_UPDATE', chassis: v.chassis, model: v.model, color: v.color, location: v.location, status: 'HOLD', remarks: `Stock Transfer to ${region}` })
+                    }).catch(err => {});
+                }
             }
 
-            document.getElementById('out-editor').style.display = 'none';
-            alert(`Outward confirmed for ${v.chassis}!`);
-            setTimeout(() => { syncWithGoogleSheet(); renderOutwardList(); openModule('dashboard'); }, 1000);
+            document.getElementById('op-editor').style.display = 'none';
+            alert('Operation confirmed & Sheet updated!');
+            setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
         }
 
-        function openSettingsModal() {
-            document.getElementById('cfg-scripturl').value = botConfig.scriptUrl;
-            document.getElementById('cfg-token').value = botConfig.token;
-            document.getElementById('cfg-chatid').value = botConfig.chatId;
-            document.getElementById('settings-modal').style.display = 'flex';
-        }
+        function openSettingsModal() { document.getElementById('settings-modal').style.display = 'flex'; }
         function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+        
+        function verifyAdminPass() {
+            const pass = document.getElementById('admin-pass').value.trim();
+            if (pass === 'മുനീഷ്' || pass.toLowerCase() === 'munees') {
+                document.getElementById('admin-settings-panel').style.display = 'block';
+                document.getElementById('unlock-btn').style.display = 'none';
+                document.getElementById('cfg-scripturl').value = botConfig.scriptUrl;
+                document.getElementById('cfg-token').value = botConfig.token;
+                document.getElementById('cfg-chatid').value = botConfig.chatId;
+                alert('Admin Access Granted!');
+            } else {
+                alert('Invalid Password! (Type: മുനീഷ്)');
+            }
+        }
+
         function saveSettings() {
             botConfig.scriptUrl = document.getElementById('cfg-scripturl').value.trim();
             botConfig.token = document.getElementById('cfg-token').value.trim();
@@ -820,7 +898,7 @@
             localStorage.setItem('luxon_yms_bot_cfg', JSON.stringify(botConfig));
             closeSettingsModal();
             syncWithGoogleSheet();
-            alert('Settings saved & synced!');
+            alert('Settings saved successfully!');
         }
     </script>
 </body>
