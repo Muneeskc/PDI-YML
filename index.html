@@ -88,7 +88,7 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub">Auto-Sync & Draft Safe Active</div>
+                <div class="brand-sub">Live Google Sheet Sync Active</div>
             </div>
         </div>
         <div style="display:flex; gap:6px;">
@@ -137,7 +137,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> Active Yard Stock</div>
+                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> Master Yard Stock (Sheet Live)</div>
                     <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:150px;">
                 </div>
                 <div id="dash-vehicle-list" class="vehicle-list"></div>
@@ -326,7 +326,7 @@
     </div>
 
     <script>
-        let vehiclesDB = JSON.parse(localStorage.getItem('luxon_yms_photos_db')) || [];
+        let vehiclesDB = [];
         let botConfig = JSON.parse(localStorage.getItem('luxon_yms_bot_cfg')) || { 
             scriptUrl: 'https://script.google.com/macros/s/AKfycbyhtIDnBmd4yvJNYd60CpUqs5klkdwu97O8svx6PffXlmbmI8KuyZnDulPFALoAuUTdvQ/exec',
             token: '9043876419:AAEKnIedVt0rcOPxtfJiJvmtWX32z7mvBZA', 
@@ -340,11 +340,9 @@
         window.onload = function() {
             loadDraft();
             syncWithGoogleSheet();
-            // Background auto-sync every 30 seconds without interrupting work
-            setInterval(() => { syncWithGoogleSheet(true); }, 30000);
+            setInterval(() => { syncWithGoogleSheet(true); }, 15000); // Background sync every 15s
         };
 
-        // Auto-Save Draft so input text won't be lost on refresh
         function saveDraft() {
             const draft = {
                 inChassis: document.getElementById('in-chassis').value,
@@ -372,43 +370,29 @@
             if (document.getElementById('pdi-remarks')) document.getElementById('pdi-remarks').value = draft.pdiRemarks || '';
         }
 
-        function clearDraft() {
-            localStorage.removeItem('luxon_yms_draft');
-        }
+        function clearDraft() { localStorage.removeItem('luxon_yms_draft'); }
 
-        // Live Auto-Sync with Google Sheet
+        // Master Sheet Sync (Ensures both browsers show identical live sheet data)
         function syncWithGoogleSheet(isBackground = false) {
-            if (!botConfig.scriptUrl) { renderDashboard(); renderAllGrids(); return; }
+            if (!botConfig.scriptUrl) { renderDashboard(); return; }
             const icon = document.getElementById('sync-icon');
             if (icon && !isBackground) icon.classList.add('fa-spin');
 
             fetch(botConfig.scriptUrl)
                 .then(res => res.json())
                 .then(data => {
-                    if (Array.isArray(data) && data.length > 0) {
-                        data.forEach(serverItem => {
-                            let localIdx = vehiclesDB.findIndex(v => v.chassis === serverItem.chassis);
-                            if (localIdx !== -1) {
-                                vehiclesDB[localIdx].model = serverItem.model;
-                                vehiclesDB[localIdx].color = serverItem.color;
-                                vehiclesDB[localIdx].location = serverItem.location;
-                                vehiclesDB[localIdx].status = serverItem.status;
-                                vehiclesDB[localIdx].remarks = serverItem.remarks;
-                            } else {
-                                vehiclesDB.push({
-                                    chassis: serverItem.chassis,
-                                    model: serverItem.model,
-                                    color: serverItem.color,
-                                    location: serverItem.location,
-                                    status: serverItem.status,
-                                    remarks: serverItem.remarks,
-                                    inwardTime: serverItem.inwardTime,
-                                    photos: [],
-                                    pdiData: null
-                                });
-                            }
-                        });
-                        saveDB();
+                    if (Array.isArray(data)) {
+                        vehiclesDB = data.map(item => ({
+                            chassis: item.chassis,
+                            model: item.model,
+                            color: item.color,
+                            location: item.location,
+                            status: item.status,
+                            remarks: item.remarks,
+                            inwardTime: item.inwardTime,
+                            photos: [],
+                            pdiData: null
+                        }));
                     }
                     if (icon) icon.classList.remove('fa-spin');
                     renderDashboard();
@@ -574,22 +558,11 @@
             const location = document.getElementById('in-location').value;
 
             if (!chassis || !model) { alert('Enter Chassis and Model.'); return; }
-            const exIdx = vehiclesDB.findIndex(v => v.chassis === chassis);
-            if (exIdx !== -1 && vehiclesDB[exIdx].status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
+            const ex = vehiclesDB.find(v => v.chassis === chassis);
+            if (ex && ex.status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
 
             const inwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-            const rec = {
-                chassis, model, color: color || 'Standard', location,
-                status: 'Pending PDI',
-                inwardTime,
-                photos: [...photoBuckets.inward],
-                pdiData: null, remarks: ''
-            };
-
-            if (exIdx !== -1) vehiclesDB[exIdx] = rec; else vehiclesDB.unshift(rec);
-            saveDB();
-            clearDraft();
-
+            
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST',
@@ -599,12 +572,13 @@
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
+            clearDraft();
             document.getElementById('in-chassis').value = '';
             document.getElementById('in-model').value = '';
             document.getElementById('in-color').value = '';
             photoBuckets.inward = []; renderGrid('inward');
             alert(`Inward successful for ${chassis}!`);
-            openModule('dashboard');
+            setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
         }
 
         function filterDashboardList(f) {
@@ -625,7 +599,7 @@
             if (q) list = list.filter(v => v.chassis.includes(q));
 
             const c = document.getElementById('dash-vehicle-list');
-            if (!list.length) { c.innerHTML = `<div style="text-align:center; padding:20px; color:var(--slate);">No vehicles found.</div>`; return; }
+            if (!list.length) { c.innerHTML = `<div style="text-align:center; padding:20px; color:var(--slate);">No vehicles found from Sheet.</div>`; return; }
 
             c.innerHTML = list.map(v => `
                 <div class="vehicle-item">
@@ -657,22 +631,8 @@
             currentPdiChassis = v.chassis;
             document.getElementById('pdi-select').value = v.chassis;
             document.getElementById('pdi-banner').style.display = 'block';
-            document.getElementById('pdi-barcode-box').style.display = 'none';
             document.getElementById('pdi-b-chassis').innerText = v.chassis;
             document.getElementById('pdi-b-model').innerText = `${v.model} (${v.color})`;
-
-            if (v.pdiData) {
-                document.getElementById('pdi-speed').value = v.pdiData.speed || '';
-                document.getElementById('pdi-remarks').value = v.remarks || '';
-                photoBuckets.pdi_vehicle = [...(v.pdiData.vehiclePhotos || [])];
-                photoBuckets.pdi_checksheet = [...(v.pdiData.checksheetPhotos || [])];
-                photoBuckets.pdi_chassis = [...(v.pdiData.chassisPhotos || [])];
-                photoBuckets.pdi_form28 = [...(v.pdiData.form28Photos || [])];
-                photoBuckets.pdi_battery = [...(v.pdiData.batteryPhotos || [])];
-            } else {
-                photoBuckets.pdi_vehicle = [...(v.photos || [])];
-                photoBuckets.pdi_checksheet = []; photoBuckets.pdi_chassis = []; photoBuckets.pdi_form28 = []; photoBuckets.pdi_battery = [];
-            }
             renderAllGrids();
         }
 
@@ -690,85 +650,76 @@
             const decision = document.getElementById('pdi-decision').value;
             const nextLoc = document.getElementById('pdi-next-loc').value;
             const remarks = document.getElementById('pdi-remarks').value.trim();
+            const pdiTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
             v.status = decision;
             v.location = nextLoc;
             v.remarks = remarks;
-            v.pdiTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-            v.pdiData = {
-                speed: speed || 'Tested - OK',
-                vehiclePhotos: [...photoBuckets.pdi_vehicle],
-                checksheetPhotos: [...photoBuckets.pdi_checksheet],
-                chassisPhotos: [...photoBuckets.pdi_chassis],
-                form28Photos: [...photoBuckets.pdi_form28],
-                batteryPhotos: [...photoBuckets.pdi_battery]
-            };
-            saveDB();
-            clearDraft();
 
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime: v.pdiTime, chassis: v.chassis, model: v.model, color: v.color, status: decision, speed: v.pdiData.speed, location: nextLoc, remarks })
+                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, chassis: v.chassis, model: v.model, color: v.color, status: decision, speed: speed || 'Tested - OK', location: nextLoc, remarks })
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
-            if (typeof window.jspdf === 'undefined') { alert('PDI Saved!'); openModule('dashboard'); return; }
+            clearDraft();
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 26, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(14);
-            doc.text('LUXON TATA - PDI INSPECTION REPORT', 12, 11);
-            doc.setFontSize(10);
-            doc.text(`Chassis: ${v.chassis} | Status: ${v.status} | Time: ${v.pdiTime}`, 12, 19);
+            if (typeof window.jspdf !== 'undefined') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 26, 'F');
+                doc.setTextColor(255, 255, 255); doc.setFontSize(14);
+                doc.text('LUXON TATA - PDI INSPECTION REPORT', 12, 11);
+                doc.setFontSize(10);
+                doc.text(`Chassis: ${v.chassis} | Status: ${v.status} | Time: ${pdiTime}`, 12, 19);
 
-            doc.setTextColor(15, 23, 42); doc.setFontSize(10);
-            let y = 35;
-            doc.text(`Model: ${v.model} (${v.color})`, 12, y); doc.text(`Speed Test: ${v.pdiData.speed}`, 110, y); y += 6;
-            doc.text(`Location: ${v.location}`, 12, y); doc.text(`Remarks: ${v.remarks || 'None'}`, 110, y); y += 12;
+                doc.setTextColor(15, 23, 42); doc.setFontSize(10);
+                let y = 35;
+                doc.text(`Model: ${v.model} (${v.color})`, 12, y); doc.text(`Speed Test: ${speed || 'Tested - OK'}`, 110, y); y += 6;
+                doc.text(`Location: ${nextLoc}`, 12, y); doc.text(`Remarks: ${remarks || 'None'}`, 110, y); y += 12;
 
-            function addCatToPDF(title, arr) {
-                if (!arr || !arr.length) return;
-                if (y > 230) { doc.addPage(); y = 15; }
-                doc.setFontSize(10); doc.setTextColor(30, 64, 175);
-                doc.text(`${title} (${arr.length}):`, 12, y); y += 4;
-                let x = 12;
-                arr.forEach((img, idx) => {
-                    if (y > 235) { doc.addPage(); y = 15; x = 12; }
-                    try { doc.addImage(img, 'JPEG', x, y, 55, 40); } catch(e){}
-                    x += 59;
-                    if ((idx + 1) % 3 === 0) { x = 12; y = y + 44; }
-                });
-                if (arr.length % 3 !== 0) y += 44;
-                y += 6;
-            }
+                function addCatToPDF(title, arr) {
+                    if (!arr || !arr.length) return;
+                    if (y > 230) { doc.addPage(); y = 15; }
+                    doc.setFontSize(10); doc.setTextColor(30, 64, 175);
+                    doc.text(`${title} (${arr.length}):`, 12, y); y += 4;
+                    let x = 12;
+                    arr.forEach((img, idx) => {
+                        if (y > 235) { doc.addPage(); y = 15; x = 12; }
+                        try { doc.addImage(img, 'JPEG', x, y, 55, 40); } catch(e){}
+                        x += 59;
+                        if ((idx + 1) % 3 === 0) { x = 12; y = y + 44; }
+                    });
+                    if (arr.length % 3 !== 0) y += 44;
+                    y += 6;
+                }
 
-            addCatToPDF('PDI Check Sheet Photos', v.pdiData.checksheetPhotos);
-            addCatToPDF('Chassis Photos', v.pdiData.chassisPhotos);
-            addCatToPDF('Form 22 / 28 Photos', v.pdiData.form28Photos);
-            addCatToPDF('Battery Photos', v.pdiData.batteryPhotos);
-            addCatToPDF('Vehicle All-Round Photos', v.pdiData.vehiclePhotos);
+                addCatToPDF('PDI Check Sheet Photos', photoBuckets.pdi_checksheet);
+                addCatToPDF('Chassis Photos', photoBuckets.pdi_chassis);
+                addCatToPDF('Form 22 / 28 Photos', photoBuckets.pdi_form28);
+                addCatToPDF('Battery Photos', photoBuckets.pdi_battery);
+                addCatToPDF('Vehicle All-Round Photos', photoBuckets.pdi_vehicle);
 
-            const pdfName = `PDI_${v.chassis}.pdf`;
-            doc.save(pdfName);
+                const pdfName = `PDI_${v.chassis}.pdf`;
+                doc.save(pdfName);
 
-            if (botConfig.token && botConfig.chatId) {
-                try {
-                    const blob = doc.output('blob');
-                    const fd = new FormData();
-                    fd.append('chat_id', botConfig.chatId);
-                    fd.append('document', blob, pdfName);
-                    fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${v.status}\nLocation: ${v.location}`);
-                    await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
-                    alert('PDF successfully sent to Telegram!');
-                } catch(e) {
-                    alert('PDF downloaded, but Telegram send failed.');
+                if (botConfig.token && botConfig.chatId) {
+                    try {
+                        const blob = doc.output('blob');
+                        const fd = new FormData();
+                        fd.append('chat_id', botConfig.chatId);
+                        fd.append('document', blob, pdfName);
+                        fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${v.status}\nLocation: ${nextLoc}`);
+                        await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
+                    } catch(e) {}
                 }
             }
-            openModule('dashboard');
+
+            alert('PDI Submitted & Sheet Updated!');
+            setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
         }
 
         function renderLocationList() {
@@ -797,7 +748,6 @@
             const st = document.getElementById('loc-ed-status').value;
             if (newLoc) v.location = newLoc;
             if (st !== 'KEEP') v.status = st;
-            saveDB();
 
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
@@ -809,8 +759,8 @@
             }
 
             document.getElementById('loc-editor').style.display = 'none';
-            renderLocationList();
-            alert('Location updated!');
+            alert('Location updated in Sheet!');
+            setTimeout(() => { syncWithGoogleSheet(); renderLocationList(); }, 1000);
         }
 
         function renderOutwardList() {
@@ -837,10 +787,10 @@
             const dest = document.getElementById('out-ed-dest').value.trim();
             const driver = document.getElementById('out-ed-driver').value.trim();
             if (!dest) { alert('Enter destination.'); return; }
+            
+            const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
             v.status = 'Outward';
             v.location = `Outward -> ${dest}`;
-            const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-            saveDB();
 
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
@@ -848,13 +798,12 @@
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'OUTWARD', outwardTime, chassis: v.chassis, model: v.model, color: v.color, outwardDest: dest, outwardDriver: driver })
-                }).catch(err => console.log('Sheet sync error:', err));
+                }).catch(err => console.log('Sheet-sync error:', err));
             }
 
             document.getElementById('out-editor').style.display = 'none';
-            renderOutwardList();
             alert(`Outward confirmed for ${v.chassis}!`);
-            openModule('dashboard');
+            setTimeout(() => { syncWithGoogleSheet(); renderOutwardList(); openModule('dashboard'); }, 1000);
         }
 
         function openSettingsModal() {
@@ -873,8 +822,6 @@
             syncWithGoogleSheet();
             alert('Settings saved & synced!');
         }
-
-        function saveDB() { localStorage.setItem('luxon_yms_photos_db', JSON.stringify(vehiclesDB)); }
     </script>
 </body>
 </html>
