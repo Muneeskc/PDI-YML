@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Luxon TATA - Yard Management System (YMS)</title>
+    <!-- HTML5 Barcode Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- JsBarcode Library -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -60,7 +64,7 @@
         .card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
         .stat-card { background: var(--white); padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; cursor: pointer; }
         .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate); }
         .stat-val { font-size: 24px; font-weight: 800; margin-top: 4px; }
@@ -130,7 +134,7 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub">Functional & Live Sheet Sync</div>
+                <div class="brand-sub">Live Sheet Sync & Safe Auto-Refresh</div>
             </div>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
@@ -142,6 +146,8 @@
                 <div class="menu-dropdown" id="app-menu-dropdown">
                     <div class="menu-item" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Reports</div>
                     <div class="menu-item" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Reports</div>
+                    <div class="menu-item" onclick="openReportsModal('hold')"><i class="fa-solid fa-triangle-exclamation"></i> Hold Report</div>
+                    <div class="menu-item" onclick="openReportsModal('review')"><i class="fa-solid fa-clock-rotate-left"></i> Hold Review Pending</div>
                     <div class="menu-item" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> Settings</div>
                 </div>
             </div>
@@ -151,7 +157,7 @@
     <nav class="nav-tabs">
         <button class="tab-btn active" id="tabbtn-dashboard" onclick="openModule('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
         <button class="tab-btn" id="tabbtn-inward" onclick="openModule('inward')"><i class="fa-solid fa-barcode"></i> 1. Inward</button>
-        <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> 2. PDI & Photos</button>
+        <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> 2. PDI Checking</button>
         <button class="tab-btn" id="tabbtn-operations" onclick="openModule('operations')"><i class="fa-solid fa-truck-arrow-right"></i> 3. Operations</button>
     </nav>
 
@@ -159,9 +165,9 @@
         <!-- DASHBOARD -->
         <section id="mod-dashboard" class="module-section active">
             <div class="stats-grid">
-                <div class="stat-card" onclick="filterDashboardList('ALL')">
+                <div class="stat-card" onclick="filterDashboardList('Physical')">
                     <div class="stat-label">Physical Stock</div>
-                    <div class="stat-val" id="count-total" style="color: var(--primary);">0</div>
+                    <div class="stat-val" id="count-physical" style="color: var(--primary);">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('Pending PDI')">
                     <div class="stat-label">Pending PDI</div>
@@ -183,20 +189,19 @@
                     <div class="stat-label">Aging >90 Days</div>
                     <div class="stat-val" id="count-aging" style="color: #ca8a04;">0</div>
                 </div>
-                <div class="stat-card" onclick="filterDashboardList('ConfPending')">
-                    <div class="stat-label">Hold Conf. Pending</div>
-                    <div class="stat-val" id="count-conf" style="color: #0284c7;">0</div>
-                </div>
-                <div class="stat-card" onclick="filterDashboardList('Outward')">
-                    <div class="stat-label">Outward</div>
-                    <div class="stat-val" id="count-outward" style="color: var(--slate);">0</div>
+                <div class="stat-card" onclick="filterDashboardList('ReviewPending')">
+                    <div class="stat-label">Hold Review Pending</div>
+                    <div class="stat-val" id="count-review" style="color: #0284c7;">0</div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
                     <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Physical Stock</span></div>
-                    <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:150px;">
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:140px;">
+                        <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadFilteredList()"><i class="fa-solid fa-download"></i> Download</button>
+                    </div>
                 </div>
                 <div id="dash-vehicle-list" class="vehicle-list"></div>
             </div>
@@ -240,8 +245,8 @@
                         <input type="text" id="in-model" placeholder="Model name (e.g. Tata Punch)" oninput="saveDraft()">
                     </div>
                     <div>
-                        <label>Color Code *</label>
-                        <input type="text" id="in-color" placeholder="Color code/name" oninput="saveDraft()">
+                        <label>TML Invoice Date *</label>
+                        <input type="date" id="in-invdate" onchange="saveDraft()">
                     </div>
                 </div>
 
@@ -279,11 +284,11 @@
             </div>
         </section>
 
-        <!-- PDI INSPECTION -->
+        <!-- PDI CHECKING -->
         <section id="mod-pdi" class="module-section">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> PDI Inspection & Photos</div>
+                    <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> PDI Checking & Photos</div>
                 </div>
 
                 <div class="scanner-container" style="padding:10px;">
@@ -334,28 +339,28 @@
                     <div class="multi-photo-grid" id="grid-pdi_checksheet"><span class="empty-photo-hint">Add check sheet photos.</span></div>
                 </div>
 
-                <!-- Chassis Photos -->
+                <!-- Chassis Sprint / Stencil Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
-                        <div class="photo-section-title"><i class="fa-solid fa-hashtag"></i> 3. Chassis / VIN Photos *</div>
+                        <div class="photo-section-title"><i class="fa-solid fa-hashtag"></i> 3. Chassis Sprint / Stencil Photos *</div>
                         <div class="photo-action-btns">
                             <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
                             <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
                         </div>
                     </div>
-                    <div class="multi-photo-grid" id="grid-pdi_chassis"><span class="empty-photo-hint">Add chassis photos.</span></div>
+                    <div class="multi-photo-grid" id="grid-pdi_chassis"><span class="empty-photo-hint">Add chassis sprint photos.</span></div>
                 </div>
 
-                <!-- Form 22 / 28 Photos -->
+                <!-- Form 22 Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
-                        <div class="photo-section-title"><i class="fa-solid fa-file-contract"></i> 4. Form 22 / Form 28 Photos *</div>
+                        <div class="photo-section-title"><i class="fa-solid fa-file-contract"></i> 4. Form 22 Photos *</div>
                         <div class="photo-action-btns">
-                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form28')"></label>
-                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form28')"></label>
+                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form22')"></label>
+                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form22')"></label>
                         </div>
                     </div>
-                    <div class="multi-photo-grid" id="grid-pdi_form28"><span class="empty-photo-hint">Add document photos.</span></div>
+                    <div class="multi-photo-grid" id="grid-pdi_form22"><span class="empty-photo-hint">Add form 22 photos.</span></div>
                 </div>
 
                 <!-- Battery Photos -->
@@ -378,9 +383,9 @@
                     <div>
                         <label>PDI Status *</label>
                         <select id="pdi-decision" onchange="toggleHoldUI(); saveDraft();">
-                            <option value="PDI OK">PDI OK (Ready)</option>
-                            <option value="HOLD">HOLD Vehicle (Issue Found)</option>
-                            <option value="CONF_PENDING">Hold Confirmation Pending (Review)</option>
+                            <option value="PDI OK">PDI OK</option>
+                            <option value="HOLD">PDI Hold</option>
+                            <option value="REVIEW_PENDING">Send to Review (Hold Review Pending)</option>
                         </select>
                     </div>
                 </div>
@@ -392,7 +397,7 @@
                     </div>
                     <div>
                         <label>Remarks / Hold Reason</label>
-                        <input type="text" id="pdi-remarks" placeholder="Optional notes / reason..." oninput="saveDraft()">
+                        <input type="text" id="pdi-remarks" placeholder="Required if hold / review..." oninput="saveDraft()">
                     </div>
                 </div>
 
@@ -406,8 +411,13 @@
         <!-- OPERATIONS -->
         <section id="mod-operations" class="module-section">
             <div class="card">
-                <div class="card-header"><div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> Yard Operations & Location Manager</div></div>
-                <input type="text" id="op-search" placeholder="Search chassis..." oninput="renderOperationsList()" style="margin-bottom:12px;">
+                <div class="card-header"><div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> Yard Operations & Dispatch</div></div>
+                <div style="display:flex; gap:6px; margin-bottom:12px;">
+                    <input type="text" id="op-search" placeholder="Search chassis..." oninput="renderOperationsList()" style="flex:1;">
+                    <button class="btn btn-primary" onclick="toggleCameraScanner('op')"><i class="fa-solid fa-barcode"></i> Scan</button>
+                </div>
+                <div id="op-camera-reader" class="camera-viewport" style="margin-bottom:12px;"></div>
+
                 <div id="op-editor" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:12px; margin-bottom:12px;">
                     <div id="op-ed-chassis" style="font-family:monospace; font-weight:800; color:var(--danger); margin-bottom:6px;"></div>
                     <div class="form-row">
@@ -556,8 +566,8 @@
             chatId: '-1004478595920' 
         };
 
-        let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form28: [], pdi_battery: [] };
-        let currentPdiChassis = '', currentOpChassis = '', currentDashFilter = 'ALL';
+        let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form22: [], pdi_battery: [] };
+        let currentPdiChassis = '', currentOpChassis = '', currentDashFilter = 'Physical';
         let qrScanner = null, activeScannerMode = null;
 
         window.onload = function() {
@@ -571,7 +581,7 @@
             const draft = {
                 inChassis: document.getElementById('in-chassis').value,
                 inModel: document.getElementById('in-model').value,
-                inColor: document.getElementById('in-color').value,
+                inInvDate: document.getElementById('in-invdate').value,
                 inLocation: document.getElementById('in-location').value,
                 inInspector: document.getElementById('in-inspector').value,
                 pdiSpeed: document.getElementById('pdi-speed').value,
@@ -586,7 +596,7 @@
             if (!draft) return;
             if (document.getElementById('in-chassis')) document.getElementById('in-chassis').value = draft.inChassis || '';
             if (document.getElementById('in-model')) document.getElementById('in-model').value = draft.inModel || '';
-            if (document.getElementById('in-color')) document.getElementById('in-color').value = draft.inColor || '';
+            if (document.getElementById('in-invdate')) document.getElementById('in-invdate').value = draft.inInvDate || '';
             if (document.getElementById('in-location')) document.getElementById('in-location').value = draft.inLocation || '';
             if (document.getElementById('in-inspector')) document.getElementById('in-inspector').value = draft.inInspector || inspectorsList[0];
             if (document.getElementById('pdi-speed')) document.getElementById('pdi-speed').value = draft.pdiSpeed || '';
@@ -604,12 +614,17 @@
             fetch(botConfig.scriptUrl)
                 .then(res => res.json())
                 .then(data => {
-                    if (Array.isArray(data) && data.length > 0) {
+                    if (Array.isArray(data)) {
+                        let serverChassisSet = new Set(data.map(item => item.chassis));
+                        
+                        // Strict Two-Way Deletion Matching: Remove locally if deleted in Sheet
+                        vehiclesDB = vehiclesDB.filter(v => serverChassisSet.has(v.chassis));
+
                         data.forEach(serverItem => {
                             let localIdx = vehiclesDB.findIndex(v => v.chassis === serverItem.chassis);
                             if (localIdx !== -1) {
                                 vehiclesDB[localIdx].model = serverItem.model;
-                                vehiclesDB[localIdx].color = serverItem.color;
+                                vehiclesDB[localIdx].invDate = serverItem.invDate || serverItem.inwardTime;
                                 vehiclesDB[localIdx].location = serverItem.location;
                                 vehiclesDB[localIdx].status = serverItem.status;
                                 vehiclesDB[localIdx].inspector = serverItem.inspector || vehiclesDB[localIdx].inspector;
@@ -618,12 +633,11 @@
                                 vehiclesDB.push({
                                     chassis: serverItem.chassis,
                                     model: serverItem.model,
-                                    color: serverItem.color,
+                                    invDate: serverItem.invDate || serverItem.inwardTime || new Date().toISOString().split('T')[0],
                                     location: serverItem.location,
                                     status: serverItem.status,
                                     inspector: serverItem.inspector || "Munees KC",
                                     remarks: serverItem.remarks,
-                                    inwardTime: serverItem.inwardTime,
                                     photos: [],
                                     pdiData: null
                                 });
@@ -688,7 +702,7 @@
         }
 
         function toggleCameraScanner(mode) {
-            const readerId = mode === 'inward' ? 'inward-camera-reader' : 'pdi-camera-reader';
+            const readerId = mode === 'inward' ? 'inward-camera-reader' : (mode === 'pdi' ? 'pdi-camera-reader' : 'op-camera-reader');
             const vp = document.getElementById(readerId);
             if (activeScannerMode === mode && qrScanner) { stopScanner(); return; }
             stopScanner();
@@ -702,7 +716,7 @@
         }
 
         function stopScanner() {
-            ['inward-camera-reader', 'pdi-camera-reader'].forEach(id => {
+            ['inward-camera-reader', 'pdi-camera-reader', 'op-camera-reader'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.style.display = 'none';
             });
             if (qrScanner) { qrScanner.stop().then(() => { qrScanner.clear(); qrScanner = null; }).catch(() => { qrScanner = null; }); }
@@ -726,6 +740,10 @@
                 onInwardChassisInput();
             } else if (mode === 'pdi') {
                 onSelectPdiVehicle(chassis);
+            } else if (mode === 'op') {
+                document.getElementById('op-search').value = chassis;
+                renderOperationsList();
+                openOpEd(chassis);
             }
         }
 
@@ -795,20 +813,19 @@
         function submitInward() {
             const chassis = document.getElementById('in-chassis').value.trim().toUpperCase();
             const model = document.getElementById('in-model').value.trim();
-            const color = document.getElementById('in-color').value.trim();
+            const invDate = document.getElementById('in-invdate').value;
             const location = document.getElementById('in-location').value;
             const inspector = document.getElementById('in-inspector').value;
 
-            if (!chassis || !model || !color) { alert('Enter Chassis, Model and Color.'); return; }
+            if (!chassis || !model || !invDate) { alert('Enter Chassis, Model and Invoice Date.'); return; }
             const exIdx = vehiclesDB.findIndex(v => v.chassis === chassis);
             if (exIdx !== -1 && vehiclesDB[exIdx].status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
 
             const inwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
             const rec = {
-                chassis, model, color, location,
+                chassis, model, invDate, location,
                 status: 'Pending PDI',
                 inspector,
-                inwardTime,
                 photos: [...photoBuckets.inward],
                 pdiData: null, remarks: ''
             };
@@ -822,13 +839,13 @@
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'INWARD', inwardTime, chassis, model, color, location, inspector, status: 'Pending PDI' })
+                    body: JSON.stringify({ action: 'INWARD', inwardTime, chassis, model, invDate, location, inspector, status: 'Pending PDI' })
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
             document.getElementById('in-chassis').value = '';
             document.getElementById('in-model').value = '';
-            document.getElementById('in-color').value = '';
+            document.getElementById('in-invdate').value = '';
             photoBuckets.inward = []; renderGrid('inward');
             alert(`Inward successful for ${chassis}!`);
             setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
@@ -839,14 +856,14 @@
             renderDashboard();
         }
 
-        function copyVehicleInfo(chassis, model, color, location, status, inspector, inwardTime) {
+        function copyVehicleInfo(chassis, model, location, status, inspector, invDate) {
             const txt = `[LUXON TATA YMS]
 Chassis: ${chassis}
-Model: ${model} (${color})
+Model: ${model}
 Location: ${location}
 Status: ${status}
 Inspector: ${inspector || 'N/A'}
-Inward Time: ${inwardTime || 'N/A'}`;
+TML Invoice Date: ${invDate || 'N/A'}`;
             navigator.clipboard.writeText(txt).then(() => {
                 alert(`Copied details for ${chassis}!`);
             }).catch(() => {
@@ -855,44 +872,41 @@ Inward Time: ${inwardTime || 'N/A'}`;
         }
 
         function renderDashboard() {
-            const inYard = vehiclesDB.filter(v => v.status !== 'Outward');
-            const displayCars = inYard.filter(v => v.location.includes('Display'));
+            const physicalStock = vehiclesDB.filter(v => v.status !== 'Outward');
+            const displayCars = physicalStock.filter(v => v.location.includes('Display'));
             const pendingPdi = vehiclesDB.filter(v => v.status === 'Pending PDI');
             const pdiOk = vehiclesDB.filter(v => v.status === 'PDI OK');
             const holdCars = vehiclesDB.filter(v => v.status === 'HOLD');
-            const confPending = vehiclesDB.filter(v => v.status === 'CONF_PENDING');
-            const outwardCars = vehiclesDB.filter(v => v.status === 'Outward');
+            const reviewPending = vehiclesDB.filter(v => v.status === 'REVIEW_PENDING');
 
             const now = new Date();
-            const agingCars = inYard.filter(v => {
-                if (!v.inwardTime) return false;
-                const inDate = new Date(v.inwardTime);
-                const diffTime = Math.abs(now - inDate);
+            const agingCars = physicalStock.filter(v => {
+                if (!v.invDate) return false;
+                const invD = new Date(v.invDate);
+                const diffTime = Math.abs(now - invD);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 return diffDays > 90;
             });
 
-            document.getElementById('count-total').innerText = inYard.length;
+            document.getElementById('count-physical').innerText = physicalStock.length;
             document.getElementById('count-pending').innerText = pendingPdi.length;
             document.getElementById('count-pdiok').innerText = pdiOk.length;
             document.getElementById('count-hold').innerText = holdCars.length;
             document.getElementById('count-display').innerText = displayCars.length;
             document.getElementById('count-aging').innerText = agingCars.length;
-            document.getElementById('count-conf').innerText = confPending.length;
-            document.getElementById('count-outward').innerText = outwardCars.length;
+            document.getElementById('count-review').innerText = reviewPending.length;
 
             const q = document.getElementById('dash-search').value.trim().toUpperCase();
             let list = [];
             let titleText = "Physical Stock";
             
-            if (currentDashFilter === 'ALL') { list = inYard; titleText = "Physical Stock (All)"; }
+            if (currentDashFilter === 'Physical') { list = physicalStock; titleText = "Physical Stock (Yard & Display)"; }
             else if (currentDashFilter === 'Pending PDI') { list = pendingPdi; titleText = "Pending PDI Vehicles"; }
             else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI Done Vehicles"; }
             else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
             else if (currentDashFilter === 'Display') { list = displayCars; titleText = "Display Cars"; }
-            else if (currentDashFilter === 'Aging') { list = agingCars; titleText = "Aging Vehicles (>90 Days)"; }
-            else if (currentDashFilter === 'ConfPending') { list = confPending; titleText = "Hold Confirmation Pending"; }
-            else if (currentDashFilter === 'Outward') { list = outwardCars; titleText = "Outward Dispatched Vehicles"; }
+            else if (currentDashFilter === 'Aging') { list = agingCars; titleText = "Aging Vehicles (>90 Days TML Invoice)"; }
+            else if (currentDashFilter === 'ReviewPending') { list = reviewPending; titleText = "Hold Review Pending Vehicles"; }
 
             document.getElementById('dash-list-title').innerText = titleText;
             if (q) list = list.filter(v => v.chassis.includes(q));
@@ -904,13 +918,13 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 <div class="vehicle-item">
                     <div class="v-info">
                         <h4>${v.chassis}</h4>
-                        <p><b>${v.model}</b> • ${v.color} • Inspector: ${v.inspector || 'N/A'}</p>
-                        <p><i class="fa-solid fa-location-dot"></i> ${v.location} | Inward: ${v.inwardTime || 'Recent'}</p>
+                        <p><b>${v.model}</b> • Inspector: ${v.inspector || 'N/A'}</p>
+                        <p><i class="fa-solid fa-location-dot"></i> ${v.location} | Inv Date: ${v.invDate || 'N/A'}</p>
                     </div>
                     <div style="text-align:right; display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
-                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':v.status=='CONF_PENDING'?'badge-conf':'badge-hold'}">${v.status}</span>
+                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':v.status=='REVIEW_PENDING'?'badge-conf':'badge-hold'}">${v.status}</span>
                         <div style="display:flex; gap:4px;">
-                            <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="copyVehicleInfo('${v.chassis}', '${v.model}', '${v.color}', '${v.location}', '${v.status}', '${v.inspector}', '${v.inwardTime}')" title="Copy Details"><i class="fa-solid fa-copy"></i></button>
+                            <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="copyVehicleInfo('${v.chassis}', '${v.model}', '${v.location}', '${v.status}', '${v.inspector}', '${v.invDate}')" title="Copy Details"><i class="fa-solid fa-copy"></i></button>
                             ${v.status!='Outward'?`<button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button>`:''}
                         </div>
                     </div>
@@ -918,11 +932,36 @@ Inward Time: ${inwardTime || 'N/A'}`;
             `).join('');
         }
 
+        function downloadFilteredList() {
+            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,TML Invoice Date,Location,Status,Inspector,Remarks\n";
+            let physicalStock = vehiclesDB.filter(v => v.status !== 'Outward');
+            let list = currentDashFilter === 'Physical' ? physicalStock :
+                       (currentDashFilter === 'Pending PDI' ? vehiclesDB.filter(v => v.status === 'Pending PDI') :
+                       (currentDashFilter === 'PDI OK' ? vehiclesDB.filter(v => v.status === 'PDI OK') :
+                       (currentDashFilter === 'HOLD' ? vehiclesDB.filter(v => v.status === 'HOLD') :
+                       (currentDashFilter === 'Display' ? physicalStock.filter(v => v.location.includes('Display')) :
+                       (currentDashFilter === 'Aging' ? physicalStock.filter(v => {
+                           if (!v.invDate) return false;
+                           return Math.ceil(Math.abs(new Date() - new Date(v.invDate)) / (1000 * 60 * 60 * 24)) > 90;
+                       }) : vehiclesDB.filter(v => v.status === 'REVIEW_PENDING'))))));
+
+            list.forEach(v => {
+                csvContent += `"${v.chassis}","${v.model}","${v.invDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Luxon_Stock_${currentDashFilter}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         function jumpPdi(c) { openModule('pdi'); onSelectPdiVehicle(c); }
 
         function populatePdiMasterList() {
             const container = document.getElementById('pdi-master-list');
-            const pendingList = vehiclesDB.filter(v => v.status === 'Pending PDI' || v.status === 'CONF_PENDING');
+            const pendingList = vehiclesDB.filter(v => v.status === 'Pending PDI' || v.status === 'REVIEW_PENDING');
             if (!pendingList.length) {
                 container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No Pending PDI vehicles.</div>`;
                 return;
@@ -931,9 +970,9 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer; background:${currentPdiChassis===v.chassis?'#eff6ff':'#fff'}">
                     <div class="v-info">
                         <h4>${v.chassis}</h4>
-                        <p><b>${v.model}</b> • ${v.color} • ${v.location}</p>
+                        <p><b>${v.model}</b> • ${v.location}</p>
                     </div>
-                    <span class="badge ${v.status=='CONF_PENDING'?'badge-conf':'badge-pending'}">${v.status}</span>
+                    <span class="badge ${v.status=='REVIEW_PENDING'?'badge-conf':'badge-pending'}">${v.status}</span>
                 </div>
             `).join('');
         }
@@ -941,15 +980,15 @@ Inward Time: ${inwardTime || 'N/A'}`;
         function filterPdiList(q) {
             const query = q.trim().toUpperCase();
             const container = document.getElementById('pdi-master-list');
-            const pendingList = vehiclesDB.filter(v => (v.status === 'Pending PDI' || v.status === 'CONF_PENDING') && v.chassis.includes(query));
+            const pendingList = vehiclesDB.filter(v => (v.status === 'Pending PDI' || v.status === 'REVIEW_PENDING') && v.chassis.includes(query));
             if (!pendingList.length) {
                 container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No matching vehicle found.</div>`;
                 return;
             }
             container.innerHTML = pendingList.map(v => `
                 <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer;">
-                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.color} • ${v.location}</p></div>
-                    <span class="badge ${v.status=='CONF_PENDING'?'badge-conf':'badge-pending'}">${v.status}</span>
+                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div>
+                    <span class="badge ${v.status=='REVIEW_PENDING'?'badge-conf':'badge-pending'}">${v.status}</span>
                 </div>
             `).join('');
         }
@@ -960,14 +999,13 @@ Inward Time: ${inwardTime || 'N/A'}`;
             currentPdiChassis = v.chassis;
             document.getElementById('pdi-banner').style.display = 'block';
             document.getElementById('pdi-b-chassis').innerText = v.chassis;
-            document.getElementById('pdi-b-model').innerText = `${v.model} (${v.color}) - ${v.location}`;
+            document.getElementById('pdi-b-model').innerText = `${v.model} - ${v.location}`;
             populatePdiMasterList();
             renderAllGrids();
         }
 
         function toggleHoldUI() {
-            const dec = document.getElementById('pdi-decision').value;
-            document.getElementById('pdi-next-loc').value = dec === 'HOLD' ? 'Hold / Repair Bay' : 'PDI OK - Ready Bay';
+            // Remarks handling based on PDI status
         }
 
         function cancelOrDeletePdi() {
@@ -975,9 +1013,9 @@ Inward Time: ${inwardTime || 'N/A'}`;
             if (confirm(`Are you sure you want to cancel PDI for chassis ${currentPdiChassis}?`)) {
                 const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
                 if (v) {
-                    v.status = 'CANCELLED';
+                    v.status = 'Pending PDI';
                     saveDB();
-                    alert(`PDI Cancelled for ${currentPdiChassis}`);
+                    alert(`PDI Reset for ${currentPdiChassis}`);
                     currentPdiChassis = '';
                     document.getElementById('pdi-banner').style.display = 'none';
                     populatePdiMasterList();
@@ -992,22 +1030,26 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
             const speed = document.getElementById('pdi-speed').value.trim();
             const decision = document.getElementById('pdi-decision').value;
-            const nextLoc = document.getElementById('pdi-next-loc').value;
             const remarks = document.getElementById('pdi-remarks').value.trim();
             const inspector = document.getElementById('pdi-inspector-sel').value;
             const pdiTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
+            if ((decision === 'HOLD' || decision === 'REVIEW_PENDING') && !remarks) {
+                alert('Remarks/Hold reason is mandatory for Hold or Review Pending status!');
+                return;
+            }
+
             v.status = decision;
-            v.location = nextLoc;
             v.inspector = inspector;
             v.remarks = remarks;
             v.pdiTime = pdiTime;
+            v.location = decision === 'HOLD' ? 'Hold / Repair Bay' : (decision === 'PDI OK' ? 'PDI OK - Ready Bay' : v.location);
             v.pdiData = {
                 speed: speed || '15 km',
                 vehiclePhotos: [...photoBuckets.pdi_vehicle],
                 checksheetPhotos: [...photoBuckets.pdi_checksheet],
                 chassisPhotos: [...photoBuckets.pdi_chassis],
-                form28Photos: [...photoBuckets.pdi_form28],
+                form22Photos: [...photoBuckets.pdi_form22],
                 batteryPhotos: [...photoBuckets.pdi_battery]
             };
             saveDB();
@@ -1018,7 +1060,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, chassis: v.chassis, model: v.model, color: v.color, status: decision, speed: v.pdiData.speed, inspector, location: nextLoc, remarks })
+                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, chassis: v.chassis, model: v.model, status: decision, speed: v.pdiData.speed, inspector, location: v.location, remarks })
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
@@ -1033,8 +1075,8 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
                 doc.setTextColor(15, 23, 42); doc.setFontSize(10);
                 let y = 35;
-                doc.text(`Model: ${v.model} (${v.color})`, 12, y); doc.text(`Odometer: ${v.pdiData.speed}`, 110, y); y += 6;
-                doc.text(`Location: ${nextLoc}`, 12, y); doc.text(`Remarks: ${remarks || 'None'}`, 110, y); y += 12;
+                doc.text(`Model: ${v.model}`, 12, y); doc.text(`Odometer: ${v.pdiData.speed}`, 110, y); y += 6;
+                doc.text(`Location: ${v.location}`, 12, y); doc.text(`Remarks: ${remarks || 'None'}`, 110, y); y += 12;
 
                 function addCatToPDF(title, arr) {
                     if (!arr || !arr.length) return;
@@ -1053,8 +1095,8 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 }
 
                 addCatToPDF('PDI Check Sheet Photos', v.pdiData.checksheetPhotos);
-                addCatToPDF('Chassis Photos', v.pdiData.chassisPhotos);
-                addCatToPDF('Form 22 / 28 Photos', v.pdiData.form28Photos);
+                addCatToPDF('Chassis Sprint Photos', v.pdiData.chassisPhotos);
+                addCatToPDF('Form 22 Photos', v.pdiData.form22Photos);
                 addCatToPDF('Battery Photos', v.pdiData.batteryPhotos);
                 addCatToPDF('Vehicle Photos', v.pdiData.vehiclePhotos);
 
@@ -1103,6 +1145,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
         function openOpEd(c) {
             currentOpChassis = c;
             const v = vehiclesDB.find(x => x.chassis === c);
+            if (!v) return;
             document.getElementById('op-editor').style.display = 'block';
             document.getElementById('op-ed-chassis').innerText = `Operations: ${v.chassis} (${v.model})`;
         }
@@ -1116,6 +1159,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
         function confirmOperationsDispatch() {
             const v = vehiclesDB.find(x => x.chassis === currentOpChassis);
+            if (!v) return;
             const act = document.getElementById('op-action-type').value;
             const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -1128,7 +1172,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                         method: 'POST',
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, color: v.color, location: newLoc, status: v.status, remarks: v.remarks })
+                        body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, location: newLoc, status: v.status, remarks: v.remarks })
                     }).catch(err => {});
                 }
             } else if (act === 'DISPATCH') {
@@ -1141,7 +1185,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                         method: 'POST',
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'OUTWARD', outwardTime, chassis: v.chassis, model: v.model, color: v.color, outwardDest: dest, outwardDriver: "Driver" })
+                        body: JSON.stringify({ action: 'OUTWARD', outwardTime, chassis: v.chassis, model: v.model, outwardDest: dest, outwardDriver: "Driver" })
                     }).catch(err => {});
                 }
             } else {
@@ -1154,7 +1198,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                         method: 'POST',
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'OPERATIONS_UPDATE', chassis: v.chassis, model: v.model, color: v.color, location: v.location, status: 'HOLD', remarks: `Stock Transfer to ${region}` })
+                        body: JSON.stringify({ action: 'OPERATIONS_UPDATE', chassis: v.chassis, model: v.model, location: v.location, status: 'HOLD', remarks: `Stock Transfer to ${region}` })
                     }).catch(err => {});
                 }
             }
@@ -1207,7 +1251,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                     <div id="rep-daily-results"></div>
                 `;
                 updateDailyReportView();
-            } else {
+            } else if (type === 'monthly') {
                 title.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Monthly Summary Report`;
                 const currMonth = new Date().toISOString().slice(0, 7);
                 body.innerHTML = `
@@ -1218,6 +1262,26 @@ Inward Time: ${inwardTime || 'N/A'}`;
                     <div id="rep-monthly-results"></div>
                 `;
                 updateMonthlyReportView();
+            } else if (type === 'hold') {
+                title.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Hold Vehicles Report`;
+                let holdList = vehiclesDB.filter(v => v.status === 'HOLD');
+                body.innerHTML = `
+                    <div style="margin-bottom:10px;">Total Hold Vehicles: <b>${holdList.length}</b></div>
+                    <div class="vehicle-list" style="max-height:250px; overflow-y:auto; margin-bottom:12px;">
+                        ${holdList.length ? holdList.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-hold">HOLD</span></div>`).join('') : '<div style="color:var(--slate);">No hold vehicles.</div>'}
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="downloadSpecialReportCSV('Hold')"><i class="fa-solid fa-download"></i> Download Excel / CSV</button>
+                `;
+            } else if (type === 'review') {
+                title.innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i> Hold Review Pending Report`;
+                let revList = vehiclesDB.filter(v => v.status === 'REVIEW_PENDING');
+                body.innerHTML = `
+                    <div style="margin-bottom:10px;">Total Review Pending: <b>${revList.length}</b></div>
+                    <div class="vehicle-list" style="max-height:250px; overflow-y:auto; margin-bottom:12px;">
+                        ${revList.length ? revList.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-conf">REVIEW</span></div>`).join('') : '<div style="color:var(--slate);">No review pending vehicles.</div>'}
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="downloadSpecialReportCSV('Review_Pending')"><i class="fa-solid fa-download"></i> Download Excel / CSV</button>
+                `;
             }
         }
 
@@ -1228,9 +1292,9 @@ Inward Time: ${inwardTime || 'N/A'}`;
             const selectedDate = dtInput.value;
 
             const matched = vehiclesDB.filter(v => {
-                if (!v.inwardTime) return false;
+                if (!v.invDate) return false;
                 try {
-                    const d = new Date(v.inwardTime).toISOString().split('T')[0];
+                    const d = new Date(v.invDate).toISOString().split('T')[0];
                     return d === selectedDate;
                 } catch(e) { return false; }
             });
@@ -1239,10 +1303,12 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 <div class="report-grid">
                     <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
                     <div class="report-box"><div class="report-box-lbl">PDI Done</div><div class="report-box-val">${matched.filter(v=>v.status=='PDI OK').length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">PDI Hold</div><div class="report-box-val">${matched.filter(v=>v.status=='HOLD').length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Pending PDI</div><div class="report-box-val">${matched.filter(v=>v.status=='Pending PDI').length}</div></div>
                 </div>
                 <div style="margin-top:10px;">
                     <b>Vehicles on ${selectedDate}:</b>
-                    <div class="vehicle-list" style="max-height:180px; overflow-y:auto; margin-top:6px;">
+                    <div class="vehicle-list" style="max-height:160px; overflow-y:auto; margin-top:6px;">
                         ${matched.length ? matched.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-ok">${v.status}</span></div>`).join('') : '<div style="font-size:12px; color:var(--slate);">No records for this date.</div>'}
                     </div>
                 </div>
@@ -1257,54 +1323,70 @@ Inward Time: ${inwardTime || 'N/A'}`;
             const selectedMonth = mInput.value;
 
             const matched = vehiclesDB.filter(v => {
-                if (!v.inwardTime) return false;
+                if (!v.invDate) return false;
                 try {
-                    const m = new Date(v.inwardTime).toISOString().slice(0, 7);
+                    const m = new Date(v.invDate).toISOString().slice(0, 7);
                     return m === selectedMonth;
                 } catch(e) { return false; }
             });
 
             const deliveryReady = matched.filter(v => v.status === 'PDI OK' || v.location.includes('Outward')).length;
             const stockTransfer = matched.filter(v => v.location.includes('Transferred') || v.location.includes('Transfer')).length;
+            const stockOut = matched.filter(v => v.status === 'Outward').length;
 
             let techCounts = {};
             matched.forEach(v => {
-                const ins = v.inspector || 'Munees KC';
-                techCounts[ins] = (techCounts[ins] || 0) + 1;
+                if (v.inspector) {
+                    techCounts[v.inspector] = (techCounts[v.inspector] || 0) + 1;
+                }
             });
-            let techHtml = Object.keys(techCounts).map(k => `• <b>${k}:</b> ${techCounts[k]} vehicles`).join('<br>') || 'No technician data.';
-
-            let yardCounts = {};
-            matched.forEach(v => {
-                const loc = v.location || 'Main Yard';
-                yardCounts[loc] = (yardCounts[loc] || 0) + 1;
-            });
-            let yardHtml = Object.keys(yardCounts).map(k => `• <b>${k}:</b> ${yardCounts[k]} vehicles`).join('<br>') || 'No yard data.';
+            let techHtml = Object.keys(techCounts).map(k => `• <b>${k}:</b> ${techCounts[k]} PDI done`).join('<br>') || 'No technician data.';
 
             resDiv.innerHTML = `
                 <div class="report-grid">
+                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
                     <div class="report-box"><div class="report-box-lbl">Delivery Ready</div><div class="report-box-val">${deliveryReady}</div></div>
                     <div class="report-box"><div class="report-box-lbl">Stock Transfers</div><div class="report-box-val">${stockTransfer}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">Outward Dispatched</div><div class="report-box-val">${matched.filter(v=>v.status=='Outward').length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Stock Out (Dispatched)</div><div class="report-box-val">${stockOut}</div></div>
                 </div>
                 <div style="background:#f1f5f9; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">
-                    <b>PDI Per Technician / Inspector:</b><br>${techHtml}<br><br>
-                    <b>Yard Wise Breakdown:</b><br>${yardHtml}
+                    <b>PDI Per Technician / Inspector:</b><br>${techHtml}
                 </div>
                 <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Monthly', '${selectedMonth}')"><i class="fa-solid fa-download"></i> Download Report (Excel / CSV)</button>
             `;
         }
 
         function downloadReportCSV(type, val) {
-            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,Color,Location,Status,Inspector,InwardTime\n";
-            vehiclesDB.forEach(v => {
-                csvContent += `"${v.chassis}","${v.model}","${v.color}","${v.location}","${v.status}","${v.inspector || ''}","${v.inwardTime || ''}"\n`;
+            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,TML Invoice Date,Location,Status,Inspector,Remarks\n";
+            let matched = vehiclesDB.filter(v => {
+                if (!v.invDate) return false;
+                try {
+                    let dStr = new Date(v.invDate).toISOString();
+                    return type === 'Daily' ? dStr.split('T')[0] === val : dStr.slice(0, 7) === val;
+                } catch(e) { return false; }
+            });
+            matched.forEach(v => {
+                csvContent += `"${v.chassis}","${v.model}","${v.invDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
             });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", `Luxon_${type}_Report_${val}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadSpecialReportCSV(statusType) {
+            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,TML Invoice Date,Location,Status,Inspector,Remarks\n";
+            let matched = vehiclesDB.filter(v => v.status === (statusType === 'Hold' ? 'HOLD' : 'REVIEW_PENDING'));
+            matched.forEach(v => {
+                csvContent += `"${v.chassis}","${v.model}","${v.invDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Luxon_${statusType}_Report.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
