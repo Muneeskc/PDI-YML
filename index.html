@@ -27,7 +27,7 @@
         
         .menu-container { position: relative; }
         .menu-btn { background: rgba(255,255,255,0.15); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .menu-dropdown { position: absolute; right: 0; top: 45px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); width: 220px; display: none; z-index: 1000; overflow: hidden; border: 1px solid var(--border); }
+        .menu-dropdown { position: absolute; right: 0; top: 45px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); width: 230px; display: none; z-index: 1000; overflow: hidden; border: 1px solid var(--border); }
         .menu-dropdown.show { display: block; }
         .menu-item { padding: 12px 16px; font-size: 13px; font-weight: 700; color: var(--dark); border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; align-items: center; gap: 10px; }
         .menu-item:hover { background: var(--primary-bg); color: var(--primary); }
@@ -87,6 +87,7 @@
         .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
         .badge-ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
         .badge-hold { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
+        .badge-conf { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
         
         .vehicle-list { display: flex; flex-direction: column; gap: 10px; }
         .vehicle-item { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background: var(--white); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -98,7 +99,7 @@
         .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #6ee7b7; }
         
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
-        .modal-card { background: var(--white); width: 100%; max-width: 580px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        .modal-card { background: var(--white); width: 100%; max-width: 600px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
 
         .report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
         .report-box { background: var(--primary-bg); border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px; text-align: center; }
@@ -125,6 +126,8 @@
                 <div class="menu-dropdown" id="app-menu-dropdown">
                     <div class="menu-item" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Reports</div>
                     <div class="menu-item" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Reports</div>
+                    <div class="menu-item" onclick="openReportsModal('hold')"><i class="fa-solid fa-triangle-exclamation"></i> PDI Hold Reports</div>
+                    <div class="menu-item" onclick="openTechniciansManager()"><i class="fa-solid fa-users-gear"></i> Manage Technicians</div>
                     <div class="menu-item" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> Settings</div>
                 </div>
             </div>
@@ -143,7 +146,7 @@
         <section id="mod-dashboard" class="module-section active">
             <div class="stats-grid">
                 <div class="stat-card" onclick="filterDashboardList('ALL')">
-                    <div class="stat-label">Physical Yard</div>
+                    <div class="stat-label">Master List (All)</div>
                     <div class="stat-val" id="count-total" style="color: var(--primary);">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('Pending PDI')">
@@ -167,18 +170,18 @@
                     <div class="stat-val" id="count-aging" style="color: #ca8a04;">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('ConfPending')">
-                    <div class="stat-label">Conf. Pending</div>
+                    <div class="stat-label">Hold Conf. Pending</div>
                     <div class="stat-val" id="count-conf" style="color: #0284c7;">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('Outward')">
-                    <div class="stat-label">Outward</div>
+                    <div class="stat-label">Outward / Dispatched</div>
                     <div class="stat-val" id="count-outward" style="color: var(--slate);">0</div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Master Yard Stock</span></div>
+                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Master Yard Stock (Inward to Outward)</span></div>
                     <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:150px;">
                 </div>
                 <div id="dash-vehicle-list" class="vehicle-list"></div>
@@ -235,10 +238,10 @@
                         </div>
                     </div>
                     <div>
-                        <label>Inspector Name *</label>
+                        <label>Technician / Inspector Name *</label>
                         <div style="display:flex; gap:6px;">
                             <select id="in-inspector" onchange="saveDraft()" style="flex:1;"></select>
-                            <button type="button" class="btn btn-outline" onclick="addNewInspectorPrompt()" title="Add Inspector">+</button>
+                            <button type="button" class="btn btn-outline" onclick="openTechniciansManager()" title="Manage Technicians">+</button>
                         </div>
                     </div>
                 </div>
@@ -309,8 +312,8 @@
                         <label>PDI Status *</label>
                         <select id="pdi-decision" onchange="toggleHoldUI(); saveDraft();">
                             <option value="PDI OK">PDI OK (Ready)</option>
-                            <option value="HOLD">HOLD Vehicle (Issue Found)</option>
-                            <option value="CONF_PENDING">Confirmation Pending (Manager Review)</option>
+                            <option value="HOLD">PDI Hold (Issue Found)</option>
+                            <option value="CONF_PENDING">Hold Confirmation Pending</option>
                         </select>
                     </div>
                 </div>
@@ -319,7 +322,10 @@
                         <label>Next Yard Location *</label>
                         <select id="pdi-next-loc" onchange="saveDraft()"></select>
                     </div>
-                    <div><label>Inspector Name *</label><input type="text" id="pdi-inspector" value="Munees KC" readonly></div>
+                    <div>
+                        <label>Technician / Inspector Name *</label>
+                        <select id="pdi-inspector" onchange="saveDraft()"></select>
+                    </div>
                 </div>
                 <div class="form-group"><label>Remarks / Hold Reason</label><input type="text" id="pdi-remarks" placeholder="Optional notes..." oninput="saveDraft()"></div>
                 
@@ -392,6 +398,27 @@
         </div>
     </div>
 
+    <!-- TECHNICIANS MANAGER MODAL -->
+    <div class="modal-overlay" id="tech-modal">
+        <div class="modal-card">
+            <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-users-gear"></i> Manage Technicians / Inspectors</div>
+                <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeTechModal()">✕</button>
+            </div>
+            <div class="form-group">
+                <label>Add New Technician:</label>
+                <div style="display:flex; gap:6px;">
+                    <input type="text" id="new-tech-name" placeholder="Technician name...">
+                    <button class="btn btn-primary" onclick="addTechnician()">Add</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Current Technicians List:</label>
+                <div id="tech-list-box" style="display:flex; flex-direction:column; gap:6px; max-height:200px; overflow-y:auto;"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- REPORTS MODAL -->
     <div class="modal-overlay" id="reports-modal">
         <div class="modal-card">
@@ -439,9 +466,50 @@
                 }
             });
             const iSel = document.getElementById('in-inspector');
-            if (iSel) {
-                iSel.innerHTML = inspectorsList.map(i => `<option value="${i}">${i}</option>`).join('');
+            const pIns = document.getElementById('pdi-inspector');
+            [iSel, pIns].forEach(sel => {
+                if (sel) {
+                    sel.innerHTML = inspectorsList.map(i => `<option value="${i}">${i}</option>`).join('');
+                }
+            });
+        }
+
+        function openTechniciansManager() {
+            document.getElementById('tech-modal').style.display = 'flex';
+            renderTechList();
+        }
+        function closeTechModal() { document.getElementById('tech-modal').style.display = 'none'; }
+
+        function renderTechList() {
+            const box = document.getElementById('tech-list-box');
+            if (!box) return;
+            box.innerHTML = inspectorsList.map((t, idx) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#f1f5f9; padding:8px 12px; border-radius:8px;">
+                    <span style="font-weight:700;">${t}</span>
+                    <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="removeTechnician(${idx})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function addTechnician() {
+            const name = document.getElementById('new-tech-name').value.trim();
+            if (!name) return;
+            if (!inspectorsList.includes(name)) {
+                inspectorsList.push(name);
+                localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList));
+                initDropdowns();
+                renderTechList();
+                document.getElementById('new-tech-name').value = '';
+                alert(`Technician ${name} added successfully!`);
             }
+        }
+
+        function removeTechnician(idx) {
+            if (inspectorsList.length <= 1) { alert("At least one technician must remain."); return; }
+            inspectorsList.splice(idx, 1);
+            localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList));
+            initDropdowns();
+            renderTechList();
         }
 
         function addNewModelPrompt() {
@@ -471,15 +539,6 @@
             if (!locationsList.includes(nl)) locationsList.push(nl);
             localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList));
             initDropdowns();
-        }
-
-        function addNewInspectorPrompt() {
-            const ni = prompt("Enter new inspector name:");
-            if (!ni) return;
-            if (!inspectorsList.includes(ni)) inspectorsList.push(ni);
-            localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList));
-            initDropdowns();
-            document.getElementById('in-inspector').value = ni;
         }
 
         function updateColorDropdown() {
@@ -570,7 +629,7 @@
                             color: item.color,
                             location: item.location,
                             status: item.status,
-                            inspector: item.inspector || "Munees KC",
+                            inspector: item.inspector || inspectorsList[0],
                             remarks: item.remarks,
                             inwardTime: item.inwardTime,
                             photos: [],
@@ -807,7 +866,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 return diffDays > 90;
             });
 
-            document.getElementById('count-total').innerText = inYard.length;
+            document.getElementById('count-total').innerText = vehiclesDB.length;
             document.getElementById('count-pending').innerText = pendingPdi.length;
             document.getElementById('count-pdiok').innerText = pdiOk.length;
             document.getElementById('count-hold').innerText = holdCars.length;
@@ -818,15 +877,15 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
             const q = document.getElementById('dash-search').value.trim().toUpperCase();
             let list = [];
-            let titleText = "Master Yard Stock";
+            let titleText = "Master Yard Stock (Inward to Outward)";
             
-            if (currentDashFilter === 'ALL') { list = inYard; titleText = "Master Yard Stock (Physical)"; }
+            if (currentDashFilter === 'ALL') { list = vehiclesDB; titleText = "Master Yard Stock (All Records)"; }
             else if (currentDashFilter === 'Pending PDI') { list = pendingPdi; titleText = "Pending PDI Vehicles"; }
             else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI OK Vehicles"; }
             else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
             else if (currentDashFilter === 'Display') { list = displayCars; titleText = "Display Cars"; }
             else if (currentDashFilter === 'Aging') { list = agingCars; titleText = "Aging Vehicles (>90 Days)"; }
-            else if (currentDashFilter === 'ConfPending') { list = confPending; titleText = "Confirmation Pending PDI"; }
+            else if (currentDashFilter === 'ConfPending') { list = confPending; titleText = "Hold Confirmation Pending"; }
             else if (currentDashFilter === 'Outward') { list = outwardCars; titleText = "Outward Dispatched Vehicles"; }
 
             document.getElementById('dash-list-title').innerText = titleText;
@@ -839,11 +898,11 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 <div class="vehicle-item">
                     <div class="v-info">
                         <h4>${v.chassis}</h4>
-                        <p><b>${v.model}</b> • ${v.color} • Inspector: ${v.inspector || 'N/A'}</p>
+                        <p><b>${v.model}</b> • ${v.color} • Tech: ${v.inspector || 'N/A'}</p>
                         <p><i class="fa-solid fa-location-dot"></i> ${v.location} | Inward: ${v.inwardTime || 'Recent'}</p>
                     </div>
                     <div style="text-align:right; display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
-                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':'badge-hold'}">${v.status}</span>
+                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':v.status=='CONF_PENDING'?'badge-conf':'badge-hold'}">${v.status}</span>
                         <div style="display:flex; gap:4px;">
                             <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="copyVehicleInfo('${v.chassis}', '${v.model}', '${v.color}', '${v.location}', '${v.status}', '${v.inspector}', '${v.inwardTime}')" title="Copy Details"><i class="fa-solid fa-copy"></i></button>
                             ${v.status!='Outward'?`<button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button>`:''}
@@ -902,7 +961,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
         function toggleHoldUI() {
             const dec = document.getElementById('pdi-decision').value;
-            document.getElementById('pdi-next-loc').value = dec === 'HOLD' ? 'Hold / Repair Bay' : 'PDI OK - Ready Bay';
+            document.getElementById('pdi-next-loc').value = (dec === 'HOLD' || dec === 'CONF_PENDING') ? 'Hold / Repair Bay' : 'PDI OK - Ready Bay';
         }
 
         function cancelOrDeletePdi() {
@@ -954,7 +1013,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 doc.setTextColor(255, 255, 255); doc.setFontSize(14);
                 doc.text('LUXON TATA - PDI INSPECTION REPORT', 12, 11);
                 doc.setFontSize(10);
-                doc.text(`Chassis: ${v.chassis} | Status: ${v.status} | Inspector: ${inspector}`, 12, 19);
+                doc.text(`Chassis: ${v.chassis} | Status: ${v.status} | Tech: ${inspector}`, 12, 19);
 
                 doc.setTextColor(15, 23, 42); doc.setFontSize(10);
                 let y = 35;
@@ -1003,7 +1062,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                         const fd = new FormData();
                         fd.append('chat_id', botConfig.chatId);
                         fd.append('document', pdfBlob, pdfName);
-                        fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${v.status}\nInspector: ${inspector}`);
+                        fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${v.status}\nTech: ${inspector}\nRemarks: ${remarks}`);
                         await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
                     } catch(e) {}
                 }
@@ -1088,137 +1147,3 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 alert('Admin Access Granted!');
             } else {
                 alert('Enter valid password!');
-            }
-        }
-
-        function saveSettings() {
-            botConfig.scriptUrl = document.getElementById('cfg-scripturl').value.trim();
-            botConfig.token = document.getElementById('cfg-token').value.trim();
-            botConfig.chatId = document.getElementById('cfg-chatid').value.trim();
-            localStorage.setItem('luxon_yms_bot_cfg', JSON.stringify(botConfig));
-            closeSettingsModal();
-            syncWithGoogleSheet();
-            alert('Settings saved successfully!');
-        }
-
-        function openReportsModal(type) {
-            document.getElementById('reports-modal').style.display = 'flex';
-            const body = document.getElementById('report-content-body');
-            const title = document.getElementById('report-modal-title');
-            
-            const inYard = vehiclesDB.filter(v => v.status !== 'Outward');
-            const outward = vehiclesDB.filter(v => v.status === 'Outward');
-            const pending = vehiclesDB.filter(v => v.status === 'Pending PDI');
-            const ok = vehiclesDB.filter(v => v.status === 'PDI OK');
-
-            if (type === 'daily') {
-                title.innerHTML = `<i class="fa-solid fa-calendar-day"></i> Daily Operations Report`;
-                const todayStr = new Date().toISOString().split('T')[0];
-                body.innerHTML = `
-                    <div class="form-group">
-                        <label>Select Date:</label>
-                        <input type="date" id="rep-daily-date" value="${todayStr}" onchange="updateDailyReportView()">
-                    </div>
-                    <div id="rep-daily-results"></div>
-                `;
-                updateDailyReportView();
-            } else {
-                title.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Monthly Summary Report`;
-                const currMonth = new Date().toISOString().slice(0, 7);
-                body.innerHTML = `
-                    <div class="form-group">
-                        <label>Select Month:</label>
-                        <input type="month" id="rep-monthly-val" value="${currMonth}" onchange="updateMonthlyReportView()">
-                    </div>
-                    <div id="rep-monthly-results"></div>
-                `;
-                updateMonthlyReportView();
-            }
-        }
-
-        function updateDailyReportView() {
-            const dtInput = document.getElementById('rep-daily-date');
-            const resDiv = document.getElementById('rep-daily-results');
-            if (!dtInput || !resDiv) return;
-            const selectedDate = dtInput.value;
-
-            const matched = vehiclesDB.filter(v => {
-                if (!v.inwardTime) return false;
-                try {
-                    const d = new Date(v.inwardTime).toISOString().split('T')[0];
-                    return d === selectedDate;
-                } catch(e) { return false; }
-            });
-
-            resDiv.innerHTML = `
-                <div class="report-grid">
-                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">PDI OK</div><div class="report-box-val">${matched.filter(v=>v.status=='PDI OK').length}</div></div>
-                </div>
-                <div style="margin-top:10px;">
-                    <b>Vehicles on ${selectedDate}:</b>
-                    <div class="vehicle-list" style="max-height:180px; overflow-y:auto; margin-top:6px;">
-                        ${matched.length ? matched.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-ok">${v.status}</span></div>`).join('') : '<div style="font-size:12px; color:var(--slate);">No records for this date.</div>'}
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Daily', '${selectedDate}')"><i class="fa-solid fa-download"></i> Download Report (CSV)</button>
-            `;
-        }
-
-        function updateMonthlyReportView() {
-            const mInput = document.getElementById('rep-monthly-val');
-            const resDiv = document.getElementById('rep-monthly-results');
-            if (!mInput || !resDiv) return;
-            const selectedMonth = mInput.value; // YYYY-MM
-
-            const matched = vehiclesDB.filter(v => {
-                if (!v.inwardTime) return false;
-                try {
-                    const m = new Date(v.inwardTime).toISOString().slice(0, 7);
-                    return m === selectedMonth;
-                } catch(e) { return false; }
-            });
-
-            const deliveryReady = matched.filter(v => v.status === 'PDI OK' || v.location.includes('Outward')).length;
-            const stockTransfer = matched.filter(v => v.location.includes('Transferred') || v.location.includes('Transfer')).length;
-
-            let techCounts = {};
-            matched.forEach(v => {
-                const ins = v.inspector || 'Munees KC';
-                techCounts[ins] = (techCounts[ins] || 0) + 1;
-            });
-
-            let techHtml = Object.keys(techCounts).map(k => `• <b>${k}:</b> ${techCounts[k]} vehicles`).join('<br>') || 'No technician data.';
-
-            resDiv.innerHTML = `
-                <div class="report-grid">
-                    <div class="report-box"><div class="report-box-lbl">Final Check for Delivery</div><div class="report-box-val">${deliveryReady}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">Stock Transfers</div><div class="report-box-val">${stockTransfer}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">Outward Dispatched</div><div class="report-box-val">${matched.filter(v=>v.status=='Outward').length}</div></div>
-                </div>
-                <div style="background:#f1f5f9; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">
-                    <b>PDI Per Technician / Inspector:</b><br>${techHtml}
-                </div>
-                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Monthly', '${selectedMonth}')"><i class="fa-solid fa-download"></i> Download Report (CSV)</button>
-            `;
-        }
-
-        function downloadReportCSV(type, val) {
-            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,Color,Location,Status,Inspector,InwardTime\n";
-            vehiclesDB.forEach(v => {
-                csvContent += `"${v.chassis}","${v.model}","${v.color}","${v.location}","${v.status}","${v.inspector || ''}","${v.inwardTime || ''}"\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Luxon_${type}_Report_${val}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function closeReportsModal() { document.getElementById('reports-modal').style.display = 'none'; }
-    </script>
-</body>
-</html>
