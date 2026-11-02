@@ -107,7 +107,7 @@
         .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
         .badge-ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
         .badge-hold { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
-        .badge-out { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+        .badge-conf { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
 
         .vehicle-list { display: flex; flex-direction: column; gap: 10px; }
         .vehicle-item { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background: var(--white); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -164,7 +164,7 @@
         <section id="mod-dashboard" class="module-section active">
             <div class="stats-grid">
                 <div class="stat-card" onclick="filterDashboardList('ALL')">
-                    <div class="stat-label">In Yard</div>
+                    <div class="stat-label">Physical Yard</div>
                     <div class="stat-val" id="count-total" style="color: var(--primary);">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('Pending PDI')">
@@ -188,7 +188,7 @@
                     <div class="stat-val" id="count-aging" style="color: #ca8a04;">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('ConfPending')">
-                    <div class="stat-label">Conf. Pending</div>
+                    <div class="stat-label">Hold Conf. Pending</div>
                     <div class="stat-val" id="count-conf" style="color: #0284c7;">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('Outward')">
@@ -241,17 +241,11 @@
                 <div class="form-row">
                     <div>
                         <label>Vehicle Model *</label>
-                        <div style="display:flex; gap:6px;">
-                            <select id="in-model" onchange="updateColorDropdown(); saveDraft();" style="flex:1;"><option value="">-- Select Model --</option></select>
-                            <button type="button" class="btn btn-outline" onclick="addNewModelPrompt()" title="Add Model">+</button>
-                        </div>
+                        <input type="text" id="in-model" placeholder="Enter model name (e.g. Tata Punch)" oninput="saveDraft()">
                     </div>
                     <div>
                         <label>Color Code *</label>
-                        <div style="display:flex; gap:6px;">
-                            <select id="in-color" onchange="saveDraft()" style="flex:1;"><option value="">-- Select Model First --</option></select>
-                            <button type="button" class="btn btn-outline" onclick="addNewColorPrompt()" title="Add Color">+</button>
-                        </div>
+                        <input type="text" id="in-color" placeholder="Enter color code / name" oninput="saveDraft()">
                     </div>
                 </div>
 
@@ -264,7 +258,7 @@
                         </div>
                     </div>
                     <div>
-                        <label>Inspector Name *</label>
+                        <label>Inspector / Technician Name *</label>
                         <div style="display:flex; gap:6px;">
                             <select id="in-inspector" onchange="saveDraft()" style="flex:1;"></select>
                             <button type="button" class="btn btn-outline" onclick="addNewInspectorPrompt()" title="Add Inspector">+</button>
@@ -388,7 +382,7 @@
                         <select id="pdi-decision" onchange="toggleHoldUI(); saveDraft();">
                             <option value="PDI OK">PDI OK (Ready)</option>
                             <option value="HOLD">HOLD Vehicle (Issue Found)</option>
-                            <option value="CONF_PENDING">Confirmation Pending (Manager Review)</option>
+                            <option value="CONF_PENDING">Hold Confirmation Pending (Manager Review)</option>
                         </select>
                     </div>
                 </div>
@@ -399,8 +393,8 @@
                         <select id="pdi-next-loc" onchange="saveDraft()"></select>
                     </div>
                     <div>
-                        <label>Inspector Name *</label>
-                        <input type="text" id="pdi-inspector" value="Munees KC" readonly>
+                        <label>Inspector / Technician Name *</label>
+                        <select id="pdi-inspector-sel" onchange="saveDraft()"></select>
                     </div>
                 </div>
 
@@ -490,17 +484,6 @@
     </div>
 
     <script>
-        let modelColors = JSON.parse(localStorage.getItem('luxon_yms_models')) || {
-            "Tata Punch": ["Calypso Red", "Ariel Silver", "Tornado Blue", "Grassland Beige", "Atomic Orange", "Pure White"],
-            "Tata Punch.ev": ["Seaweed Green", "Pristine White", "Empowered Oxide", "Fearless Grey"],
-            "Tata Nexon": ["Foliage Green", "Calypso Red", "Daytona Grey", "Pure White", "Creative Ocean"],
-            "Tata Nexon.ev": ["Creative Ocean", "Pristine White", "Intense Teal", "Empowered Oxide"],
-            "Tata Curvv": ["Gold Essence", "Flame Red", "Pristine White", "Pure Grey", "Daytona Grey"],
-            "Tata Tiago": ["Flame Red", "Pearlescent White", "Midnight Plum", "Arizona Blue", "Opal White"],
-            "Tata Harrier": ["Coral Red", "Oberon Black", "Pebble Grey", "Lunar White", "Sunlit Yellow"],
-            "Tata Safari": ["Oberon Black", "Cosmic Gold", "Lunar White", "Stardust Ash"]
-        };
-
         let locationsList = JSON.parse(localStorage.getItem('luxon_yms_locs')) || [
             "Main Yard - Inward Bay", "Kottakkal Yard", "Changanakkal Yard", "Malappuram Yard",
             "Kottakkal Display", "Malappuram Display", "Edappal Display", "Changanakkulam Display",
@@ -510,13 +493,6 @@
         let inspectorsList = JSON.parse(localStorage.getItem('luxon_yms_inspectors')) || ["Munees KC", "Sahal", "Safuvan", "Sarfas"];
 
         function initDropdowns() {
-            const mSel = document.getElementById('in-model');
-            if (mSel) {
-                mSel.innerHTML = '<option value="">-- Select Model --</option>';
-                Object.keys(modelColors).forEach(m => {
-                    mSel.innerHTML += `<option value="${m}">${m}</option>`;
-                });
-            }
             const lSel = document.getElementById('in-location');
             const pNext = document.getElementById('pdi-next-loc');
             [lSel, pNext].forEach(sel => {
@@ -525,30 +501,12 @@
                 }
             });
             const iSel = document.getElementById('in-inspector');
-            if (iSel) {
-                iSel.innerHTML = inspectorsList.map(i => `<option value="${i}">${i}</option>`).join('');
-            }
-        }
-
-        function addNewModelPrompt() {
-            const nm = prompt("Enter new vehicle model name:");
-            if (!nm) return;
-            if (!modelColors[nm]) modelColors[nm] = ["Standard White", "Midnight Black"];
-            localStorage.setItem('luxon_yms_models', JSON.stringify(modelColors));
-            initDropdowns();
-            document.getElementById('in-model').value = nm;
-            updateColorDropdown();
-        }
-
-        function addNewColorPrompt() {
-            const mdl = document.getElementById('in-model').value;
-            if (!mdl) { alert("Select model first!"); return; }
-            const nc = prompt(`Enter new color for ${mdl}:`);
-            if (!nc) return;
-            if (!modelColors[mdl].includes(nc)) modelColors[mdl].push(nc);
-            localStorage.setItem('luxon_yms_models', JSON.stringify(modelColors));
-            updateColorDropdown();
-            document.getElementById('in-color').value = nc;
+            const pIns = document.getElementById('pdi-inspector-sel');
+            [iSel, pIns].forEach(sel => {
+                if (sel) {
+                    sel.innerHTML = inspectorsList.map(i => `<option value="${i}">${i}</option>`).join('');
+                }
+            });
         }
 
         function addNewLocationPrompt() {
@@ -560,21 +518,157 @@
         }
 
         function addNewInspectorPrompt() {
-            const ni = prompt("Enter new inspector name:");
+            const ni = prompt("Enter new technician/inspector name:");
             if (!ni) return;
             if (!inspectorsList.includes(ni)) inspectorsList.push(ni);
             localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList));
             initDropdowns();
-            document.getElementById('in-inspector').value = ni;
         }
 
-        function updateColorDropdown() {
-            const mdl = document.getElementById('in-model').value;
-            const colSel = document.getElementById('in-color');
-            colSel.innerHTML = '<option value="">-- Select Color --</option>';
-            if (modelColors[mdl]) {
-                modelColors[mdl].forEach(c => {
-                    colSel.innerHTML += `<option value="${c}">${c}</option>`; }); } }  function toggleMenu() { document.getElementById('app-menu-dropdown').classList.toggle('show'); } window.onclick = function(e) { if (!e.target.closest('.menu-container')) { const drop = document.getElementById('app-menu-dropdown'); if (drop) drop.classList.remove('show'); } }  let vehiclesDB = []; let botConfig = JSON.parse(localStorage.getItem('luxon_yms_bot_cfg')) \vert{}\vert{} { scriptUrl: 'https://script.google.com/macros/s/AKfycbyhtIDnBmd4yvJNYd60CpUqs5klkdwu97O8svx6PffXlmbmI8KuyZnDulPFALoAuUTdvQ/exec', token: '9043876419:AAEKnIedVt0rcOPxtfJiJvmtWX32z7mvBZA', chatId: '-1004478595920' };  let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form28: [], pdi_battery: [] }; let currentPdiChassis = '', currentOpChassis = '', currentDashFilter = 'ALL'; let qrScanner = null, activeScannerMode = null;  window.onload = function() { initDropdowns(); loadDraft(); syncWithGoogleSheet(); setInterval(() => { syncWithGoogleSheet(true); }, 15000); };  function saveDraft() { const draft = { inChassis: document.getElementById('in-chassis').value, inModel: document.getElementById('in-model').value, inColor: document.getElementById('in-color').value, inLocation: document.getElementById('in-location').value, inInspector: document.getElementById('in-inspector').value, pdiSpeed: document.getElementById('pdi-speed').value, pdiDecision: document.getElementById('pdi-decision').value, pdiNextLoc: document.getElementById('pdi-next-loc').value, pdiRemarks: document.getElementById('pdi-remarks').value }; localStorage.setItem('luxon_yms_draft', JSON.stringify(draft)); }  function loadDraft() { const draft = JSON.parse(localStorage.getItem('luxon_yms_draft')); if (!draft) return; if (document.getElementById('in-chassis')) document.getElementById('in-chassis').value = draft.inChassis \vert{}\vert{} ''; if (document.getElementById('in-model')) { document.getElementById('in-model').value = draft.inModel \vert{}\vert{} ''; updateColorDropdown(); } if (document.getElementById('in-color')) document.getElementById('in-color').value = draft.inColor \vert{}\vert{} ''; if (document.getElementById('in-location')) document.getElementById('in-location').value = draft.inLocation \vert{}\vert{} ''; if (document.getElementById('in-inspector')) document.getElementById('in-inspector').value = draft.inInspector \vert{}\vert{} inspectorsList[0]; if (document.getElementById('pdi-speed')) document.getElementById('pdi-speed').value = draft.pdiSpeed \vert{}\vert{} ''; if (document.getElementById('pdi-decision')) document.getElementById('pdi-decision').value = draft.pdiDecision \vert{}\vert{} 'PDI OK'; if (document.getElementById('pdi-next-loc')) document.getElementById('pdi-next-loc').value = draft.pdiNextLoc \vert{}\vert{} 'PDI OK - Ready Bay'; if (document.getElementById('pdi-remarks')) document.getElementById('pdi-remarks').value = draft.pdiRemarks \vert{}\vert{} ''; }  function clearDraft() { localStorage.removeItem('luxon_yms_draft'); }  function syncWithGoogleSheet(isBackground = false) { if (!botConfig.scriptUrl) { renderDashboard(); return; } const icon = document.getElementById('sync-icon'); if (icon && !isBackground) icon.classList.add('fa-spin');  fetch(botConfig.scriptUrl) .then(res => res.json()) .then(data => { if (Array.isArray(data)) { vehiclesDB = data.map(item => ({ chassis: item.chassis, model: item.model, color: item.color, location: item.location, status: item.status, inspector: item.inspector \vert{}\vert{} "Munees KC", remarks: item.remarks, inwardTime: item.inwardTime, photos: [], pdiData: null })); } if (icon) icon.classList.remove('fa-spin'); renderDashboard(); }) .catch(err => { if (icon) icon.classList.remove('fa-spin'); renderDashboard(); }); }  function openModule(name) { stopScanner(); ['dashboard', 'inward', 'pdi', 'operations'].forEach(m => { const el = document.getElementById('mod-' + m); const btn = document.getElementById('tabbtn-' + m); if (el) el.classList.remove('active'); if (btn) btn.classList.remove('active'); }); const targetMod = document.getElementById('mod-' + name); const targetBtn = document.getElementById('tabbtn-' + name); if (targetMod) targetMod.classList.add('active'); if (targetBtn) targetBtn.classList.add('active');  if (name === 'dashboard') syncWithGoogleSheet(); if (name === 'pdi') populatePdiMasterList(); if (name === 'operations') renderOperationsList(); }  function generateBarcode(ctx) { const chassis = ctx === 'inward' ? document.getElementById('in-chassis').value.trim().toUpperCase() : currentPdiChassis; if (!chassis) { alert('Enter chassis number first.'); return; } const boxId = ctx === 'inward' ? 'inward-barcode-box' : 'pdi-barcode-box'; const svgId = ctx === 'inward' ? 'inward-barcode-svg' : 'pdi-barcode-svg'; document.getElementById(boxId).style.display = 'block'; if (typeof JsBarcode !== 'undefined') { JsBarcode("#" + svgId, chassis, { format: "CODE128", width: 2, height: 50, displayValue: true }); } }  function downloadBarcode(svgId, name) { const svg = document.getElementById(svgId); const data = new XMLSerializer().serializeToString(svg); const canvas = document.createElement("canvas"); const img = new Image(); img.onload = function() { canvas.width = img.width + 20; canvas.height = img.height + 20; const ctx = canvas.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.drawImage(img, 10, 10); const a = document.createElement("a"); a.download = `Barcode_${name || 'Chassis'}.png`;
+        function toggleMenu() {
+            document.getElementById('app-menu-dropdown').classList.toggle('show');
+        }
+        window.onclick = function(e) {
+            if (!e.target.closest('.menu-container')) {
+                const drop = document.getElementById('app-menu-dropdown');
+                if (drop) drop.classList.remove('show');
+            }
+        }
+
+        let vehiclesDB = JSON.parse(localStorage.getItem('luxon_yms_photos_db')) || [];
+        let botConfig = JSON.parse(localStorage.getItem('luxon_yms_bot_cfg')) || { 
+            scriptUrl: 'https://script.google.com/macros/s/AKfycbyhtIDnBmd4yvJNYd60CpUqs5klkdwu97O8svx6PffXlmbmI8KuyZnDulPFALoAuUTdvQ/exec',
+            token: '9043876419:AAEKnIedVt0rcOPxtfJiJvmtWX32z7mvBZA', 
+            chatId: '-1004478595920' 
+        };
+
+        let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form28: [], pdi_battery: [] };
+        let currentPdiChassis = '', currentOpChassis = '', currentDashFilter = 'ALL';
+        let qrScanner = null, activeScannerMode = null;
+
+        window.onload = function() {
+            initDropdowns();
+            loadDraft();
+            syncWithGoogleSheet();
+            setInterval(() => { syncWithGoogleSheet(true); }, 15000);
+        };
+
+        function saveDraft() {
+            const draft = {
+                inChassis: document.getElementById('in-chassis').value,
+                inModel: document.getElementById('in-model').value,
+                inColor: document.getElementById('in-color').value,
+                inLocation: document.getElementById('in-location').value,
+                inInspector: document.getElementById('in-inspector').value,
+                pdiSpeed: document.getElementById('pdi-speed').value,
+                pdiDecision: document.getElementById('pdi-decision').value,
+                pdiNextLoc: document.getElementById('pdi-next-loc').value,
+                pdiRemarks: document.getElementById('pdi-remarks').value
+            };
+            localStorage.setItem('luxon_yms_draft', JSON.stringify(draft));
+        }
+
+        function loadDraft() {
+            const draft = JSON.parse(localStorage.getItem('luxon_yms_draft'));
+            if (!draft) return;
+            if (document.getElementById('in-chassis')) document.getElementById('in-chassis').value = draft.inChassis || '';
+            if (document.getElementById('in-model')) document.getElementById('in-model').value = draft.inModel || '';
+            if (document.getElementById('in-color')) document.getElementById('in-color').value = draft.inColor || '';
+            if (document.getElementById('in-location')) document.getElementById('in-location').value = draft.inLocation || '';
+            if (document.getElementById('in-inspector')) document.getElementById('in-inspector').value = draft.inInspector || inspectorsList[0];
+            if (document.getElementById('pdi-speed')) document.getElementById('pdi-speed').value = draft.pdiSpeed || '';
+            if (document.getElementById('pdi-decision')) document.getElementById('pdi-decision').value = draft.pdiDecision || 'PDI OK';
+            if (document.getElementById('pdi-next-loc')) document.getElementById('pdi-next-loc').value = draft.pdiNextLoc || 'PDI OK - Ready Bay';
+            if (document.getElementById('pdi-remarks')) document.getElementById('pdi-remarks').value = draft.pdiRemarks || '';
+        }
+
+        function clearDraft() { localStorage.removeItem('luxon_yms_draft'); }
+
+        function syncWithGoogleSheet(isBackground = false) {
+            if (!botConfig.scriptUrl) { renderDashboard(); return; }
+            const icon = document.getElementById('sync-icon');
+            if (icon && !isBackground) icon.classList.add('fa-spin');
+
+            fetch(botConfig.scriptUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(serverItem => {
+                            let localIdx = vehiclesDB.findIndex(v => v.chassis === serverItem.chassis);
+                            if (localIdx !== -1) {
+                                vehiclesDB[localIdx].model = serverItem.model;
+                                vehiclesDB[localIdx].color = serverItem.color;
+                                vehiclesDB[localIdx].location = serverItem.location;
+                                vehiclesDB[localIdx].status = serverItem.status;
+                                vehiclesDB[localIdx].inspector = serverItem.inspector || vehiclesDB[localIdx].inspector;
+                                vehiclesDB[localIdx].remarks = serverItem.remarks;
+                            } else {
+                                vehiclesDB.push({
+                                    chassis: serverItem.chassis,
+                                    model: serverItem.model,
+                                    color: serverItem.color,
+                                    location: serverItem.location,
+                                    status: serverItem.status,
+                                    inspector: serverItem.inspector || "Munees KC",
+                                    remarks: serverItem.remarks,
+                                    inwardTime: serverItem.inwardTime,
+                                    photos: [],
+                                    pdiData: null
+                                });
+                            }
+                        });
+                        saveDB();
+                    }
+                    if (icon) icon.classList.remove('fa-spin');
+                    renderDashboard();
+                })
+                .catch(err => {
+                    if (icon) icon.classList.remove('fa-spin');
+                    renderDashboard();
+                });
+        }
+
+        function openModule(name) {
+            stopScanner();
+            ['dashboard', 'inward', 'pdi', 'operations'].forEach(m => {
+                const el = document.getElementById('mod-' + m);
+                const btn = document.getElementById('tabbtn-' + m);
+                if (el) el.classList.remove('active');
+                if (btn) btn.classList.remove('active');
+            });
+            const targetMod = document.getElementById('mod-' + name);
+            const targetBtn = document.getElementById('tabbtn-' + name);
+            if (targetMod) targetMod.classList.add('active');
+            if (targetBtn) targetBtn.classList.add('active');
+
+            if (name === 'dashboard') syncWithGoogleSheet();
+            if (name === 'pdi') populatePdiMasterList();
+            if (name === 'operations') renderOperationsList();
+        }
+
+        function generateBarcode(ctx) {
+            const chassis = ctx === 'inward' ? document.getElementById('in-chassis').value.trim().toUpperCase() : currentPdiChassis;
+            if (!chassis) { alert('Enter chassis number first.'); return; }
+            const boxId = ctx === 'inward' ? 'inward-barcode-box' : 'pdi-barcode-box';
+            const svgId = ctx === 'inward' ? 'inward-barcode-svg' : 'pdi-barcode-svg';
+            document.getElementById(boxId).style.display = 'block';
+            if (typeof JsBarcode !== 'undefined') {
+                JsBarcode("#" + svgId, chassis, { format: "CODE128", width: 2, height: 50, displayValue: true });
+            }
+        }
+
+        function downloadBarcode(svgId, name) {
+            const svg = document.getElementById(svgId);
+            const data = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement("canvas");
+            const img = new Image();
+            img.onload = function() {
+                canvas.width = img.width + 20; canvas.height = img.height + 20;
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage(img, 10, 10);
+                const a = document.createElement("a");
+                a.download = `Barcode_${name || 'Chassis'}.png`;
                 a.href = canvas.toDataURL("image/png");
                 a.click();
             };
@@ -665,7 +759,7 @@
             g.innerHTML = arr.map((src, i) => `
                 <div class="thumb-wrapper">
                     <img src="${src}" alt="photo">
-                    <button type="button" class="thumb-remove" onclick="removePhoto('${bucket}',${i})">✕</button>
+                    <button type="button" class="thumb-remove" onclick="removePhoto('${bucket}', ${i})">✕</button>
                 </div>
             `).join('');
         }
@@ -679,7 +773,10 @@
             const ex = vehiclesDB.find(v => v.chassis === c);
             if (ex && ex.status !== 'Outward') {
                 alertEl.className = 'alert-box alert-error'; alertEl.style.display = 'block';
-                alertEl.innerHTML = `DUPLICATE BLOCKED: Chassis ${c} is already in yard at ${ex.location}.`; } else { alertEl.className = 'alert-box alert-success'; alertEl.style.display = 'block'; alertEl.innerHTML = `Chassis ${c} verified clean for inward.`;
+                alertEl.innerHTML = `DUPLICATE BLOCKED: Chassis ${c} is already in yard at ${ex.location}.`;
+            } else {
+                alertEl.className = 'alert-box alert-success'; alertEl.style.display = 'block';
+                alertEl.innerHTML = `Chassis ${c} verified clean for inward.`;
             }
         }
 
@@ -691,11 +788,23 @@
             const inspector = document.getElementById('in-inspector').value;
 
             if (!chassis || !model || !color) { alert('Enter Chassis, Model and Color.'); return; }
-            const ex = vehiclesDB.find(v => v.chassis === chassis);
-            if (ex && ex.status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
+            const exIdx = vehiclesDB.findIndex(v => v.chassis === chassis);
+            if (exIdx !== -1 && vehiclesDB[exIdx].status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
 
             const inwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-            
+            const rec = {
+                chassis, model, color, location,
+                status: 'Pending PDI',
+                inspector,
+                inwardTime,
+                photos: [...photoBuckets.inward],
+                pdiData: null, remarks: ''
+            };
+
+            if (exIdx !== -1) vehiclesDB[exIdx] = rec; else vehiclesDB.unshift(rec);
+            saveDB();
+            clearDraft();
+
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST',
@@ -705,10 +814,9 @@
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
-            clearDraft();
             document.getElementById('in-chassis').value = '';
             document.getElementById('in-model').value = '';
-            document.getElementById('in-color').innerHTML = '<option value="">-- Select Model First --</option>';
+            document.getElementById('in-color').value = '';
             photoBuckets.inward = []; renderGrid('inward');
             alert(`Inward successful for ${chassis}!`);
             setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
@@ -771,7 +879,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
             else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
             else if (currentDashFilter === 'Display') { list = displayCars; titleText = "Display Cars"; }
             else if (currentDashFilter === 'Aging') { list = agingCars; titleText = "Aging Vehicles (>90 Days)"; }
-            else if (currentDashFilter === 'ConfPending') { list = confPending; titleText = "Confirmation Pending PDI"; }
+            else if (currentDashFilter === 'ConfPending') { list = confPending; titleText = "Hold Confirmation Pending"; }
             else if (currentDashFilter === 'Outward') { list = outwardCars; titleText = "Outward Dispatched Vehicles"; }
 
             document.getElementById('dash-list-title').innerText = titleText;
@@ -785,10 +893,10 @@ Inward Time: ${inwardTime || 'N/A'}`;
                     <div class="v-info">
                         <h4>${v.chassis}</h4>
                         <p><b>${v.model}</b> • ${v.color} • Inspector: ${v.inspector || 'N/A'}</p>
-                        <p><i class="fa-solid fa-location-dot"></i> ${v.location} \vert{} Inward:${v.inwardTime || 'Recent'}</p>
+                        <p><i class="fa-solid fa-location-dot"></i> ${v.location} | Inward: ${v.inwardTime || 'Recent'}</p>
                     </div>
                     <div style="text-align:right; display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
-                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':'badge-hold'}">${v.status}</span>
+                        <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':v.status=='CONF_PENDING'?'badge-conf':'badge-hold'}">${v.status}</span>
                         <div style="display:flex; gap:4px;">
                             <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="copyVehicleInfo('${v.chassis}', '${v.model}', '${v.color}', '${v.location}', '${v.status}', '${v.inspector}', '${v.inwardTime}')" title="Copy Details"><i class="fa-solid fa-copy"></i></button>
                             ${v.status!='Outward'?`<button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button>`:''}
@@ -811,9 +919,9 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer; background:${currentPdiChassis===v.chassis?'#eff6ff':'#fff'}">
                     <div class="v-info">
                         <h4>${v.chassis}</h4>
-                        <p><b>${v.model}</b> • ${v.color} •${v.location}</p>
+                        <p><b>${v.model}</b> • ${v.color} • ${v.location}</p>
                     </div>
-                    <span class="badge badge-pending">${v.status}</span>
+                    <span class="badge ${v.status=='CONF_PENDING'?'badge-conf':'badge-pending'}">${v.status}</span>
                 </div>
             `).join('');
         }
@@ -828,8 +936,8 @@ Inward Time: ${inwardTime || 'N/A'}`;
             }
             container.innerHTML = pendingList.map(v => `
                 <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer;">
-                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.color} •${v.location}</p></div>
-                    <span class="badge badge-pending">${v.status}</span>
+                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.color} • ${v.location}</p></div>
+                    <span class="badge ${v.status=='CONF_PENDING'?'badge-conf':'badge-pending'}">${v.status}</span>
                 </div>
             `).join('');
         }
@@ -840,7 +948,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
             currentPdiChassis = v.chassis;
             document.getElementById('pdi-banner').style.display = 'block';
             document.getElementById('pdi-b-chassis').innerText = v.chassis;
-            document.getElementById('pdi-b-model').innerText = `${v.model} (${v.color}) -${v.location}`;
+            document.getElementById('pdi-b-model').innerText = `${v.model} (${v.color}) - ${v.location}`;
             populatePdiMasterList();
             renderAllGrids();
         }
@@ -852,10 +960,11 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
         function cancelOrDeletePdi() {
             if (!currentPdiChassis) { alert('Select a vehicle first.'); return; }
-            if (confirm(`Are you sure you want to cancel/delete PDI for chassis ${currentPdiChassis}?`)) {
+            if (confirm(`Are you sure you want to cancel PDI for chassis ${currentPdiChassis}?`)) {
                 const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
                 if (v) {
                     v.status = 'CANCELLED';
+                    saveDB();
                     alert(`PDI Cancelled for ${currentPdiChassis}`);
                     currentPdiChassis = '';
                     document.getElementById('pdi-banner').style.display = 'none';
@@ -873,24 +982,33 @@ Inward Time: ${inwardTime || 'N/A'}`;
             const decision = document.getElementById('pdi-decision').value;
             const nextLoc = document.getElementById('pdi-next-loc').value;
             const remarks = document.getElementById('pdi-remarks').value.trim();
-            const inspector = document.getElementById('pdi-inspector').value;
+            const inspector = document.getElementById('pdi-inspector-sel').value;
             const pdiTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
             v.status = decision;
             v.location = nextLoc;
             v.inspector = inspector;
             v.remarks = remarks;
+            v.pdiTime = pdiTime;
+            v.pdiData = {
+                speed: speed || 'Tested - OK',
+                vehiclePhotos: [...photoBuckets.pdi_vehicle],
+                checksheetPhotos: [...photoBuckets.pdi_checksheet],
+                chassisPhotos: [...photoBuckets.pdi_chassis],
+                form28Photos: [...photoBuckets.pdi_form28],
+                batteryPhotos: [...photoBuckets.pdi_battery]
+            };
+            saveDB();
+            clearDraft();
 
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, chassis: v.chassis, model: v.model, color: v.color, status: decision, speed: speed || 'Tested - OK', inspector, location: nextLoc, remarks })
+                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, chassis: v.chassis, model: v.model, color: v.color, status: decision, speed: v.pdiData.speed, inspector, location: nextLoc, remarks })
                 }).catch(err => console.log('Sheet sync error:', err));
             }
-
-            clearDraft();
 
             if (typeof window.jspdf !== 'undefined') {
                 const { jsPDF } = window.jspdf;
@@ -899,4 +1017,278 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 doc.setTextColor(255, 255, 255); doc.setFontSize(14);
                 doc.text('LUXON TATA - PDI INSPECTION REPORT', 12, 11);
                 doc.setFontSize(10);
-                doc.text(`Chassis: ${v.chassis} \vert{} Status:${v.
+                doc.text(`Chassis: ${v.chassis} | Status: ${v.status} | Inspector: ${inspector}`, 12, 19);
+
+                doc.setTextColor(15, 23, 42); doc.setFontSize(10);
+                let y = 35;
+                doc.text(`Model: ${v.model} (${v.color})`, 12, y); doc.text(`Speed Test: ${v.pdiData.speed}`, 110, y); y += 6;
+                doc.text(`Location: ${nextLoc}`, 12, y); doc.text(`Remarks: ${remarks || 'None'}`, 110, y); y += 12;
+
+                function addCatToPDF(title, arr) {
+                    if (!arr || !arr.length) return;
+                    if (y > 230) { doc.addPage(); y = 15; }
+                    doc.setFontSize(10); doc.setTextColor(30, 64, 175);
+                    doc.text(`${title} (${arr.length}):`, 12, y); y += 4;
+                    let x = 12;
+                    arr.forEach((img, idx) => {
+                        if (y > 235) { doc.addPage(); y = 15; x = 12; }
+                        try { doc.addImage(img, 'JPEG', x, y, 55, 40); } catch(e){}
+                        x += 59;
+                        if ((idx + 1) % 3 === 0) { x = 12; y = y + 44; }
+                    });
+                    if (arr.length % 3 !== 0) y += 44;
+                    y += 6;
+                }
+
+                addCatToPDF('PDI Check Sheet Photos', v.pdiData.checksheetPhotos);
+                addCatToPDF('Chassis Photos', v.pdiData.chassisPhotos);
+                addCatToPDF('Form 22 / 28 Photos', v.pdiData.form28Photos);
+                addCatToPDF('Battery Photos', v.pdiData.batteryPhotos);
+                addCatToPDF('Vehicle All-Round Photos', v.pdiData.vehiclePhotos);
+
+                const pdfName = `PDI_${v.chassis}.pdf`;
+                const pdfBlob = doc.output('blob');
+                
+                if (navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], pdfName, { type: 'application/pdf' })] })) {
+                    try {
+                        await navigator.share({
+                            files: [new File([pdfBlob], pdfName, { type: 'application/pdf' })],
+                            title: 'PDI Inspection Report',
+                            text: `✅ PDI Report for Chassis: ${v.chassis} (${v.model}) - Status: ${v.status}`
+                        });
+                    } catch(e) {}
+                } else {
+                    doc.save(pdfName);
+                }
+
+                if (botConfig.token && botConfig.chatId) {
+                    try {
+                        const fd = new FormData();
+                        fd.append('chat_id', botConfig.chatId);
+                        fd.append('document', pdfBlob, pdfName);
+                        fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${v.status}\nInspector: ${inspector}`);
+                        await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
+                    } catch(e) {}
+                }
+            }
+
+            alert('PDI Submitted & Shared Successfully!');
+            setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
+        }
+
+        function renderOperationsList() {
+            const q = document.getElementById('op-search').value.trim().toUpperCase();
+            let list = vehiclesDB.filter(v => v.status !== 'Outward');
+            if (q) list = list.filter(v => v.chassis.includes(q));
+            document.getElementById('op-list').innerHTML = list.map(v => `
+                <div class="vehicle-item" onclick="openOpEd('${v.chassis}')" style="cursor:pointer;">
+                    <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div>
+                    <span class="badge ${v.status=='PDI OK'?'badge-ok':'badge-pending'}">${v.status}</span>
+                </div>
+            `).join('') || '<div style="text-align:center; color:var(--slate);">No vehicles.</div>';
+        }
+
+        function openOpEd(c) {
+            currentOpChassis = c;
+            const v = vehiclesDB.find(x => x.chassis === c);
+            document.getElementById('op-editor').style.display = 'block';
+            document.getElementById('op-ed-chassis').innerText = `Operations: ${v.chassis} (${v.model})`;
+        }
+
+        function toggleOpActionUI() {
+            const act = document.getElementById('op-action-type').value;
+            document.getElementById('op-dest-box').style.display = act === 'DISPATCH' ? 'block' : 'none';
+            document.getElementById('op-region-box').style.display = act === 'TRANSFER' ? 'block' : 'none';
+        }
+
+        function confirmOperationsDispatch() {
+            const v = vehiclesDB.find(x => x.chassis === currentOpChassis);
+            const act = document.getElementById('op-action-type').value;
+            const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+            if (act === 'DISPATCH') {
+                const dest = document.getElementById('op-ed-dest').value;
+                v.status = 'Outward';
+                v.location = `Outward -> ${dest}`;
+                saveDB();
+                if (botConfig.scriptUrl) {
+                    fetch(botConfig.scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'OUTWARD', outwardTime, chassis: v.chassis, model: v.model, color: v.color, outwardDest: dest, outwardDriver: "Driver" })
+                    }).catch(err => {});
+                }
+            } else {
+                const region = document.getElementById('op-ed-region').value;
+                v.location = `Transferred -> ${region}`;
+                v.status = 'HOLD';
+                saveDB();
+                if (botConfig.scriptUrl) {
+                    fetch(botConfig.scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'OPERATIONS_UPDATE', chassis: v.chassis, model: v.model, color: v.color, location: v.location, status: 'HOLD', remarks: `Stock Transfer to ${region}` })
+                    }).catch(err => {});
+                }
+            }
+
+            document.getElementById('op-editor').style.display = 'none';
+            alert('Operation confirmed & Sheet updated!');
+            setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
+        }
+
+        function openSettingsModal() { document.getElementById('settings-modal').style.display = 'flex'; }
+        function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+        
+        function verifyAdminPass() {
+            const pass = document.getElementById('admin-pass').value.trim();
+            if (pass.length > 0) {
+                document.getElementById('admin-settings-panel').style.display = 'block';
+                document.getElementById('unlock-btn').style.display = 'none';
+                document.getElementById('cfg-scripturl').value = botConfig.scriptUrl;
+                document.getElementById('cfg-token').value = botConfig.token;
+                document.getElementById('cfg-chatid').value = botConfig.chatId;
+                alert('Admin Access Granted!');
+            } else {
+                alert('Enter valid password!');
+            }
+        }
+
+        function saveSettings() {
+            botConfig.scriptUrl = document.getElementById('cfg-scripturl').value.trim();
+            botConfig.token = document.getElementById('cfg-token').value.trim();
+            botConfig.chatId = document.getElementById('cfg-chatid').value.trim();
+            localStorage.setItem('luxon_yms_bot_cfg', JSON.stringify(botConfig));
+            closeSettingsModal();
+            syncWithGoogleSheet();
+            alert('Settings saved successfully!');
+        }
+
+        function openReportsModal(type) {
+            document.getElementById('reports-modal').style.display = 'flex';
+            const body = document.getElementById('report-content-body');
+            const title = document.getElementById('report-modal-title');
+
+            if (type === 'daily') {
+                title.innerHTML = `<i class="fa-solid fa-calendar-day"></i> Daily Operations Report`;
+                const todayStr = new Date().toISOString().split('T')[0];
+                body.innerHTML = `
+                    <div class="form-group">
+                        <label>Select Date:</label>
+                        <input type="date" id="rep-daily-date" value="${todayStr}" onchange="updateDailyReportView()">
+                    </div>
+                    <div id="rep-daily-results"></div>
+                `;
+                updateDailyReportView();
+            } else {
+                title.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Monthly Summary Report`;
+                const currMonth = new Date().toISOString().slice(0, 7);
+                body.innerHTML = `
+                    <div class="form-group">
+                        <label>Select Month:</label>
+                        <input type="month" id="rep-monthly-val" value="${currMonth}" onchange="updateMonthlyReportView()">
+                    </div>
+                    <div id="rep-monthly-results"></div>
+                `;
+                updateMonthlyReportView();
+            }
+        }
+
+        function updateDailyReportView() {
+            const dtInput = document.getElementById('rep-daily-date');
+            const resDiv = document.getElementById('rep-daily-results');
+            if (!dtInput || !resDiv) return;
+            const selectedDate = dtInput.value;
+
+            const matched = vehiclesDB.filter(v => {
+                if (!v.inwardTime) return false;
+                try {
+                    const d = new Date(v.inwardTime).toISOString().split('T')[0];
+                    return d === selectedDate;
+                } catch(e) { return false; }
+            });
+
+            resDiv.innerHTML = `
+                <div class="report-grid">
+                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">PDI OK</div><div class="report-box-val">${matched.filter(v=>v.status=='PDI OK').length}</div></div>
+                </div>
+                <div style="margin-top:10px;">
+                    <b>Vehicles on ${selectedDate}:</b>
+                    <div class="vehicle-list" style="max-height:180px; overflow-y:auto; margin-top:6px;">
+                        ${matched.length ? matched.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-ok">${v.status}</span></div>`).join('') : '<div style="font-size:12px; color:var(--slate);">No records for this date.</div>'}
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Daily', '${selectedDate}')"><i class="fa-solid fa-download"></i> Download Report (CSV / Excel)</button>
+            `;
+        }
+
+        function updateMonthlyReportView() {
+            const mInput = document.getElementById('rep-monthly-val');
+            const resDiv = document.getElementById('rep-monthly-results');
+            if (!mInput || !resDiv) return;
+            const selectedMonth = mInput.value;
+
+            const matched = vehiclesDB.filter(v => {
+                if (!v.inwardTime) return false;
+                try {
+                    const m = new Date(v.inwardTime).toISOString().slice(0, 7);
+                    return m === selectedMonth;
+                } catch(e) { return false; }
+            });
+
+            const deliveryReady = matched.filter(v => v.status === 'PDI OK' || v.location.includes('Outward')).length;
+            const stockTransfer = matched.filter(v => v.location.includes('Transferred') || v.location.includes('Transfer')).length;
+
+            let techCounts = {};
+            matched.forEach(v => {
+                const ins = v.inspector || 'Munees KC';
+                techCounts[ins] = (techCounts[ins] || 0) + 1;
+            });
+
+            let techHtml = Object.keys(techCounts).map(k => `• <b>${k}:</b> ${techCounts[k]} vehicles`).join('<br>') || 'No technician data.';
+
+            // Yard wise count
+            let yardCounts = {};
+            matched.forEach(v => {
+                const loc = v.location || 'Main Yard';
+                yardCounts[loc] = (yardCounts[loc] || 0) + 1;
+            });
+            let yardHtml = Object.keys(yardCounts).map(k => `• <b>${k}:</b> ${yardCounts[k]} vehicles`).join('<br>') || 'No yard data.';
+
+            resDiv.innerHTML = `
+                <div class="report-grid">
+                    <div class="report-box"><div class="report-box-lbl">Delivery Ready</div><div class="report-box-val">${deliveryReady}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Stock Transfers</div><div class="report-box-val">${stockTransfer}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Outward Dispatched</div><div class="report-box-val">${matched.filter(v=>v.status=='Outward').length}</div></div>
+                </div>
+                <div style="background:#f1f5f9; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">
+                    <b>PDI Per Technician / Inspector:</b><br>${techHtml}<br><br>
+                    <b>Yard Wise Breakdown:</b><br>${yardHtml}
+                </div>
+                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Monthly', '${selectedMonth}')"><i class="fa-solid fa-download"></i> Download Report (CSV / Excel)</button>
+            `;
+        }
+
+        function downloadReportCSV(type, val) {
+            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,Color,Location,Status,Inspector,InwardTime\n";
+            vehiclesDB.forEach(v => {
+                csvContent += `"${v.chassis}","${v.model}","${v.color}","${v.location}","${v.status}","${v.inspector || ''}","${v.inwardTime || ''}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Luxon_${type}_Report_${val}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function saveDB() { localStorage.setItem('luxon_yms_photos_db', JSON.stringify(vehiclesDB)); }
+        function closeReportsModal() { document.getElementById('reports-modal').style.display = 'none'; }
+    </script>
+</body>
+</html>
