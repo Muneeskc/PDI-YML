@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Luxon TATA - Yard Management System (YMS)</title>
-    <!-- HTML5 Barcode Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <!-- JsBarcode Library -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-    <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -164,7 +160,7 @@
         <section id="mod-dashboard" class="module-section active">
             <div class="stats-grid">
                 <div class="stat-card" onclick="filterDashboardList('ALL')">
-                    <div class="stat-label">Physical Yard</div>
+                    <div class="stat-label">Physical Stock</div>
                     <div class="stat-val" id="count-total" style="color: var(--primary);">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('Pending PDI')">
@@ -172,7 +168,7 @@
                     <div class="stat-val" id="count-pending" style="color: var(--warning);">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('PDI OK')">
-                    <div class="stat-label">PDI OK</div>
+                    <div class="stat-label">PDI Done</div>
                     <div class="stat-val" id="count-pdiok" style="color: var(--success);">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('HOLD')">
@@ -199,7 +195,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Master Yard Stock</span></div>
+                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Physical Stock</span></div>
                     <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:150px;">
                 </div>
                 <div id="dash-vehicle-list" class="vehicle-list"></div>
@@ -241,27 +237,29 @@
                 <div class="form-row">
                     <div>
                         <label>Vehicle Model *</label>
-                        <input type="text" id="in-model" placeholder="Enter model name (e.g. Tata Punch)" oninput="saveDraft()">
+                        <input type="text" id="in-model" placeholder="Model name (e.g. Tata Punch)" oninput="saveDraft()">
                     </div>
                     <div>
                         <label>Color Code *</label>
-                        <input type="text" id="in-color" placeholder="Enter color code / name" oninput="saveDraft()">
+                        <input type="text" id="in-color" placeholder="Color code/name" oninput="saveDraft()">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div>
-                        <label>Initial Yard Location *</label>
+                        <label>Yard Location *</label>
                         <div style="display:flex; gap:6px;">
                             <select id="in-location" onchange="saveDraft()" style="flex:1;"></select>
                             <button type="button" class="btn btn-outline" onclick="addNewLocationPrompt()" title="Add Location">+</button>
+                            <button type="button" class="btn btn-outline" onclick="removeLocationPrompt()" title="Remove Location">-</button>
                         </div>
                     </div>
                     <div>
-                        <label>Inspector / Technician Name *</label>
+                        <label>Technician / Inspector Name *</label>
                         <div style="display:flex; gap:6px;">
                             <select id="in-inspector" onchange="saveDraft()" style="flex:1;"></select>
-                            <button type="button" class="btn btn-outline" onclick="addNewInspectorPrompt()" title="Add Inspector">+</button>
+                            <button type="button" class="btn btn-outline" onclick="addNewInspectorPrompt()" title="Add Technician">+</button>
+                            <button type="button" class="btn btn-outline" onclick="removeInspectorPrompt()" title="Remove Technician">-</button>
                         </div>
                     </div>
                 </div>
@@ -312,10 +310,10 @@
                     <div id="pdi-barcode-box" style="margin-top:8px; display:none;"><svg id="pdi-barcode-svg"></svg></div>
                 </div>
 
-                <!-- 1. All-Round Photos -->
+                <!-- Vehicle Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
-                        <div class="photo-section-title"><i class="fa-solid fa-car"></i> 1. Vehicle All-Round Photos *</div>
+                        <div class="photo-section-title"><i class="fa-solid fa-car"></i> 1. Vehicle Photos *</div>
                         <div class="photo-action-btns">
                             <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
                             <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
@@ -324,7 +322,7 @@
                     <div class="multi-photo-grid" id="grid-pdi_vehicle"><span class="empty-photo-hint">Add photos.</span></div>
                 </div>
 
-                <!-- 2. Check Sheet Photos -->
+                <!-- Check Sheet Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
                         <div class="photo-section-title"><i class="fa-solid fa-file-lines"></i> 2. PDI Check Sheet Photos *</div>
@@ -336,7 +334,7 @@
                     <div class="multi-photo-grid" id="grid-pdi_checksheet"><span class="empty-photo-hint">Add check sheet photos.</span></div>
                 </div>
 
-                <!-- 3. Chassis Number Photos -->
+                <!-- Chassis Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
                         <div class="photo-section-title"><i class="fa-solid fa-hashtag"></i> 3. Chassis / VIN Photos *</div>
@@ -348,7 +346,7 @@
                     <div class="multi-photo-grid" id="grid-pdi_chassis"><span class="empty-photo-hint">Add chassis photos.</span></div>
                 </div>
 
-                <!-- 4. Form 22 / Form 28 Photos -->
+                <!-- Form 22 / 28 Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
                         <div class="photo-section-title"><i class="fa-solid fa-file-contract"></i> 4. Form 22 / Form 28 Photos *</div>
@@ -360,10 +358,10 @@
                     <div class="multi-photo-grid" id="grid-pdi_form28"><span class="empty-photo-hint">Add document photos.</span></div>
                 </div>
 
-                <!-- 5. Battery Photos -->
+                <!-- Battery Photos -->
                 <div class="photo-section-card">
                     <div class="photo-section-header">
-                        <div class="photo-section-title"><i class="fa-solid fa-car-battery"></i> 5. Battery & Voltage Photos *</div>
+                        <div class="photo-section-title"><i class="fa-solid fa-car-battery"></i> 5. Battery Photos *</div>
                         <div class="photo-action-btns">
                             <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
                             <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
@@ -374,33 +372,28 @@
 
                 <div class="form-row">
                     <div>
-                        <label>Speedometer Test *</label>
-                        <input type="text" id="pdi-speed" placeholder="e.g. Tested 20 km/h - OK" oninput="saveDraft()">
+                        <label>Odometer Reading *</label>
+                        <input type="text" id="pdi-speed" placeholder="e.g. 15 km" oninput="saveDraft()">
                     </div>
                     <div>
                         <label>PDI Status *</label>
                         <select id="pdi-decision" onchange="toggleHoldUI(); saveDraft();">
                             <option value="PDI OK">PDI OK (Ready)</option>
                             <option value="HOLD">HOLD Vehicle (Issue Found)</option>
-                            <option value="CONF_PENDING">Hold Confirmation Pending (Manager Review)</option>
+                            <option value="CONF_PENDING">Hold Confirmation Pending (Review)</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div>
-                        <label>Next Yard Location *</label>
-                        <select id="pdi-next-loc" onchange="saveDraft()"></select>
-                    </div>
-                    <div>
-                        <label>Inspector / Technician Name *</label>
+                        <label>Technician / Inspector Name *</label>
                         <select id="pdi-inspector-sel" onchange="saveDraft()"></select>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Remarks / Hold Reason</label>
-                    <input type="text" id="pdi-remarks" placeholder="Optional notes..." oninput="saveDraft()">
+                    <div>
+                        <label>Remarks / Hold Reason</label>
+                        <input type="text" id="pdi-remarks" placeholder="Optional notes / reason..." oninput="saveDraft()">
+                    </div>
                 </div>
 
                 <div style="display:flex; gap:10px;">
@@ -413,7 +406,7 @@
         <!-- OPERATIONS -->
         <section id="mod-operations" class="module-section">
             <div class="card">
-                <div class="card-header"><div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> Yard Operations & Dispatch</div></div>
+                <div class="card-header"><div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> Yard Operations & Location Manager</div></div>
                 <input type="text" id="op-search" placeholder="Search chassis..." oninput="renderOperationsList()" style="margin-bottom:12px;">
                 <div id="op-editor" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:12px; margin-bottom:12px;">
                     <div id="op-ed-chassis" style="font-family:monospace; font-weight:800; color:var(--danger); margin-bottom:6px;"></div>
@@ -421,11 +414,16 @@
                         <div>
                             <label>Action Type *</label>
                             <select id="op-action-type" onchange="toggleOpActionUI()">
-                                <option value="DISPATCH">Final Check for Delivery (Ready)</option>
+                                <option value="LOCATION">Update Current Location</option>
+                                <option value="DISPATCH">Final Check for Delivery</option>
                                 <option value="TRANSFER">Stock Transfer (Regional)</option>
                             </select>
                         </div>
-                        <div id="op-dest-box">
+                        <div id="op-loc-box">
+                            <label>New Yard / Display Location *</label>
+                            <select id="op-ed-newloc"></select>
+                        </div>
+                        <div id="op-dest-box" style="display:none;">
                             <label>Delivery Location *</label>
                             <select id="op-ed-dest">
                                 <option value="Malappuram">Malappuram</option>
@@ -494,8 +492,8 @@
 
         function initDropdowns() {
             const lSel = document.getElementById('in-location');
-            const pNext = document.getElementById('pdi-next-loc');
-            [lSel, pNext].forEach(sel => {
+            const opLoc = document.getElementById('op-ed-newloc');
+            [lSel, opLoc].forEach(sel => {
                 if (sel) {
                     sel.innerHTML = locationsList.map(l => `<option value="${l}">${l}</option>`).join('');
                 }
@@ -517,10 +515,26 @@
             initDropdowns();
         }
 
+        function removeLocationPrompt() {
+            const nl = prompt("Enter location name to remove:");
+            if (!nl) return;
+            locationsList = locationsList.filter(l => l !== nl);
+            localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList));
+            initDropdowns();
+        }
+
         function addNewInspectorPrompt() {
             const ni = prompt("Enter new technician/inspector name:");
             if (!ni) return;
             if (!inspectorsList.includes(ni)) inspectorsList.push(ni);
+            localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList));
+            initDropdowns();
+        }
+
+        function removeInspectorPrompt() {
+            const ni = prompt("Enter technician name to remove:");
+            if (!ni) return;
+            inspectorsList = inspectorsList.filter(i => i !== ni);
             localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList));
             initDropdowns();
         }
@@ -562,7 +576,6 @@
                 inInspector: document.getElementById('in-inspector').value,
                 pdiSpeed: document.getElementById('pdi-speed').value,
                 pdiDecision: document.getElementById('pdi-decision').value,
-                pdiNextLoc: document.getElementById('pdi-next-loc').value,
                 pdiRemarks: document.getElementById('pdi-remarks').value
             };
             localStorage.setItem('luxon_yms_draft', JSON.stringify(draft));
@@ -578,7 +591,6 @@
             if (document.getElementById('in-inspector')) document.getElementById('in-inspector').value = draft.inInspector || inspectorsList[0];
             if (document.getElementById('pdi-speed')) document.getElementById('pdi-speed').value = draft.pdiSpeed || '';
             if (document.getElementById('pdi-decision')) document.getElementById('pdi-decision').value = draft.pdiDecision || 'PDI OK';
-            if (document.getElementById('pdi-next-loc')) document.getElementById('pdi-next-loc').value = draft.pdiNextLoc || 'PDI OK - Ready Bay';
             if (document.getElementById('pdi-remarks')) document.getElementById('pdi-remarks').value = draft.pdiRemarks || '';
         }
 
@@ -871,11 +883,11 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
             const q = document.getElementById('dash-search').value.trim().toUpperCase();
             let list = [];
-            let titleText = "Master Yard Stock";
+            let titleText = "Physical Stock";
             
-            if (currentDashFilter === 'ALL') { list = inYard; titleText = "Master Yard Stock (Physical)"; }
+            if (currentDashFilter === 'ALL') { list = inYard; titleText = "Physical Stock (All)"; }
             else if (currentDashFilter === 'Pending PDI') { list = pendingPdi; titleText = "Pending PDI Vehicles"; }
-            else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI OK Vehicles"; }
+            else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI Done Vehicles"; }
             else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
             else if (currentDashFilter === 'Display') { list = displayCars; titleText = "Display Cars"; }
             else if (currentDashFilter === 'Aging') { list = agingCars; titleText = "Aging Vehicles (>90 Days)"; }
@@ -991,7 +1003,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
             v.remarks = remarks;
             v.pdiTime = pdiTime;
             v.pdiData = {
-                speed: speed || 'Tested - OK',
+                speed: speed || '15 km',
                 vehiclePhotos: [...photoBuckets.pdi_vehicle],
                 checksheetPhotos: [...photoBuckets.pdi_checksheet],
                 chassisPhotos: [...photoBuckets.pdi_chassis],
@@ -1021,7 +1033,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
                 doc.setTextColor(15, 23, 42); doc.setFontSize(10);
                 let y = 35;
-                doc.text(`Model: ${v.model} (${v.color})`, 12, y); doc.text(`Speed Test: ${v.pdiData.speed}`, 110, y); y += 6;
+                doc.text(`Model: ${v.model} (${v.color})`, 12, y); doc.text(`Odometer: ${v.pdiData.speed}`, 110, y); y += 6;
                 doc.text(`Location: ${nextLoc}`, 12, y); doc.text(`Remarks: ${remarks || 'None'}`, 110, y); y += 12;
 
                 function addCatToPDF(title, arr) {
@@ -1044,7 +1056,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 addCatToPDF('Chassis Photos', v.pdiData.chassisPhotos);
                 addCatToPDF('Form 22 / 28 Photos', v.pdiData.form28Photos);
                 addCatToPDF('Battery Photos', v.pdiData.batteryPhotos);
-                addCatToPDF('Vehicle All-Round Photos', v.pdiData.vehiclePhotos);
+                addCatToPDF('Vehicle Photos', v.pdiData.vehiclePhotos);
 
                 const pdfName = `PDI_${v.chassis}.pdf`;
                 const pdfBlob = doc.output('blob');
@@ -1097,6 +1109,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
 
         function toggleOpActionUI() {
             const act = document.getElementById('op-action-type').value;
+            document.getElementById('op-loc-box').style.display = act === 'LOCATION' ? 'block' : 'none';
             document.getElementById('op-dest-box').style.display = act === 'DISPATCH' ? 'block' : 'none';
             document.getElementById('op-region-box').style.display = act === 'TRANSFER' ? 'block' : 'none';
         }
@@ -1106,7 +1119,19 @@ Inward Time: ${inwardTime || 'N/A'}`;
             const act = document.getElementById('op-action-type').value;
             const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
-            if (act === 'DISPATCH') {
+            if (act === 'LOCATION') {
+                const newLoc = document.getElementById('op-ed-newloc').value;
+                v.location = newLoc;
+                saveDB();
+                if (botConfig.scriptUrl) {
+                    fetch(botConfig.scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, color: v.color, location: newLoc, status: v.status, remarks: v.remarks })
+                    }).catch(err => {});
+                }
+            } else if (act === 'DISPATCH') {
                 const dest = document.getElementById('op-ed-dest').value;
                 v.status = 'Outward';
                 v.location = `Outward -> ${dest}`;
@@ -1213,7 +1238,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
             resDiv.innerHTML = `
                 <div class="report-grid">
                     <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">PDI OK</div><div class="report-box-val">${matched.filter(v=>v.status=='PDI OK').length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">PDI Done</div><div class="report-box-val">${matched.filter(v=>v.status=='PDI OK').length}</div></div>
                 </div>
                 <div style="margin-top:10px;">
                     <b>Vehicles on ${selectedDate}:</b>
@@ -1221,7 +1246,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                         ${matched.length ? matched.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-ok">${v.status}</span></div>`).join('') : '<div style="font-size:12px; color:var(--slate);">No records for this date.</div>'}
                     </div>
                 </div>
-                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Daily', '${selectedDate}')"><i class="fa-solid fa-download"></i> Download Report (CSV / Excel)</button>
+                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Daily', '${selectedDate}')"><i class="fa-solid fa-download"></i> Download Report (Excel / CSV)</button>
             `;
         }
 
@@ -1247,10 +1272,8 @@ Inward Time: ${inwardTime || 'N/A'}`;
                 const ins = v.inspector || 'Munees KC';
                 techCounts[ins] = (techCounts[ins] || 0) + 1;
             });
-
             let techHtml = Object.keys(techCounts).map(k => `• <b>${k}:</b> ${techCounts[k]} vehicles`).join('<br>') || 'No technician data.';
 
-            // Yard wise count
             let yardCounts = {};
             matched.forEach(v => {
                 const loc = v.location || 'Main Yard';
@@ -1269,7 +1292,7 @@ Inward Time: ${inwardTime || 'N/A'}`;
                     <b>PDI Per Technician / Inspector:</b><br>${techHtml}<br><br>
                     <b>Yard Wise Breakdown:</b><br>${yardHtml}
                 </div>
-                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Monthly', '${selectedMonth}')"><i class="fa-solid fa-download"></i> Download Report (CSV / Excel)</button>
+                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Monthly', '${selectedMonth}')"><i class="fa-solid fa-download"></i> Download Report (Excel / CSV)</button>
             `;
         }
 
