@@ -200,7 +200,8 @@
                     <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Physical Stock</span></div>
                     <div style="display:flex; gap:6px;">
                         <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:140px;">
-                        <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadFilteredList()"><i class="fa-solid fa-download"></i> Download</button>
+                        <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadFilteredList('csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                        <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadFilteredList('image')"><i class="fa-solid fa-image"></i> Image</button>
                     </div>
                 </div>
                 <div id="dash-vehicle-list" class="vehicle-list"></div>
@@ -239,15 +240,9 @@
                     <div><button class="btn btn-primary" style="font-size:11px; padding:4px 8px; margin-top:6px;" onclick="downloadBarcode('inward-barcode-svg', document.getElementById('in-chassis').value)">Download Barcode</button></div>
                 </div>
 
-                <div class="form-row">
-                    <div>
-                        <label>Vehicle Model *</label>
-                        <input type="text" id="in-model" placeholder="Model name (e.g. Tata Punch)" oninput="saveDraft()">
-                    </div>
-                    <div>
-                        <label>TML Invoice Date *</label>
-                        <input type="date" id="in-invdate" onchange="saveDraft()">
-                    </div>
+                <div class="form-group">
+                    <label>Vehicle Model *</label>
+                    <input type="text" id="in-model" placeholder="Model name (e.g. Tata Punch)" oninput="saveDraft()">
                 </div>
 
                 <div class="form-row">
@@ -300,7 +295,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Select Pending PDI Vehicle from List *</label>
+                    <label>Select Pending PDI / Review Vehicle from List *</label>
                     <div id="pdi-master-list" class="vehicle-list" style="max-height:220px; overflow-y:auto; margin-bottom:14px;"></div>
                 </div>
 
@@ -402,7 +397,7 @@
                 </div>
 
                 <div style="display:flex; gap:10px;">
-                    <button type="button" class="btn btn-danger" style="flex:1;" onclick="cancelOrDeletePdi()"><i class="fa-solid fa-trash"></i> Cancel PDI</button>
+                    <button type="button" class="btn btn-danger" style="flex:1;" onclick="cancelOrDeletePdi()"><i class="fa-solid fa-trash"></i> Reset PDI</button>
                     <button type="button" class="btn btn-success" style="flex:2;" onclick="submitPdiAndShare()"><i class="fa-brands fa-whatsapp"></i> Submit PDI & Share</button>
                 </div>
             </div>
@@ -581,7 +576,6 @@
             const draft = {
                 inChassis: document.getElementById('in-chassis').value,
                 inModel: document.getElementById('in-model').value,
-                inInvDate: document.getElementById('in-invdate').value,
                 inLocation: document.getElementById('in-location').value,
                 inInspector: document.getElementById('in-inspector').value,
                 pdiSpeed: document.getElementById('pdi-speed').value,
@@ -596,7 +590,6 @@
             if (!draft) return;
             if (document.getElementById('in-chassis')) document.getElementById('in-chassis').value = draft.inChassis || '';
             if (document.getElementById('in-model')) document.getElementById('in-model').value = draft.inModel || '';
-            if (document.getElementById('in-invdate')) document.getElementById('in-invdate').value = draft.inInvDate || '';
             if (document.getElementById('in-location')) document.getElementById('in-location').value = draft.inLocation || '';
             if (document.getElementById('in-inspector')) document.getElementById('in-inspector').value = draft.inInspector || inspectorsList[0];
             if (document.getElementById('pdi-speed')) document.getElementById('pdi-speed').value = draft.pdiSpeed || '';
@@ -616,15 +609,15 @@
                 .then(data => {
                     if (Array.isArray(data)) {
                         let serverChassisSet = new Set(data.map(item => item.chassis));
-                        
-                        // Strict Two-Way Deletion Matching: Remove locally if deleted in Sheet
                         vehiclesDB = vehiclesDB.filter(v => serverChassisSet.has(v.chassis));
 
                         data.forEach(serverItem => {
                             let localIdx = vehiclesDB.findIndex(v => v.chassis === serverItem.chassis);
+                            let todayDate = new Date().toISOString().split('T')[0];
                             if (localIdx !== -1) {
                                 vehiclesDB[localIdx].model = serverItem.model;
-                                vehiclesDB[localIdx].invDate = serverItem.invDate || serverItem.inwardTime;
+                                vehiclesDB[localIdx].inwardDate = serverItem.inwardDate || serverItem.inwardTime || todayDate;
+                                vehiclesDB[localIdx].pdiDate = serverItem.pdiDate || vehiclesDB[localIdx].pdiDate;
                                 vehiclesDB[localIdx].location = serverItem.location;
                                 vehiclesDB[localIdx].status = serverItem.status;
                                 vehiclesDB[localIdx].inspector = serverItem.inspector || vehiclesDB[localIdx].inspector;
@@ -633,7 +626,8 @@
                                 vehiclesDB.push({
                                     chassis: serverItem.chassis,
                                     model: serverItem.model,
-                                    invDate: serverItem.invDate || serverItem.inwardTime || new Date().toISOString().split('T')[0],
+                                    inwardDate: serverItem.inwardDate || serverItem.inwardTime || todayDate,
+                                    pdiDate: serverItem.pdiDate || null,
                                     location: serverItem.location,
                                     status: serverItem.status,
                                     inspector: serverItem.inspector || "Munees KC",
@@ -813,17 +807,17 @@
         function submitInward() {
             const chassis = document.getElementById('in-chassis').value.trim().toUpperCase();
             const model = document.getElementById('in-model').value.trim();
-            const invDate = document.getElementById('in-invdate').value;
             const location = document.getElementById('in-location').value;
             const inspector = document.getElementById('in-inspector').value;
 
-            if (!chassis || !model || !invDate) { alert('Enter Chassis, Model and Invoice Date.'); return; }
+            if (!chassis || !model) { alert('Enter Chassis and Model.'); return; }
             const exIdx = vehiclesDB.findIndex(v => v.chassis === chassis);
             if (exIdx !== -1 && vehiclesDB[exIdx].status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
 
+            const todayDate = new Date().toISOString().split('T')[0];
             const inwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
             const rec = {
-                chassis, model, invDate, location,
+                chassis, model, inwardDate: todayDate, pdiDate: null, location,
                 status: 'Pending PDI',
                 inspector,
                 photos: [...photoBuckets.inward],
@@ -839,13 +833,12 @@
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'INWARD', inwardTime, chassis, model, invDate, location, inspector, status: 'Pending PDI' })
+                    body: JSON.stringify({ action: 'INWARD', inwardTime, inwardDate: todayDate, chassis, model, location, inspector, status: 'Pending PDI' })
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
             document.getElementById('in-chassis').value = '';
             document.getElementById('in-model').value = '';
-            document.getElementById('in-invdate').value = '';
             photoBuckets.inward = []; renderGrid('inward');
             alert(`Inward successful for ${chassis}!`);
             setTimeout(() => { syncWithGoogleSheet(); openModule('dashboard'); }, 1000);
@@ -856,14 +849,14 @@
             renderDashboard();
         }
 
-        function copyVehicleInfo(chassis, model, location, status, inspector, invDate) {
+        function copyVehicleInfo(chassis, model, location, status, inspector, inwardDate) {
             const txt = `[LUXON TATA YMS]
 Chassis: ${chassis}
 Model: ${model}
 Location: ${location}
 Status: ${status}
 Inspector: ${inspector || 'N/A'}
-TML Invoice Date: ${invDate || 'N/A'}`;
+Inward Date: ${inwardDate || 'N/A'}`;
             navigator.clipboard.writeText(txt).then(() => {
                 alert(`Copied details for ${chassis}!`);
             }).catch(() => {
@@ -872,17 +865,18 @@ TML Invoice Date: ${invDate || 'N/A'}`;
         }
 
         function renderDashboard() {
+            // Physical Stock includes all vehicles currently in yard or display (excluding Outward)
             const physicalStock = vehiclesDB.filter(v => v.status !== 'Outward');
             const displayCars = physicalStock.filter(v => v.location.includes('Display'));
-            const pendingPdi = vehiclesDB.filter(v => v.status === 'Pending PDI');
-            const pdiOk = vehiclesDB.filter(v => v.status === 'PDI OK');
-            const holdCars = vehiclesDB.filter(v => v.status === 'HOLD');
-            const reviewPending = vehiclesDB.filter(v => v.status === 'REVIEW_PENDING');
+            const pendingPdi = physicalStock.filter(v => v.status === 'Pending PDI');
+            const pdiOk = physicalStock.filter(v => v.status === 'PDI OK');
+            const holdCars = physicalStock.filter(v => v.status === 'HOLD');
+            const reviewPending = physicalStock.filter(v => v.status === 'REVIEW_PENDING');
 
             const now = new Date();
             const agingCars = physicalStock.filter(v => {
-                if (!v.invDate) return false;
-                const invD = new Date(v.invDate);
+                if (!v.inwardDate) return false;
+                const invD = new Date(v.inwardDate);
                 const diffTime = Math.abs(now - invD);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 return diffDays > 90;
@@ -905,7 +899,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
             else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI Done Vehicles"; }
             else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
             else if (currentDashFilter === 'Display') { list = displayCars; titleText = "Display Cars"; }
-            else if (currentDashFilter === 'Aging') { list = agingCars; titleText = "Aging Vehicles (>90 Days TML Invoice)"; }
+            else if (currentDashFilter === 'Aging') { list = agingCars; titleText = "Aging Vehicles (>90 Days Inward)"; }
             else if (currentDashFilter === 'ReviewPending') { list = reviewPending; titleText = "Hold Review Pending Vehicles"; }
 
             document.getElementById('dash-list-title').innerText = titleText;
@@ -919,12 +913,12 @@ TML Invoice Date: ${invDate || 'N/A'}`;
                     <div class="v-info">
                         <h4>${v.chassis}</h4>
                         <p><b>${v.model}</b> • Inspector: ${v.inspector || 'N/A'}</p>
-                        <p><i class="fa-solid fa-location-dot"></i> ${v.location} | Inv Date: ${v.invDate || 'N/A'}</p>
+                        <p><i class="fa-solid fa-location-dot"></i> ${v.location} | Inward Date: ${v.inwardDate || 'N/A'}</p>
                     </div>
                     <div style="text-align:right; display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
                         <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':v.status=='REVIEW_PENDING'?'badge-conf':'badge-hold'}">${v.status}</span>
                         <div style="display:flex; gap:4px;">
-                            <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="copyVehicleInfo('${v.chassis}', '${v.model}', '${v.location}', '${v.status}', '${v.inspector}', '${v.invDate}')" title="Copy Details"><i class="fa-solid fa-copy"></i></button>
+                            <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="copyVehicleInfo('${v.chassis}', '${v.model}', '${v.location}', '${v.status}', '${v.inspector}', '${v.inwardDate}')" title="Copy Details"><i class="fa-solid fa-copy"></i></button>
                             ${v.status!='Outward'?`<button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button>`:''}
                         </div>
                     </div>
@@ -932,8 +926,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
             `).join('');
         }
 
-        function downloadFilteredList() {
-            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,TML Invoice Date,Location,Status,Inspector,Remarks\n";
+        function downloadFilteredList(format) {
             let physicalStock = vehiclesDB.filter(v => v.status !== 'Outward');
             let list = currentDashFilter === 'Physical' ? physicalStock :
                        (currentDashFilter === 'Pending PDI' ? vehiclesDB.filter(v => v.status === 'Pending PDI') :
@@ -941,29 +934,77 @@ TML Invoice Date: ${invDate || 'N/A'}`;
                        (currentDashFilter === 'HOLD' ? vehiclesDB.filter(v => v.status === 'HOLD') :
                        (currentDashFilter === 'Display' ? physicalStock.filter(v => v.location.includes('Display')) :
                        (currentDashFilter === 'Aging' ? physicalStock.filter(v => {
-                           if (!v.invDate) return false;
-                           return Math.ceil(Math.abs(new Date() - new Date(v.invDate)) / (1000 * 60 * 60 * 24)) > 90;
+                           if (!v.inwardDate) return false;
+                           return Math.ceil(Math.abs(new Date() - new Date(v.inwardDate)) / (1000 * 60 * 60 * 24)) > 90;
                        }) : vehiclesDB.filter(v => v.status === 'REVIEW_PENDING'))))));
 
-            list.forEach(v => {
-                csvContent += `"${v.chassis}","${v.model}","${v.invDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Luxon_Stock_${currentDashFilter}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            if (format === 'csv') {
+                let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,Inward Date,Location,Status,Inspector,Remarks\n";
+                list.forEach(v => {
+                    csvContent += `"${v.chassis}","${v.model}","${v.inwardDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
+                });
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `Luxon_Stock_${currentDashFilter}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                // Image export using canvas
+                let canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 200 + (list.length * 40);
+                let ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#1e40af';
+                ctx.font = 'bold 20px sans-serif';
+                ctx.fillText(`Luxon TATA YMS - Report (${currentDashFilter})`, 20, 40);
+
+                ctx.fillStyle = '#475569';
+                ctx.font = '12px sans-serif';
+                ctx.fillText(`Generated on: ${new Date().toLocaleString()}`, 20, 65);
+
+                // Table Header
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(20, 85, 760, 30);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText("Chassis", 30, 105);
+                ctx.fillText("Model", 220, 105);
+                ctx.fillText("Location", 400, 105);
+                ctx.fillText("Status", 600, 105);
+
+                let y = 135;
+                ctx.font = '12px sans-serif';
+                list.forEach((v, idx) => {
+                    ctx.fillStyle = idx % 2 === 0 ? '#f8fafc' : '#ffffff';
+                    ctx.fillRect(20, y - 18, 760, 30);
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillText(v.chassis, 30, y);
+                    ctx.fillText(v.model, 220, y);
+                    ctx.fillText(v.location, 400, y);
+                    ctx.fillText(v.status, 600, y);
+                    y += 30;
+                });
+
+                let link = document.createElement('a');
+                link.download = `Luxon_Report_${currentDashFilter}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
         }
 
         function jumpPdi(c) { openModule('pdi'); onSelectPdiVehicle(c); }
 
         function populatePdiMasterList() {
             const container = document.getElementById('pdi-master-list');
-            const pendingList = vehiclesDB.filter(v => v.status === 'Pending PDI' || v.status === 'REVIEW_PENDING');
+            // Allow selecting Pending PDI as well as Review Pending vehicles to update/clear hold
+            const pendingList = vehiclesDB.filter(v => v.status === 'Pending PDI' || v.status === 'REVIEW_PENDING' || v.status === 'HOLD');
             if (!pendingList.length) {
-                container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No Pending PDI vehicles.</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No pending or review vehicles.</div>`;
                 return;
             }
             container.innerHTML = pendingList.map(v => `
@@ -972,7 +1013,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
                         <h4>${v.chassis}</h4>
                         <p><b>${v.model}</b> • ${v.location}</p>
                     </div>
-                    <span class="badge ${v.status=='REVIEW_PENDING'?'badge-conf':'badge-pending'}">${v.status}</span>
+                    <span class="badge ${v.status=='REVIEW_PENDING'?'badge-conf':(v.status=='HOLD'?'badge-hold':'badge-pending')}">${v.status}</span>
                 </div>
             `).join('');
         }
@@ -980,7 +1021,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
         function filterPdiList(q) {
             const query = q.trim().toUpperCase();
             const container = document.getElementById('pdi-master-list');
-            const pendingList = vehiclesDB.filter(v => (v.status === 'Pending PDI' || v.status === 'REVIEW_PENDING') && v.chassis.includes(query));
+            const pendingList = vehiclesDB.filter(v => (v.status === 'Pending PDI' || v.status === 'REVIEW_PENDING' || v.status === 'HOLD') && v.chassis.includes(query));
             if (!pendingList.length) {
                 container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No matching vehicle found.</div>`;
                 return;
@@ -988,7 +1029,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
             container.innerHTML = pendingList.map(v => `
                 <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer;">
                     <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div>
-                    <span class="badge ${v.status=='REVIEW_PENDING'?'badge-conf':'badge-pending'}">${v.status}</span>
+                    <span class="badge ${v.status=='REVIEW_PENDING'?'badge-conf':(v.status=='HOLD'?'badge-hold':'badge-pending')}">${v.status}</span>
                 </div>
             `).join('');
         }
@@ -999,18 +1040,22 @@ TML Invoice Date: ${invDate || 'N/A'}`;
             currentPdiChassis = v.chassis;
             document.getElementById('pdi-banner').style.display = 'block';
             document.getElementById('pdi-b-chassis').innerText = v.chassis;
-            document.getElementById('pdi-b-model').innerText = `${v.model} - ${v.location}`;
+            document.getElementById('pdi-b-model').innerText = `${v.model} - ${v.location} [Status: ${v.status}]`;
+            
+            // If it's in review or hold, preselect decision or remarks if available
+            if (v.status === 'REVIEW_PENDING' || v.status === 'HOLD') {
+                document.getElementById('pdi-decision').value = v.status === 'HOLD' ? 'HOLD' : 'REVIEW_PENDING';
+                if (v.remarks) document.getElementById('pdi-remarks').value = v.remarks;
+            }
             populatePdiMasterList();
             renderAllGrids();
         }
 
-        function toggleHoldUI() {
-            // Remarks handling based on PDI status
-        }
+        function toggleHoldUI() {}
 
         function cancelOrDeletePdi() {
             if (!currentPdiChassis) { alert('Select a vehicle first.'); return; }
-            if (confirm(`Are you sure you want to cancel PDI for chassis ${currentPdiChassis}?`)) {
+            if (confirm(`Are you sure you want to reset PDI for chassis ${currentPdiChassis}?`)) {
                 const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
                 if (v) {
                     v.status = 'Pending PDI';
@@ -1024,7 +1069,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
         }
 
         async function submitPdiAndShare() {
-            if (!currentPdiChassis) { alert('Select a vehicle from the pending list first.'); return; }
+            if (!currentPdiChassis) { alert('Select a vehicle from the pending/review list first.'); return; }
             const v = vehiclesDB.find(item => item.chassis === currentPdiChassis);
             if (!v) return;
 
@@ -1032,6 +1077,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
             const decision = document.getElementById('pdi-decision').value;
             const remarks = document.getElementById('pdi-remarks').value.trim();
             const inspector = document.getElementById('pdi-inspector-sel').value;
+            const todayDate = new Date().toISOString().split('T')[0];
             const pdiTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
             if ((decision === 'HOLD' || decision === 'REVIEW_PENDING') && !remarks) {
@@ -1042,7 +1088,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
             v.status = decision;
             v.inspector = inspector;
             v.remarks = remarks;
-            v.pdiTime = pdiTime;
+            v.pdiDate = todayDate;
             v.location = decision === 'HOLD' ? 'Hold / Repair Bay' : (decision === 'PDI OK' ? 'PDI OK - Ready Bay' : v.location);
             v.pdiData = {
                 speed: speed || '15 km',
@@ -1060,7 +1106,7 @@ TML Invoice Date: ${invDate || 'N/A'}`;
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, chassis: v.chassis, model: v.model, status: decision, speed: v.pdiData.speed, inspector, location: v.location, remarks })
+                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiTime, pdiDate: todayDate, chassis: v.chassis, model: v.model, status: decision, speed: v.pdiData.speed, inspector, location: v.location, remarks })
                 }).catch(err => console.log('Sheet sync error:', err));
             }
 
@@ -1270,7 +1316,10 @@ TML Invoice Date: ${invDate || 'N/A'}`;
                     <div class="vehicle-list" style="max-height:250px; overflow-y:auto; margin-bottom:12px;">
                         ${holdList.length ? holdList.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-hold">HOLD</span></div>`).join('') : '<div style="color:var(--slate);">No hold vehicles.</div>'}
                     </div>
-                    <button class="btn btn-primary btn-full" onclick="downloadSpecialReportCSV('Hold')"><i class="fa-solid fa-download"></i> Download Excel / CSV</button>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-primary" style="flex:1;" onclick="downloadSpecialReport('Hold', 'csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                        <button class="btn btn-primary" style="flex:1;" onclick="downloadSpecialReport('Hold', 'image')"><i class="fa-solid fa-image"></i> Image</button>
+                    </div>
                 `;
             } else if (type === 'review') {
                 title.innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i> Hold Review Pending Report`;
@@ -1280,7 +1329,10 @@ TML Invoice Date: ${invDate || 'N/A'}`;
                     <div class="vehicle-list" style="max-height:250px; overflow-y:auto; margin-bottom:12px;">
                         ${revList.length ? revList.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-conf">REVIEW</span></div>`).join('') : '<div style="color:var(--slate);">No review pending vehicles.</div>'}
                     </div>
-                    <button class="btn btn-primary btn-full" onclick="downloadSpecialReportCSV('Review_Pending')"><i class="fa-solid fa-download"></i> Download Excel / CSV</button>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-primary" style="flex:1;" onclick="downloadSpecialReport('Review_Pending', 'csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                        <button class="btn btn-primary" style="flex:1;" onclick="downloadSpecialReport('Review_Pending', 'image')"><i class="fa-solid fa-image"></i> Image</button>
+                    </div>
                 `;
             }
         }
@@ -1291,28 +1343,38 @@ TML Invoice Date: ${invDate || 'N/A'}`;
             if (!dtInput || !resDiv) return;
             const selectedDate = dtInput.value;
 
-            const matched = vehiclesDB.filter(v => {
-                if (!v.invDate) return false;
-                try {
-                    const d = new Date(v.invDate).toISOString().split('T')[0];
-                    return d === selectedDate;
-                } catch(e) { return false; }
+            // Separating Inward vs PDI done on selected date
+            const inwardMatched = vehiclesDB.filter(v => {
+                if (!v.inwardDate) return false;
+                try { return new Date(v.inwardDate).toISOString().split('T')[0] === selectedDate; } catch(e) { return false; }
+            });
+
+            const pdiMatched = vehiclesDB.filter(v => {
+                if (!v.pdiDate) return false;
+                try { return new Date(v.pdiDate).toISOString().split('T')[0] === selectedDate; } catch(e) { return false; }
             });
 
             resDiv.innerHTML = `
                 <div class="report-grid">
-                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">PDI Done</div><div class="report-box-val">${matched.filter(v=>v.status=='PDI OK').length}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">PDI Hold</div><div class="report-box-val">${matched.filter(v=>v.status=='HOLD').length}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">Pending PDI</div><div class="report-box-val">${matched.filter(v=>v.status=='Pending PDI').length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Inwards Today</div><div class="report-box-val">${inwardMatched.length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">PDI Done Today</div><div class="report-box-val">${pdiMatched.length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">PDI Hold Today</div><div class="report-box-val">${pdiMatched.filter(v=>v.status=='HOLD').length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Review Pending</div><div class="report-box-val">${pdiMatched.filter(v=>v.status=='REVIEW_PENDING').length}</div></div>
                 </div>
                 <div style="margin-top:10px;">
-                    <b>Vehicles on ${selectedDate}:</b>
-                    <div class="vehicle-list" style="max-height:160px; overflow-y:auto; margin-top:6px;">
-                        ${matched.length ? matched.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-ok">${v.status}</span></div>`).join('') : '<div style="font-size:12px; color:var(--slate);">No records for this date.</div>'}
+                    <b>Inward Vehicles on ${selectedDate}:</b>
+                    <div class="vehicle-list" style="max-height:120px; overflow-y:auto; margin-top:4px; margin-bottom:8px;">
+                        ${inwardMatched.length ? inwardMatched.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-pending">Inward</span></div>`).join('') : '<div style="font-size:12px; color:var(--slate);">No inward records for this date.</div>'}
+                    </div>
+                    <b>PDI Completed on ${selectedDate}:</b>
+                    <div class="vehicle-list" style="max-height:120px; overflow-y:auto; margin-top:4px;">
+                        ${pdiMatched.length ? pdiMatched.map(v => `<div class="vehicle-item"><div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div><span class="badge badge-ok">${v.status}</span></div>`).join('') : '<div style="font-size:12px; color:var(--slate);">No PDI records for this date.</div>'}
                     </div>
                 </div>
-                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Daily', '${selectedDate}')"><i class="fa-solid fa-download"></i> Download Report (Excel / CSV)</button>
+                <div style="display:flex; gap:6px; margin-top:12px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="downloadReport('Daily', '${selectedDate}', 'csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                    <button class="btn btn-primary" style="flex:1;" onclick="downloadReport('Daily', '${selectedDate}', 'image')"><i class="fa-solid fa-image"></i> Image</button>
+                </div>
             `;
         }
 
@@ -1322,20 +1384,22 @@ TML Invoice Date: ${invDate || 'N/A'}`;
             if (!mInput || !resDiv) return;
             const selectedMonth = mInput.value;
 
-            const matched = vehiclesDB.filter(v => {
-                if (!v.invDate) return false;
-                try {
-                    const m = new Date(v.invDate).toISOString().slice(0, 7);
-                    return m === selectedMonth;
-                } catch(e) { return false; }
+            const matchedInward = vehiclesDB.filter(v => {
+                if (!v.inwardDate) return false;
+                try { return new Date(v.inwardDate).toISOString().slice(0, 7) === selectedMonth; } catch(e) { return false; }
             });
 
-            const deliveryReady = matched.filter(v => v.status === 'PDI OK' || v.location.includes('Outward')).length;
-            const stockTransfer = matched.filter(v => v.location.includes('Transferred') || v.location.includes('Transfer')).length;
-            const stockOut = matched.filter(v => v.status === 'Outward').length;
+            const matchedPdi = vehiclesDB.filter(v => {
+                if (!v.pdiDate) return false;
+                try { return new Date(v.pdiDate).toISOString().slice(0, 7) === selectedMonth; } catch(e) { return false; }
+            });
+
+            const deliveryReady = matchedPdi.filter(v => v.status === 'PDI OK').length;
+            const stockTransfer = vehiclesDB.filter(v => v.location.includes('Transferred') || v.location.includes('Transfer')).length;
+            const stockOut = vehiclesDB.filter(v => v.status === 'Outward').length;
 
             let techCounts = {};
-            matched.forEach(v => {
+            matchedPdi.forEach(v => {
                 if (v.inspector) {
                     techCounts[v.inspector] = (techCounts[v.inspector] || 0) + 1;
                 }
@@ -1344,52 +1408,141 @@ TML Invoice Date: ${invDate || 'N/A'}`;
 
             resDiv.innerHTML = `
                 <div class="report-grid">
-                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matched.length}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${matchedInward.length}</div></div>
                     <div class="report-box"><div class="report-box-lbl">Delivery Ready</div><div class="report-box-val">${deliveryReady}</div></div>
                     <div class="report-box"><div class="report-box-lbl">Stock Transfers</div><div class="report-box-val">${stockTransfer}</div></div>
-                    <div class="report-box"><div class="report-box-lbl">Stock Out (Dispatched)</div><div class="report-box-val">${stockOut}</div></div>
+                    <div class="report-box"><div class="report-box-lbl">Stock Out</div><div class="report-box-val">${stockOut}</div></div>
                 </div>
                 <div style="background:#f1f5f9; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">
                     <b>PDI Per Technician / Inspector:</b><br>${techHtml}
                 </div>
-                <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="downloadReportCSV('Monthly', '${selectedMonth}')"><i class="fa-solid fa-download"></i> Download Report (Excel / CSV)</button>
+                <div style="display:flex; gap:6px; margin-top:12px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="downloadReport('Monthly', '${selectedMonth}', 'csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                    <button class="btn btn-primary" style="flex:1;" onclick="downloadReport('Monthly', '${selectedMonth}', 'image')"><i class="fa-solid fa-image"></i> Image</button>
+                </div>
             `;
         }
 
-        function downloadReportCSV(type, val) {
-            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,TML Invoice Date,Location,Status,Inspector,Remarks\n";
+        function downloadReport(type, val, format) {
             let matched = vehiclesDB.filter(v => {
-                if (!v.invDate) return false;
+                let dt = type === 'Daily' ? v.inwardDate : v.inwardDate;
+                if (!dt) return false;
                 try {
-                    let dStr = new Date(v.invDate).toISOString();
+                    let dStr = new Date(dt).toISOString();
                     return type === 'Daily' ? dStr.split('T')[0] === val : dStr.slice(0, 7) === val;
                 } catch(e) { return false; }
             });
-            matched.forEach(v => {
-                csvContent += `"${v.chassis}","${v.model}","${v.invDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Luxon_${type}_Report_${val}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+
+            if (format === 'csv') {
+                let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,Inward Date,Location,Status,Inspector,Remarks\n";
+                matched.forEach(v => {
+                    csvContent += `"${v.chassis}","${v.model}","${v.inwardDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
+                });
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `Luxon_${type}_Report_${val}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                let canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 220 + (matched.length * 40);
+                let ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#1e40af';
+                ctx.font = 'bold 20px sans-serif';
+                ctx.fillText(`Luxon TATA YMS - ${type} Report (${val})`, 20, 40);
+
+                ctx.fillStyle = '#475569';
+                ctx.font = '12px sans-serif';
+                ctx.fillText(`Generated on: ${new Date().toLocaleString()}`, 20, 65);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(20, 85, 760, 30);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText("Chassis", 30, 105);
+                ctx.fillText("Model", 220, 105);
+                ctx.fillText("Location", 400, 105);
+                ctx.fillText("Status", 600, 105);
+
+                let y = 135;
+                ctx.font = '12px sans-serif';
+                matched.forEach((v, idx) => {
+                    ctx.fillStyle = idx % 2 === 0 ? '#f8fafc' : '#ffffff';
+                    ctx.fillRect(20, y - 18, 760, 30);
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillText(v.chassis, 30, y);
+                    ctx.fillText(v.model, 220, y);
+                    ctx.fillText(v.location, 400, y);
+                    ctx.fillText(v.status, 600, y);
+                    y += 30;
+                });
+
+                let link = document.createElement('a');
+                link.download = `Luxon_${type}_Report_${val}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
         }
 
-        function downloadSpecialReportCSV(statusType) {
-            let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,TML Invoice Date,Location,Status,Inspector,Remarks\n";
+        function downloadSpecialReport(statusType, format) {
             let matched = vehiclesDB.filter(v => v.status === (statusType === 'Hold' ? 'HOLD' : 'REVIEW_PENDING'));
-            matched.forEach(v => {
-                csvContent += `"${v.chassis}","${v.model}","${v.invDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Luxon_${statusType}_Report.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            if (format === 'csv') {
+                let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,Inward Date,Location,Status,Inspector,Remarks\n";
+                matched.forEach(v => {
+                    csvContent += `"${v.chassis}","${v.model}","${v.inwardDate || ''}","${v.location}","${v.status}","${v.inspector || ''}","${v.remarks || ''}"\n`;
+                });
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `Luxon_${statusType}_Report.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                let canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 220 + (matched.length * 40);
+                let ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#1e40af';
+                ctx.font = 'bold 20px sans-serif';
+                ctx.fillText(`Luxon TATA YMS - ${statusType} Report`, 20, 40);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(20, 85, 760, 30);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText("Chassis", 30, 105);
+                ctx.fillText("Model", 220, 105);
+                ctx.fillText("Location", 400, 105);
+                ctx.fillText("Status", 600, 105);
+
+                let y = 135;
+                ctx.font = '12px sans-serif';
+                matched.forEach((v, idx) => {
+                    ctx.fillStyle = idx % 2 === 0 ? '#f8fafc' : '#ffffff';
+                    ctx.fillRect(20, y - 18, 760, 30);
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillText(v.chassis, 30, y);
+                    ctx.fillText(v.model, 220, y);
+                    ctx.fillText(v.location, 400, y);
+                    ctx.fillText(v.status, 600, y);
+                    y += 30;
+                });
+
+                let link = document.createElement('a');
+                link.download = `Luxon_${statusType}_Report.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
         }
 
         function saveDB() { localStorage.setItem('luxon_yms_photos_db', JSON.stringify(vehiclesDB)); }
