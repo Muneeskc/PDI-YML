@@ -81,7 +81,7 @@
         input:focus, select:focus, textarea:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
         .mono-input { font-family: monospace; font-weight: 800; text-transform: uppercase; }
 
-        .btn { border: none; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn { border: none; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
         .btn-full { width: 100%; padding: 13px; font-size: 14px; }
         .btn-primary { background: var(--primary-light); color: var(--white); }
         .btn-success { background: var(--success); color: var(--white); }
@@ -113,7 +113,7 @@
         .vehicle-item { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; background: var(--white); display: flex; justify-content: space-between; align-items: center; gap: 10px; transition: 0.15s; }
         .vehicle-item.selected-item { border-color: var(--primary-light); background: #eff6ff; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
         .v-info { flex: 1; cursor: pointer; }
-        .v-info h4 { font-family: monospace; font-size: 15px; font-weight: 800; color: var(--primary); }
+        .v-info h4 { font-family: monospace; font-size: 15px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .v-info p { font-size: 12px; color: var(--slate); margin-top: 3px; }
 
         .selected-banner { background: #ecfdf5; border: 2px solid var(--success); border-radius: 12px; padding: 12px; margin-bottom: 14px; display: none; }
@@ -142,7 +142,7 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub" id="sync-status-text">Live Google Sheet Sync Active</div>
+                <div class="brand-sub" id="sync-status-text">Live Google Sheet &amp; Cloud PDF Sync</div>
             </div>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
@@ -285,16 +285,16 @@
 
                 <div class="photo-section-card">
                     <div class="photo-section-header">
-                        <div class="photo-section-title"><i class="fa-solid fa-camera"></i> Inward Photos (Saved in Vehicle Details)</div>
+                        <div class="photo-section-title"><i class="fa-solid fa-camera"></i> Inward Photos (Synced to Telegram Cloud &amp; Vehicle Profile)</div>
                         <div class="photo-action-btns">
                             <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'inward')"></label>
                             <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'inward')"></label>
                         </div>
                     </div>
-                    <div class="multi-photo-grid" id="grid-inward"><span class="empty-photo-hint">Photos taken here are saved to this vehicle's profile & viewable anytime in Dashboard.</span></div>
+                    <div class="multi-photo-grid" id="grid-inward"><span class="empty-photo-hint">Photos taken here are saved &amp; synced as a PDF to Telegram so any device can view them.</span></div>
                 </div>
 
-                <button type="button" class="btn btn-primary btn-full" onclick="submitInward()"><i class="fa-solid fa-check"></i> Complete Inward</button>
+                <button type="button" class="btn btn-primary btn-full" id="btn-submit-inward" onclick="submitInward()"><i class="fa-solid fa-check"></i> Complete Inward</button>
             </div>
         </section>
 
@@ -331,7 +331,7 @@
                         </div>
                         <div style="display:flex; gap:6px;">
                             <button type="button" class="btn btn-outline" style="font-size:11px; padding:6px 10px;" onclick="generateBarcode('pdi')"><i class="fa-solid fa-barcode"></i> Barcode</button>
-                            <button type="button" class="btn btn-outline" style="font-size:11px; padding:6px 10px;" onclick="openVehicleDetailsModal(currentPdiChassis)"><i class="fa-solid fa-eye"></i> View Info</button>
+                            <button type="button" class="btn btn-outline" style="font-size:11px; padding:6px 10px;" onclick="openVehicleDetailsModal(currentPdiChassis)"><i class="fa-solid fa-file-pdf"></i> Check Sheet</button>
                         </div>
                     </div>
                     <div id="pdi-barcode-box" style="margin-top:8px; display:none; text-align:center; background:#fff; padding:8px; border-radius:8px;"><svg id="pdi-barcode-svg"></svg></div>
@@ -430,7 +430,7 @@
 
                     <div style="display:flex; gap:10px; margin-top:10px;">
                         <button type="button" class="btn btn-outline" style="flex:1;" onclick="clearPdiSelection()"><i class="fa-solid fa-xmark"></i> Clear</button>
-                        <button type="button" class="btn btn-success" style="flex:2;" onclick="submitPdiAndShare()"><i class="fa-solid fa-paper-plane"></i> Submit PDI &amp; Generate PDF</button>
+                        <button type="button" class="btn btn-success" id="btn-submit-pdi" style="flex:2;" onclick="submitPdiAndShare()"><i class="fa-solid fa-paper-plane"></i> Submit PDI &amp; Sync PDF to Cloud</button>
                     </div>
                 </div>
             </div>
@@ -515,7 +515,7 @@
     <div class="modal-overlay" id="vehicle-details-modal">
         <div class="modal-card">
             <div class="card-header">
-                <div class="card-title"><i class="fa-solid fa-car-side"></i> Vehicle Details &amp; Check Sheet</div>
+                <div class="card-title"><i class="fa-solid fa-car-side"></i> Vehicle Details &amp; Check Sheet PDF</div>
                 <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeVehicleDetailsModal()">✕</button>
             </div>
             <div id="vehicle-details-body"></div>
@@ -548,7 +548,6 @@
     </div>
 
     <script>
-        // Clean string helper to prevent newline/space bugs
         function cleanStr(val) {
             return String(val === null || val === undefined ? '' : val).replace(/[\r\n\t]+/g, ' ').trim();
         }
@@ -556,14 +555,35 @@
             return cleanStr(val).toUpperCase();
         }
 
-        // Default Locations (Explicitly excluding "Main Yard")
+        // Embed & Extract Cross-Device Telegram Cloud Metadata inside remarks so existing Google Sheet works automatically
+        function packMetaIntoRemarks(cleanRemark, tgMsgId, tgFileId, inspector) {
+            const base = cleanStr(cleanRemark).replace(/\s*\[#TG:[^\]]*\]/g, '').trim();
+            if (!tgMsgId && !tgFileId && !inspector) return base;
+            const metaTag = `[#TG:${cleanStr(tgMsgId)}|${cleanStr(tgFileId)}|${cleanStr(inspector)}]`;
+            return base ? `${base} ${metaTag}` : metaTag;
+        }
+
+        function unpackMetaFromRemarks(rawRemark) {
+            const str = cleanStr(rawRemark);
+            const match = str.match(/\[#TG:([^|\]]*)\|([^|\]]*)\|([^\]]*)\]/);
+            const cleanText = str.replace(/\s*\[#TG:[^\]]*\]/g, '').trim();
+            if (!match) {
+                return { cleanRemarks: cleanText, tgMsgId: '', tgFileId: '', metaInspector: '' };
+            }
+            return {
+                cleanRemarks: cleanText,
+                tgMsgId: cleanStr(match[1]),
+                tgFileId: cleanStr(match[2]),
+                metaInspector: cleanStr(match[3])
+            };
+        }
+
         const defaultLocations = [
             "Kottakkal Yard", "Changanakkal Yard", "Malappuram Yard",
             "Kottakkal Display", "Malappuram Display", "Edappal Display",
             "Changanakkulam Display", "Kondotty Display", "Areekode Display", "Body Shop"
         ];
         let savedLocs = JSON.parse(localStorage.getItem('luxon_yms_locs')) || defaultLocations;
-        // Automatically filter out any old "Main Yard" entries without needing cache clear
         let locationsList = savedLocs.filter(l => !cleanStr(l).toUpperCase().startsWith('MAIN YARD'));
         if (!locationsList.length) locationsList = [...defaultLocations];
         localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList));
@@ -661,12 +681,11 @@
         let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form22: [], pdi_battery: [] };
         let currentPdiChassis = '';
         let currentOpChassis = '';
-        let currentDashFilter = 'ALL'; // Default on Dashboard is ALL vehicles from Sheet
+        let currentDashFilter = 'ALL';
         let activeDailyCat = 'INWARD';
         let activeMonthlyCat = 'INWARD';
         let qrScanner = null, activeScannerMode = null;
 
-        // Normalize status strings from Google Sheet
         function normalizeStatus(rawStatus, rawLoc) {
             const st = cleanStr(rawStatus).toUpperCase();
             const loc = cleanStr(rawLoc).toUpperCase();
@@ -682,7 +701,6 @@
             return 'Pending PDI';
         }
 
-        // Strict check: Is vehicle physically in our Yard or Display right now?
         function isPhysicalStock(v) {
             if (!v) return false;
             const st = cleanStr(v.status).toUpperCase();
@@ -724,25 +742,62 @@
             return '';
         }
 
+        // Construct direct Telegram message link for any device
+        function getTelegramMessageUrl(msgId) {
+            if (!msgId || !botConfig.chatId) return '';
+            let cleanChat = cleanStr(botConfig.chatId);
+            if (cleanChat.startsWith('-100')) {
+                cleanChat = cleanChat.slice(4);
+            } else if (cleanChat.startsWith('-')) {
+                cleanChat = cleanChat.slice(1);
+            }
+            return `https://t.me/c/${cleanChat}/${msgId}`;
+        }
+
+        // Download / Open Check Sheet PDF directly from Telegram Cloud on ANY device
+        async function openCloudPdfFromTelegram(fileId, msgId, chassis) {
+            if (fileId && botConfig.token) {
+                try {
+                    const res = await fetch(`https://api.telegram.org/bot${botConfig.token}/getFile?file_id=${encodeURIComponent(fileId)}`);
+                    const data = await res.json();
+                    if (data && data.ok && data.result && data.result.file_path) {
+                        const fileUrl = `https://api.telegram.org/file/bot${botConfig.token}/${data.result.file_path}`;
+                        window.open(fileUrl, '_blank');
+                        return;
+                    }
+                } catch (e) {
+                    console.log('Direct file fetch fallback to message link', e);
+                }
+            }
+            if (msgId) {
+                const url = getTelegramMessageUrl(msgId);
+                if (url) { window.open(url, '_blank'); return; }
+            }
+            alert(`No cloud PDF found yet for ${chassis}. Submit PDI with photos first.`);
+        }
+
         window.onload = function() {
-            // Normalize any existing local DB records first
-            vehiclesDB = vehiclesDB.map(v => ({
-                ...v,
-                chassis: cleanChassis(v.chassis),
-                model: cleanStr(v.model),
-                location: cleanStr(v.location),
-                status: normalizeStatus(v.status, v.location),
-                inspector: cleanStr(v.inspector),
-                remarks: cleanStr(v.remarks),
-                tmlInvoiceDate: cleanStr(v.tmlInvoiceDate || v.invDate || '')
-            })).filter(v => v.chassis);
+            vehiclesDB = vehiclesDB.map(v => {
+                const unpacked = unpackMetaFromRemarks(v.remarks);
+                return {
+                    ...v,
+                    chassis: cleanChassis(v.chassis),
+                    model: cleanStr(v.model),
+                    location: cleanStr(v.location),
+                    status: normalizeStatus(v.status, v.location),
+                    inspector: cleanStr(v.inspector || unpacked.metaInspector),
+                    remarks: unpacked.cleanRemarks,
+                    tgMsgId: cleanStr(v.tgMsgId || unpacked.tgMsgId),
+                    tgFileId: cleanStr(v.tgFileId || unpacked.tgFileId),
+                    tmlInvoiceDate: cleanStr(v.tmlInvoiceDate || v.invDate || '')
+                };
+            }).filter(v => v.chassis);
 
             initDropdowns();
             loadDraft();
             toggleHoldUI();
             renderDashboard();
             syncWithGoogleSheet(false);
-            // Safe background sync every 25s (never interrupts active editing)
             setInterval(() => { syncWithGoogleSheet(true); }, 25000);
         };
 
@@ -781,7 +836,6 @@
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) {
-                        // Map existing local photos & metadata by cleaned chassis so we never lose photos
                         const localMap = {};
                         vehiclesDB.forEach(item => {
                             const key = cleanChassis(item.chassis);
@@ -801,6 +855,9 @@
                             const rawStatus = cleanStr(row.status || row.Status || prev.status || 'Pending PDI');
                             const normSt = normalizeStatus(rawStatus, rawLoc);
 
+                            const rawRem = cleanStr(row.remarks || row.Remarks || '');
+                            const unpacked = unpackMetaFromRemarks(rawRem);
+
                             const tmlInv = cleanStr(row.tmlInvoiceDate || row['TML Invoice Date'] || row.invDate || row.invoiceDate || prev.tmlInvoiceDate || '');
                             const inDt = parseIsoDate(row.inwardDate || row.inwardTime || prev.inwardDate) || new Date().toISOString().split('T')[0];
                             const pdiDt = parseIsoDate(row.pdiDate || row.pdiTime || prev.pdiDate);
@@ -811,8 +868,10 @@
                                 model: cleanStr(row.model || row.Model || prev.model || 'Tata Vehicle'),
                                 location: rawLoc,
                                 status: normSt,
-                                inspector: cleanStr(row.inspector || row.Inspector || prev.inspector || ''),
-                                remarks: cleanStr(row.remarks || row.Remarks || prev.remarks || ''),
+                                inspector: cleanStr(row.inspector || row.Inspector || unpacked.metaInspector || prev.inspector || ''),
+                                remarks: unpacked.cleanRemarks || prev.remarks || '',
+                                tgMsgId: cleanStr(row.tgMsgId || unpacked.tgMsgId || prev.tgMsgId || ''),
+                                tgFileId: cleanStr(row.tgFileId || unpacked.tgFileId || prev.tgFileId || ''),
                                 tmlInvoiceDate: tmlInv,
                                 inwardDate: inDt,
                                 pdiDate: pdiDt,
@@ -822,7 +881,6 @@
                             });
                         });
 
-                        // Strict Mirroring: vehiclesDB now strictly equals Google Sheet rows
                         vehiclesDB = syncedList;
                         saveDB();
                         updateDashboardFilterDropdowns();
@@ -831,7 +889,6 @@
                     if (subTxt) subTxt.innerText = 'Synced: ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     
                     renderDashboard();
-                    // Only refresh lists without resetting user's active selection
                     if (document.getElementById('mod-pdi').classList.contains('active')) populatePdiMasterList();
                     if (document.getElementById('mod-operations').classList.contains('active')) renderOperationsList();
                 })
@@ -863,9 +920,7 @@
             }
         }
 
-        // DASHBOARD RENDERING & FILTERING
         function filterDashboardList(filterName) {
-            // Clicking the active card again toggles back to ALL (Total Stock)
             if (currentDashFilter === filterName && filterName !== 'ALL') {
                 currentDashFilter = 'ALL';
             } else {
@@ -945,7 +1000,6 @@
             document.getElementById('count-aging').innerText = counts.aging;
             document.getElementById('count-review').innerText = counts.review;
 
-            // Highlight active card
             const cardMap = {
                 'Physical': 'card-Physical',
                 'Pending PDI': 'card-PendingPDI',
@@ -973,26 +1027,31 @@
                 return;
             }
 
-            container.innerHTML = list.map((v, idx) => {
+            container.innerHTML = list.map(v => {
                 const badgeClass = v.status === 'Pending PDI' ? 'badge-pending' :
                                    v.status === 'PDI OK' ? 'badge-ok' :
                                    v.status === 'REVIEW_PENDING' ? 'badge-conf' :
                                    v.status === 'HOLD' ? 'badge-hold' : 'badge-out';
                 const statusLabel = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
                 const encChassis = encodeURIComponent(v.chassis);
+                const hasCloudPdf = Boolean(v.tgFileId || v.tgMsgId);
 
                 return `
                 <div class="vehicle-item">
                     <div class="v-info" onclick="openVehicleDetailsByEnc('${encChassis}')">
-                        <h4>${v.chassis}</h4>
+                        <h4>
+                            ${v.chassis}
+                            ${hasCloudPdf ? `<span class="badge badge-conf" style="font-size:10px;"><i class="fa-solid fa-cloud-arrow-down"></i> PDF Ready</span>` : ''}
+                        </h4>
                         <p><b>${v.model}</b> ${v.inspector ? '• Tech: ' + v.inspector : ''}</p>
                         <p><i class="fa-solid fa-location-dot"></i> ${v.location} ${v.tmlInvoiceDate ? '• Inv: ' + v.tmlInvoiceDate : ''}</p>
                         ${v.remarks ? `<p style="color:var(--danger); font-weight:700;"><i class="fa-solid fa-comment-dots"></i> ${v.remarks}</p>` : ''}
                     </div>
                     <div style="text-align:right; display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
                         <span class="badge ${badgeClass}">${statusLabel}</span>
-                        <div style="display:flex; gap:4px;">
-                            <button type="button" class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="openVehicleDetailsByEnc('${encChassis}')" title="View Photos & Check Sheet"><i class="fa-solid fa-eye"></i></button>
+                        <div style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;">
+                            ${hasCloudPdf ? `<button type="button" class="btn btn-success" style="padding:5px 8px; font-size:11px;" onclick="openCloudPdfFromTelegram('${v.tgFileId}', '${v.tgMsgId}', '${v.chassis}')" title="Download/View Check Sheet PDF"><i class="fa-solid fa-file-pdf"></i> PDF</button>` : ''}
+                            <button type="button" class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="openVehicleDetailsByEnc('${encChassis}')" title="View Details & Actions"><i class="fa-solid fa-eye"></i></button>
                             ${isPhysicalStock(v) ? `<button type="button" class="btn btn-primary" style="padding:5px 10px; font-size:11px;" onclick="jumpToPdiByEnc('${encChassis}')">PDI</button>` : ''}
                         </div>
                     </div>
@@ -1006,18 +1065,16 @@
             selectPdiByChassis(ch);
         }
 
-        // PDI CHECKING SELECTION (FIXED 100%)
+        // PDI CHECKING SELECTION
         function populatePdiMasterList() {
             const container = document.getElementById('pdi-master-list');
             const dropSel = document.getElementById('pdi-dropdown-select');
             const q = cleanChassis(document.getElementById('pdi-search-input').value);
 
-            // Show Physical Stock vehicles (prioritizing Pending PDI, Review Pending, and Hold)
             let pdiCandidates = vehiclesDB.filter(v => isPhysicalStock(v));
             if (q) {
                 pdiCandidates = pdiCandidates.filter(v => v.chassis.includes(q) || v.model.toUpperCase().includes(q));
             } else {
-                // Sort so Pending PDI and Review Pending appear first
                 const priority = { 'Pending PDI': 1, 'REVIEW_PENDING': 2, 'HOLD': 3, 'PDI OK': 4 };
                 pdiCandidates.sort((a, b) => (priority[a.status] || 5) - (priority[b.status] || 5));
             }
@@ -1067,7 +1124,6 @@
             document.getElementById('pdi-b-model').innerText = `${v.model} • Location: ${v.location} • Current Status: ${v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status}`;
             document.getElementById('pdi-barcode-box').style.display = 'none';
 
-            // Load existing PDI data if present
             if (v.pdiData) {
                 document.getElementById('pdi-speed').value = v.pdiData.speed || '';
                 photoBuckets.pdi_vehicle = [...(v.pdiData.vehiclePhotos || [])];
@@ -1118,7 +1174,7 @@
             }
         }
 
-        // OPERATIONS SELECTION (FIXED 100%)
+        // OPERATIONS SELECTION
         function renderOperationsList() {
             const q = cleanChassis(document.getElementById('op-search').value);
             let list = vehiclesDB.filter(v => isPhysicalStock(v));
@@ -1195,10 +1251,11 @@
                 const newLoc = document.getElementById('op-ed-newloc').value;
                 v.location = newLoc;
                 saveDB();
+                const packedRem = packMetaIntoRemarks(v.remarks, v.tgMsgId, v.tgFileId, v.inspector);
                 if (botConfig.scriptUrl) {
                     fetch(botConfig.scriptUrl, {
                         method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, location: newLoc, status: v.status, remarks: v.remarks })
+                        body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, location: newLoc, status: v.status, remarks: packedRem })
                     }).catch(() => {});
                 }
                 alert(`Location updated to ${newLoc} for ${v.chassis}!`);
@@ -1222,10 +1279,11 @@
                 v.outwardDate = todayDate;
                 v.remarks = `Stock Transfer to ${region}`;
                 saveDB();
+                const packedRem = packMetaIntoRemarks(v.remarks, v.tgMsgId, v.tgFileId, v.inspector);
                 if (botConfig.scriptUrl) {
                     fetch(botConfig.scriptUrl, {
                         method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'OPERATIONS_UPDATE', outwardTime, outwardDate: todayDate, chassis: v.chassis, model: v.model, location: v.location, status: 'Stock Transfer', remarks: v.remarks })
+                        body: JSON.stringify({ action: 'OPERATIONS_UPDATE', outwardTime, outwardDate: todayDate, chassis: v.chassis, model: v.model, location: v.location, status: 'Stock Transfer', remarks: packedRem })
                     }).catch(() => {});
                 }
                 alert(`Stock Transfer confirmed to ${region} for ${v.chassis}!`);
@@ -1237,7 +1295,7 @@
             renderDashboard();
         }
 
-        // VEHICLE DETAILS & HOLD REVIEW MODAL
+        // VEHICLE DETAILS & CROSS-DEVICE TELEGRAM CHECK SHEET MODAL
         function openVehicleDetailsByEnc(enc) {
             openVehicleDetailsModal(decodeURIComponent(enc));
         }
@@ -1262,6 +1320,8 @@
 
             const enc = encodeURIComponent(v.chassis);
             const statusText = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
+            const tgUrl = getTelegramMessageUrl(v.tgMsgId);
+            const hasCloudPdf = Boolean(v.tgFileId || v.tgMsgId);
 
             body.innerHTML = `
                 <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid var(--border); margin-bottom:12px;">
@@ -1269,25 +1329,41 @@
                     <p style="font-size:13px; margin-top:4px;"><b>Model:</b> ${v.model} | <b>Status:</b> ${statusText}</p>
                     <p style="font-size:13px; margin-top:2px;"><b>Location:</b> ${v.location} | <b>Inspector:</b> ${v.inspector || 'N/A'}</p>
                     <p style="font-size:12px; color:var(--slate); margin-top:2px;"><b>Inward Date:</b> ${v.inwardDate || 'N/A'} | <b>TML Invoice Date:</b> ${v.tmlInvoiceDate || 'N/A'}</p>
-                    ${v.pdiData && v.pdiData.speed ? `<p style="font-size:12px; margin-top:2px;"><b>Odometer:</b> ${v.pdiData.speed}</p>` : ''}
-                    ${v.remarks ? `<p style="font-size:13px; color:var(--danger); font-weight:700; margin-top:6px;">Remarks: ${v.remarks}</p>` : ''}
+                    ${v.pdiData && v.pdiData.speed ? `<p style="font-size:12px; margin-top:2px;"><b>Odometer:</b> ${v.pdiData.speed} km</p>` : ''}
+                    ${v.remarks ? `<p style="font-size:13px; color:var(--danger); font-weight:700; margin-top:6px;">Remarks / Hold Reason: ${v.remarks}</p>` : ''}
+                </div>
+
+                <!-- CLOUD PDF ACCESS FOR ANY DEVICE -->
+                <div style="background:#ecfdf5; border:1.5px solid var(--success); padding:12px; border-radius:10px; margin-bottom:12px;">
+                    <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--success); margin-bottom:8px;">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> Check Sheet &amp; Photos PDF (Works on All Devices):
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        ${hasCloudPdf ? `
+                            <button type="button" class="btn btn-success" style="flex:1;" onclick="openCloudPdfFromTelegram('${v.tgFileId}', '${v.tgMsgId}', '${v.chassis}')">
+                                <i class="fa-solid fa-file-pdf"></i> Download / View Check Sheet PDF
+                            </button>
+                            ${tgUrl ? `<a href="${tgUrl}" target="_blank" class="btn btn-primary" style="flex:1;"><i class="fa-brands fa-telegram"></i> Open in Telegram</a>` : ''}
+                        ` : `
+                            <button type="button" class="btn btn-outline" style="flex:1;" onclick="generateSingleVehiclePDF('${enc}')">
+                                <i class="fa-solid fa-file-pdf"></i> Generate Local PDF
+                            </button>
+                        `}
+                    </div>
                 </div>
 
                 <!-- Manager / Review Action Buttons -->
                 <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:12px; border-radius:10px; margin-bottom:14px;">
-                    <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--primary); margin-bottom:8px;">Quick Status &amp; Review Actions:</div>
+                    <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--primary); margin-bottom:8px;">Manager / Hold Review Actions:</div>
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button type="button" class="btn btn-success" style="flex:1;" onclick="quickUpdateVehicleStatus('${enc}', 'PDI OK')"><i class="fa-solid fa-check"></i> Mark PDI OK</button>
-                        <button type="button" class="btn btn-danger" style="flex:1;" onclick="quickUpdateVehicleStatus('${enc}', 'HOLD')"><i class="fa-solid fa-pause"></i> Mark PDI Hold</button>
-                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="closeVehicleDetailsModal(); jumpToPdiByEnc('${enc}');"><i class="fa-solid fa-pen-to-square"></i> Open in PDI</button>
+                        <button type="button" class="btn btn-success" style="flex:1;" onclick="quickUpdateVehicleStatus('${enc}', 'PDI OK')"><i class="fa-solid fa-check"></i> Approve (PDI OK)</button>
+                        <button type="button" class="btn btn-danger" style="flex:1;" onclick="quickUpdateVehicleStatus('${enc}', 'HOLD')"><i class="fa-solid fa-pause"></i> Confirm Hold</button>
+                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="closeVehicleDetailsModal(); jumpToPdiByEnc('${enc}');"><i class="fa-solid fa-pen-to-square"></i> Edit in PDI</button>
                     </div>
                 </div>
 
                 <div style="margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <label style="margin:0;">Saved Photos &amp; Check Sheets (${allPhotos.length})</label>
-                        <button type="button" class="btn btn-outline" style="padding:5px 10px; font-size:11px;" onclick="generateSingleVehiclePDF('${enc}')"><i class="fa-solid fa-file-pdf"></i> Download Check Sheet PDF</button>
-                    </div>
+                    <label style="margin-bottom:8px;">Device Preview Photos (${allPhotos.length})</label>
                     ${allPhotos.length ? `
                         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px;">
                             ${allPhotos.map(item => `
@@ -1297,7 +1373,7 @@
                                 </div>
                             `).join('')}
                         </div>
-                    ` : `<div style="padding:16px; text-align:center; background:#f8fafc; border-radius:8px; color:var(--slate); font-size:12px;">No photos saved on this device for this vehicle yet.</div>`}
+                    ` : `<div style="padding:12px; text-align:center; background:#f8fafc; border-radius:8px; color:var(--slate); font-size:12px;">Click "Download / View Check Sheet PDF" above to view all photos &amp; check sheets on this device.</div>`}
                 </div>
             `;
         }
@@ -1316,6 +1392,8 @@
                 const inputRem = prompt("Enter reason for PDI Hold:", rem);
                 if (inputRem === null) return;
                 rem = cleanStr(inputRem) || 'On Hold';
+            } else if (newStatus === 'PDI OK') {
+                rem = '';
             }
 
             const todayDate = new Date().toISOString().split('T')[0];
@@ -1324,10 +1402,16 @@
             v.pdiDate = todayDate;
             saveDB();
 
+            const packedRem = packMetaIntoRemarks(v.remarks, v.tgMsgId, v.tgFileId, v.inspector);
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'PDI_UPDATE', pdiDate: todayDate, chassis: v.chassis, model: v.model, status: newStatus, location: v.location, inspector: v.inspector, remarks: rem })
+                    body: JSON.stringify({
+                        action: 'PDI_UPDATE', pdiDate: todayDate,
+                        chassis: v.chassis, model: v.model, status: newStatus,
+                        location: v.location, inspector: v.inspector,
+                        remarks: packedRem, tgMsgId: v.tgMsgId, tgFileId: v.tgFileId
+                    })
                 }).catch(() => {});
             }
 
@@ -1479,7 +1563,7 @@
             }
         }
 
-        function submitInward() {
+        async function submitInward() {
             const chassis = cleanChassis(document.getElementById('in-chassis').value);
             const model = cleanStr(document.getElementById('in-model').value);
             const location = cleanStr(document.getElementById('in-location').value);
@@ -1491,27 +1575,46 @@
                 return;
             }
 
+            const btn = document.getElementById('btn-submit-inward');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving Inward...';
+
             const todayDate = new Date().toISOString().split('T')[0];
             const inwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
             const rec = {
                 chassis, model, inwardDate: todayDate, pdiDate: '', outwardDate: '', tmlInvoiceDate: '',
                 location, status: 'Pending PDI', inspector: '',
+                tgMsgId: '', tgFileId: '',
                 photos: [...photoBuckets.inward],
                 pdiData: null, remarks: ''
             };
+
+            // If inward photos were taken, upload an Inward PDF to Telegram so other devices can view them
+            if (rec.photos.length > 0 && botConfig.token && botConfig.chatId) {
+                const tgRes = await buildAndSendPdiPdf(rec, true, false);
+                if (tgRes.tgMsgId) rec.tgMsgId = tgRes.tgMsgId;
+                if (tgRes.tgFileId) rec.tgFileId = tgRes.tgFileId;
+            }
 
             if (exIdx !== -1) vehiclesDB[exIdx] = rec; else vehiclesDB.unshift(rec);
             saveDB();
             clearDraft();
             updateDashboardFilterDropdowns();
 
+            const packedRem = packMetaIntoRemarks('', rec.tgMsgId, rec.tgFileId, '');
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'INWARD', inwardTime, inwardDate: todayDate, chassis, model, location, status: 'Pending PDI' })
+                    body: JSON.stringify({
+                        action: 'INWARD', inwardTime, inwardDate: todayDate,
+                        chassis, model, location, status: 'Pending PDI',
+                        remarks: packedRem, tgMsgId: rec.tgMsgId, tgFileId: rec.tgFileId
+                    })
                 }).catch(() => {});
             }
 
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Complete Inward';
             document.getElementById('in-chassis').value = '';
             document.getElementById('in-model').value = '';
             document.getElementById('inward-status-alert').style.display = 'none';
@@ -1520,7 +1623,7 @@
             openModule('dashboard', true);
         }
 
-        // PDI SUBMISSION & PDF GENERATION
+        // PDI SUBMISSION & CLOUD TELEGRAM PDF SYNC
         async function submitPdiAndShare() {
             if (!currentPdiChassis) { alert('Please tap or select a vehicle from the list above first!'); return; }
             const v = vehiclesDB.find(item => cleanChassis(item.chassis) === cleanChassis(currentPdiChassis));
@@ -1542,6 +1645,10 @@
                 return;
             }
 
+            const btn = document.getElementById('btn-submit-pdi');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading PDF to Cloud & Syncing...';
+
             v.status = decision;
             v.inspector = inspector;
             v.remarks = decision === 'PDI OK' ? '' : remarks;
@@ -1554,21 +1661,32 @@
                 form22Photos: [...photoBuckets.pdi_form22],
                 batteryPhotos: [...photoBuckets.pdi_battery]
             };
+
+            // 1. Generate PDF and upload to Telegram first to get Cloud File ID & Message ID
+            const tgRes = await buildAndSendPdiPdf(v, true, true);
+            if (tgRes.tgMsgId) v.tgMsgId = tgRes.tgMsgId;
+            if (tgRes.tgFileId) v.tgFileId = tgRes.tgFileId;
+
             saveDB();
             clearDraft();
 
+            // 2. Sync to Google Sheet with embedded Cloud File ID so all other phones get the PDF immediately
+            const packedRem = packMetaIntoRemarks(v.remarks, v.tgMsgId, v.tgFileId, v.inspector);
             if (botConfig.scriptUrl) {
                 fetch(botConfig.scriptUrl, {
                     method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         action: 'PDI_UPDATE', pdiTime, pdiDate: todayDate,
                         chassis: v.chassis, model: v.model, status: decision,
-                        speed, inspector, location: v.location, remarks: v.remarks
+                        speed, inspector, location: v.location,
+                        remarks: packedRem, tgMsgId: v.tgMsgId, tgFileId: v.tgFileId
                     })
                 }).catch(() => {});
             }
 
-            await buildAndSendPdiPdf(v, true);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit PDI & Sync PDF to Cloud';
+            alert(`PDI Submitted for ${v.chassis}! Check Sheet PDF is now synced across all devices.`);
             clearPdiSelection();
             openModule('dashboard');
         }
@@ -1577,11 +1695,13 @@
             const ch = decodeURIComponent(encChassis);
             const v = vehiclesDB.find(x => cleanChassis(x.chassis) === cleanChassis(ch));
             if (!v) return;
-            buildAndSendPdiPdf(v, false);
+            buildAndSendPdiPdf(v, false, true);
         }
 
-        async function buildAndSendPdiPdf(v, sendToTelegram = false) {
-            if (typeof window.jspdf === 'undefined') { alert('PDI Saved!'); return; }
+        async function buildAndSendPdiPdf(v, sendToTelegram = false, downloadLocally = true) {
+            let resultMeta = { tgMsgId: '', tgFileId: '' };
+            if (typeof window.jspdf === 'undefined') return resultMeta;
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
             const statusLabel = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
@@ -1633,7 +1753,9 @@
             addCatToPDF('Inward Photos', v.photos);
 
             const pdfName = `PDI_${v.chassis}.pdf`;
-            doc.save(pdfName);
+            if (downloadLocally) {
+                doc.save(pdfName);
+            }
 
             if (sendToTelegram && botConfig.token && botConfig.chatId) {
                 try {
@@ -1641,10 +1763,20 @@
                     const fd = new FormData();
                     fd.append('chat_id', botConfig.chatId);
                     fd.append('document', pdfBlob, pdfName);
-                    fd.append('caption', `✅ PDI REPORT\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${statusLabel}\nInspector: ${v.inspector || 'N/A'}\nLocation: ${v.location}${v.remarks ? '\nRemarks: ' + v.remarks : ''}`);
-                    await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
-                } catch(e) {}
+                    fd.append('caption', `✅ PDI CHECK SHEET\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${statusLabel}\nInspector: ${v.inspector || 'N/A'}\nLocation: ${v.location}${v.remarks ? '\nRemarks: ' + v.remarks : ''}`);
+                    const res = await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
+                    const json = await res.json();
+                    if (json && json.ok && json.result) {
+                        resultMeta.tgMsgId = String(json.result.message_id || '');
+                        if (json.result.document && json.result.document.file_id) {
+                            resultMeta.tgFileId = String(json.result.document.file_id);
+                        }
+                    }
+                } catch(e) {
+                    console.log('Telegram upload error:', e);
+                }
             }
+            return resultMeta;
         }
 
         // UNIVERSAL EXPORT ENGINE (EXCEL CSV, PDF, HIGH-RES TABLE IMAGE)
@@ -1700,7 +1832,6 @@
                 });
                 doc.save(`${filenameBase}.pdf`);
             } else if (format === 'image') {
-                // High-Resolution Excel-like Table Image
                 const scale = 2;
                 const rowH = 38;
                 const width = 1200;
@@ -1714,7 +1845,6 @@
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, width, height);
 
-                // Top Banner
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(0, 0, width, 70);
                 ctx.fillStyle = '#ffffff';
@@ -1724,7 +1854,6 @@
                 ctx.font = '13px sans-serif';
                 ctx.fillText(`Generated: ${new Date().toLocaleString('en-IN')}  |  Total Vehicles: ${list.length}`, 24, 56);
 
-                // Table Columns
                 const cols = [
                     { name: 'SL', x: 20, w: 50 },
                     { name: 'CHASSIS NUMBER', x: 70, w: 230 },
@@ -1776,7 +1905,7 @@
             exportVehicleTable(titleText, list, format, `Luxon_Dashboard_${currentDashFilter}`);
         }
 
-        // REPORTS MODAL (DAILY, MONTHLY, HOLD, HOLD REVIEW PENDING)
+        // REPORTS MODAL
         function openReportsModal(type) {
             document.getElementById('app-menu-dropdown').classList.remove('show');
             document.getElementById('reports-modal').style.display = 'flex';
@@ -1833,7 +1962,6 @@
             const pendingPdiAll = vehiclesDB.filter(v => isPhysicalStock(v) && v.status === 'Pending PDI');
             const outwardToday = vehiclesDB.filter(v => parseIsoDate(v.outwardDate) === selectedDate && (v.status === 'Outward' || v.status === 'Stock Transfer'));
 
-            // Technician-wise PDI count on selected date
             const techMap = {};
             vehiclesDB.filter(v => parseIsoDate(v.pdiDate) === selectedDate).forEach(v => {
                 const t = v.inspector || 'Unassigned';
@@ -1965,6 +2093,7 @@
                 <div class="vehicle-list" style="max-height:260px; overflow-y:auto; margin-bottom:14px;">
                     ${list.length ? list.map(v => {
                         const enc = encodeURIComponent(v.chassis);
+                        const hasCloudPdf = Boolean(v.tgFileId || v.tgMsgId);
                         return `
                         <div class="vehicle-item">
                             <div class="v-info" onclick="closeReportsModal(); openVehicleDetailsByEnc('${enc}');">
@@ -1972,7 +2101,8 @@
                                 <p><b>${v.model}</b> • ${v.location} • Tech: ${v.inspector || 'N/A'}</p>
                                 ${v.remarks ? `<p style="color:var(--danger); font-weight:700;">Reason: ${v.remarks}</p>` : ''}
                             </div>
-                            <div style="display:flex; gap:4px;">
+                            <div style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;">
+                                ${hasCloudPdf ? `<button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="openCloudPdfFromTelegram('${v.tgFileId}', '${v.tgMsgId}', '${v.chassis}')"><i class="fa-solid fa-file-pdf"></i> PDF</button>` : ''}
                                 <button class="btn btn-success" style="padding:5px 8px; font-size:11px;" onclick="quickUpdateVehicleStatus('${enc}', 'PDI OK'); openReportsModal('${statusKey==='HOLD'?'hold':'review'}');">Mark OK</button>
                                 ${statusKey === 'REVIEW_PENDING' ? `<button class="btn btn-danger" style="padding:5px 8px; font-size:11px;" onclick="quickUpdateVehicleStatus('${enc}', 'HOLD'); openReportsModal('review');">Hold</button>` : ''}
                             </div>
