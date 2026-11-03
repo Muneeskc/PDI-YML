@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Luxon TATA - Yard Management System (YMS)</title>
+    <!-- Barcode Scanner, Generator, PDF & Icons -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -142,7 +143,7 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub" id="sync-status-text">Live Google Sheet &amp; Telegram PDF Sync</div>
+                <div class="brand-sub" id="sync-status-text">Live Google Sheet &amp; Cloud PDF Sync</div>
             </div>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
@@ -555,7 +556,6 @@
             return cleanStr(val).toUpperCase();
         }
 
-        // Pack & Unpack Telegram Cloud Link Metadata inside Remarks so Google Sheet stores it automatically
         function packMetaIntoRemarks(cleanRemark, tgMsgId, tgFileId, inspector) {
             const base = cleanStr(cleanRemark).replace(/\s*\[#TG:[^\]]*\]/g, '').trim();
             if (!tgMsgId && !tgFileId && !inspector) return base;
@@ -673,7 +673,6 @@
             }
         };
 
-        // Zero-Crash Memory Management: Keep photos in RAM session cache, only save lightweight metadata to localStorage
         let sessionPhotoCache = {};
         let vehiclesDB = [];
         try { vehiclesDB = JSON.parse(localStorage.getItem('luxon_yms_light_db')) || []; } catch(e) { vehiclesDB = []; }
@@ -698,7 +697,6 @@
 
         function saveDB() {
             try {
-                // Strip heavy base64 photos before writing to localStorage so 5MB limit is NEVER exceeded
                 const lightList = vehiclesDB.map(v => ({
                     chassis: v.chassis,
                     model: v.model,
@@ -712,14 +710,11 @@
                     inwardDate: v.inwardDate || '',
                     pdiDate: v.pdiDate || '',
                     outwardDate: v.outwardDate || '',
-                    speed: (v.pdiData && v.pdiData.speed) ? v.pdiData.speed : (v.speed || '')
+                    speed: v.speed || ''
                 }));
                 localStorage.setItem('luxon_yms_light_db', JSON.stringify(lightList));
-                // Remove old heavy key if it existed previously
                 localStorage.removeItem('luxon_yms_photos_db');
-            } catch(e) {
-                console.log('Storage cleanup:', e);
-            }
+            } catch(e) {}
         }
 
         function normalizeStatus(rawStatus, rawLoc) {
@@ -1532,7 +1527,7 @@
             }
         }
 
-        // PHOTO COMPRESSION & BUCKETS (RAM ONLY - ZERO LOCALSTORAGE OVERFLOW)
+        // PHOTO COMPRESSION & BUCKETS
         function compressImg(file, cb) {
             const reader = new FileReader();
             reader.onload = function(e) {
