@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Luxon TATA - Yard Management System (YMS)</title>
-    <!-- HTML5 Barcode Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <!-- JsBarcode Library -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-    <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -134,7 +130,7 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub">Live Sheet Sync & Safe Auto-Refresh</div>
+                <div class="brand-sub">Strict Physical Stock & Live Sync</div>
             </div>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
@@ -865,8 +861,8 @@ Inward Date: ${inwardDate || 'N/A'}`;
         }
 
         function renderDashboard() {
-            // Physical Stock includes all vehicles currently in yard or display (excluding Outward)
-            const physicalStock = vehiclesDB.filter(v => v.status !== 'Outward');
+            // Strictly exclude Outward / Stock Out / Delivery from Physical Stock
+            const physicalStock = vehiclesDB.filter(v => v.status !== 'Outward' && !v.location.includes('Outward'));
             const displayCars = physicalStock.filter(v => v.location.includes('Display'));
             const pendingPdi = physicalStock.filter(v => v.status === 'Pending PDI');
             const pdiOk = physicalStock.filter(v => v.status === 'PDI OK');
@@ -894,7 +890,7 @@ Inward Date: ${inwardDate || 'N/A'}`;
             let list = [];
             let titleText = "Physical Stock";
             
-            if (currentDashFilter === 'Physical') { list = physicalStock; titleText = "Physical Stock (Yard & Display)"; }
+            if (currentDashFilter === 'Physical') { list = physicalStock; titleText = "Physical Stock (Yard & Display - Excluding Outward)"; }
             else if (currentDashFilter === 'Pending PDI') { list = pendingPdi; titleText = "Pending PDI Vehicles"; }
             else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI Done Vehicles"; }
             else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
@@ -919,7 +915,7 @@ Inward Date: ${inwardDate || 'N/A'}`;
                         <span class="badge ${v.status=='Pending PDI'?'badge-pending':v.status=='PDI OK'?'badge-ok':v.status=='REVIEW_PENDING'?'badge-conf':'badge-hold'}">${v.status}</span>
                         <div style="display:flex; gap:4px;">
                             <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="copyVehicleInfo('${v.chassis}', '${v.model}', '${v.location}', '${v.status}', '${v.inspector}', '${v.inwardDate}')" title="Copy Details"><i class="fa-solid fa-copy"></i></button>
-                            ${v.status!='Outward'?`<button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button>`:''}
+                            <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="jumpPdi('${v.chassis}')">PDI</button>
                         </div>
                     </div>
                 </div>
@@ -927,7 +923,7 @@ Inward Date: ${inwardDate || 'N/A'}`;
         }
 
         function downloadFilteredList(format) {
-            let physicalStock = vehiclesDB.filter(v => v.status !== 'Outward');
+            let physicalStock = vehiclesDB.filter(v => v.status !== 'Outward' && !v.location.includes('Outward'));
             let list = currentDashFilter === 'Physical' ? physicalStock :
                        (currentDashFilter === 'Pending PDI' ? vehiclesDB.filter(v => v.status === 'Pending PDI') :
                        (currentDashFilter === 'PDI OK' ? vehiclesDB.filter(v => v.status === 'PDI OK') :
@@ -951,7 +947,6 @@ Inward Date: ${inwardDate || 'N/A'}`;
                 link.click();
                 document.body.removeChild(link);
             } else {
-                // Image export using canvas
                 let canvas = document.createElement('canvas');
                 canvas.width = 800;
                 canvas.height = 200 + (list.length * 40);
@@ -967,7 +962,6 @@ Inward Date: ${inwardDate || 'N/A'}`;
                 ctx.font = '12px sans-serif';
                 ctx.fillText(`Generated on: ${new Date().toLocaleString()}`, 20, 65);
 
-                // Table Header
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(20, 85, 760, 30);
                 ctx.fillStyle = '#ffffff';
@@ -1001,7 +995,6 @@ Inward Date: ${inwardDate || 'N/A'}`;
 
         function populatePdiMasterList() {
             const container = document.getElementById('pdi-master-list');
-            // Allow selecting Pending PDI as well as Review Pending vehicles to update/clear hold
             const pendingList = vehiclesDB.filter(v => v.status === 'Pending PDI' || v.status === 'REVIEW_PENDING' || v.status === 'HOLD');
             if (!pendingList.length) {
                 container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No pending or review vehicles.</div>`;
@@ -1042,7 +1035,6 @@ Inward Date: ${inwardDate || 'N/A'}`;
             document.getElementById('pdi-b-chassis').innerText = v.chassis;
             document.getElementById('pdi-b-model').innerText = `${v.model} - ${v.location} [Status: ${v.status}]`;
             
-            // If it's in review or hold, preselect decision or remarks if available
             if (v.status === 'REVIEW_PENDING' || v.status === 'HOLD') {
                 document.getElementById('pdi-decision').value = v.status === 'HOLD' ? 'HOLD' : 'REVIEW_PENDING';
                 if (v.remarks) document.getElementById('pdi-remarks').value = v.remarks;
@@ -1343,7 +1335,6 @@ Inward Date: ${inwardDate || 'N/A'}`;
             if (!dtInput || !resDiv) return;
             const selectedDate = dtInput.value;
 
-            // Separating Inward vs PDI done on selected date
             const inwardMatched = vehiclesDB.filter(v => {
                 if (!v.inwardDate) return false;
                 try { return new Date(v.inwardDate).toISOString().split('T')[0] === selectedDate; } catch(e) { return false; }
