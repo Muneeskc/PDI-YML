@@ -60,7 +60,7 @@
         .card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
         .stat-card { background: var(--white); padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; cursor: pointer; }
         .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate); }
         .stat-val { font-size: 24px; font-weight: 800; margin-top: 4px; }
@@ -130,7 +130,7 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub">Strict Physical Stock & Fixed Selection</div>
+                <div class="brand-sub">Master Stock & Fixed Selection</div>
             </div>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
@@ -161,9 +161,13 @@
         <!-- DASHBOARD -->
         <section id="mod-dashboard" class="module-section active">
             <div class="stats-grid">
+                <div class="stat-card" onclick="filterDashboardList('ALL')">
+                    <div class="stat-label">Total Stock</div>
+                    <div class="stat-val" id="count-total" style="color: var(--primary);">0</div>
+                </div>
                 <div class="stat-card" onclick="filterDashboardList('Physical')">
                     <div class="stat-label">Physical Stock</div>
-                    <div class="stat-val" id="count-physical" style="color: var(--primary);">0</div>
+                    <div class="stat-val" id="count-physical" style="color: #0284c7;">0</div>
                 </div>
                 <div class="stat-card" onclick="filterDashboardList('Pending PDI')">
                     <div class="stat-label">Pending PDI</div>
@@ -193,7 +197,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Physical Stock</span></div>
+                    <div class="card-title"><i class="fa-solid fa-list-ul"></i> <span id="dash-list-title">Total Stock (Master Sheet)</span></div>
                     <div style="display:flex; gap:6px;">
                         <input type="text" id="dash-search" placeholder="Search chassis..." oninput="renderDashboard()" style="padding:6px 10px; font-size:12px; width:140px;">
                         <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadFilteredList('csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
@@ -558,7 +562,7 @@
         };
 
         let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form22: [], pdi_battery: [] };
-        let currentPdiChassis = '', currentOpChassis = '', currentDashFilter = 'Physical';
+        let currentPdiChassis = '', currentOpChassis = '', currentDashFilter = 'ALL';
         let qrScanner = null, activeScannerMode = null;
 
         window.onload = function() {
@@ -862,7 +866,6 @@ Inward Date: ${inwardDate || 'N/A'}`;
             });
         }
 
-        // STRICT HELPER: Check if a vehicle is truly in Physical Stock (Yard/Display and NOT Outward/Transferred out)
         function isPhysicalStock(v) {
             if (!v) return false;
             let st = (v.status || '').toUpperCase();
@@ -873,13 +876,14 @@ Inward Date: ${inwardDate || 'N/A'}`;
         }
 
         function renderDashboard() {
-            // Strictly exclude Outward / Stock Out / Transferred vehicles
+            // Master total stock from sheet (all vehicles)
+            const totalStock = vehiclesDB;
             const physicalStock = vehiclesDB.filter(v => isPhysicalStock(v));
             const displayCars = physicalStock.filter(v => v.location.toUpperCase().includes('DISPLAY'));
-            const pendingPdi = physicalStock.filter(v => v.status === 'Pending PDI');
-            const pdiOk = physicalStock.filter(v => v.status === 'PDI OK');
-            const holdCars = physicalStock.filter(v => v.status === 'HOLD');
-            const reviewPending = physicalStock.filter(v => v.status === 'REVIEW_PENDING');
+            const pendingPdi = totalStock.filter(v => v.status === 'Pending PDI');
+            const pdiOk = totalStock.filter(v => v.status === 'PDI OK');
+            const holdCars = totalStock.filter(v => v.status === 'HOLD');
+            const reviewPending = totalStock.filter(v => v.status === 'REVIEW_PENDING');
 
             const now = new Date();
             const agingCars = physicalStock.filter(v => {
@@ -890,6 +894,7 @@ Inward Date: ${inwardDate || 'N/A'}`;
                 return diffDays > 90;
             });
 
+            document.getElementById('count-total').innerText = totalStock.length;
             document.getElementById('count-physical').innerText = physicalStock.length;
             document.getElementById('count-pending').innerText = pendingPdi.length;
             document.getElementById('count-pdiok').innerText = pdiOk.length;
@@ -900,9 +905,10 @@ Inward Date: ${inwardDate || 'N/A'}`;
 
             const q = document.getElementById('dash-search').value.trim().toUpperCase();
             let list = [];
-            let titleText = "Physical Stock";
+            let titleText = "Total Stock";
             
-            if (currentDashFilter === 'Physical') { list = physicalStock; titleText = "Physical Stock (Yard & Display)"; }
+            if (currentDashFilter === 'ALL') { list = totalStock; titleText = "Total Stock (Master Sheet - All Vehicles)"; }
+            else if (currentDashFilter === 'Physical') { list = physicalStock; titleText = "Physical Stock (Yard & Display)"; }
             else if (currentDashFilter === 'Pending PDI') { list = pendingPdi; titleText = "Pending PDI Vehicles"; }
             else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI Done Vehicles"; }
             else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
@@ -935,16 +941,18 @@ Inward Date: ${inwardDate || 'N/A'}`;
         }
 
         function downloadFilteredList(format) {
+            let totalStock = vehiclesDB;
             let physicalStock = vehiclesDB.filter(v => isPhysicalStock(v));
-            let list = currentDashFilter === 'Physical' ? physicalStock :
-                       (currentDashFilter === 'Pending PDI' ? vehiclesDB.filter(v => v.status === 'Pending PDI') :
-                       (currentDashFilter === 'PDI OK' ? vehiclesDB.filter(v => v.status === 'PDI OK') :
-                       (currentDashFilter === 'HOLD' ? vehiclesDB.filter(v => v.status === 'HOLD') :
+            let list = currentDashFilter === 'ALL' ? totalStock :
+                       (currentDashFilter === 'Physical' ? physicalStock :
+                       (currentDashFilter === 'Pending PDI' ? totalStock.filter(v => v.status === 'Pending PDI') :
+                       (currentDashFilter === 'PDI OK' ? totalStock.filter(v => v.status === 'PDI OK') :
+                       (currentDashFilter === 'HOLD' ? totalStock.filter(v => v.status === 'HOLD') :
                        (currentDashFilter === 'Display' ? physicalStock.filter(v => v.location.toUpperCase().includes('DISPLAY')) :
                        (currentDashFilter === 'Aging' ? physicalStock.filter(v => {
                            if (!v.inwardDate) return false;
                            return Math.ceil(Math.abs(new Date() - new Date(v.inwardDate)) / (1000 * 60 * 60 * 24)) > 90;
-                       }) : vehiclesDB.filter(v => v.status === 'REVIEW_PENDING'))))));
+                       }) : totalStock.filter(v => v.status === 'REVIEW_PENDING')))))));
 
             if (format === 'csv') {
                 let csvContent = "data:text/csv;charset=utf-8,Chassis,Model,Inward Date,Location,Status,Inspector,Remarks\n";
