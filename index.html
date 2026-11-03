@@ -130,7 +130,7 @@
             <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
             <div>
                 <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub">Strict Physical Stock & Live Sync</div>
+                <div class="brand-sub">Strict Physical Stock & Fixed Selection</div>
             </div>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
@@ -637,6 +637,8 @@
                     }
                     if (icon) icon.classList.remove('fa-spin');
                     renderDashboard();
+                    if (document.getElementById('mod-pdi').classList.contains('active')) populatePdiMasterList();
+                    if (document.getElementById('mod-operations').classList.contains('active')) renderOperationsList();
                 })
                 .catch(err => {
                     if (icon) icon.classList.remove('fa-spin');
@@ -791,7 +793,7 @@
             const alertEl = document.getElementById('inward-status-alert');
             if (!c) { alertEl.style.display = 'none'; return; }
             const ex = vehiclesDB.find(v => v.chassis === c);
-            if (ex && ex.status !== 'Outward') {
+            if (ex && ex.status !== 'Outward' && !ex.location.includes('Outward') && !ex.location.includes('Transferred')) {
                 alertEl.className = 'alert-box alert-error'; alertEl.style.display = 'block';
                 alertEl.innerHTML = `DUPLICATE BLOCKED: Chassis ${c} is already in yard at ${ex.location}.`;
             } else {
@@ -808,7 +810,7 @@
 
             if (!chassis || !model) { alert('Enter Chassis and Model.'); return; }
             const exIdx = vehiclesDB.findIndex(v => v.chassis === chassis);
-            if (exIdx !== -1 && vehiclesDB[exIdx].status !== 'Outward') { alert('Duplicate chassis in yard!'); return; }
+            if (exIdx !== -1 && vehiclesDB[exIdx].status !== 'Outward' && !vehiclesDB[exIdx].location.includes('Outward')) { alert('Duplicate chassis in yard!'); return; }
 
             const todayDate = new Date().toISOString().split('T')[0];
             const inwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
@@ -860,10 +862,20 @@ Inward Date: ${inwardDate || 'N/A'}`;
             });
         }
 
+        // STRICT HELPER: Check if a vehicle is truly in Physical Stock (Yard/Display and NOT Outward/Transferred out)
+        function isPhysicalStock(v) {
+            if (!v) return false;
+            let st = (v.status || '').toUpperCase();
+            let loc = (v.location || '').toUpperCase();
+            if (st === 'OUTWARD' || st === 'DISPATCHED') return false;
+            if (loc.includes('OUTWARD') || loc.includes('TRANSFERRED') || loc.includes('TRANSFER')) return false;
+            return true;
+        }
+
         function renderDashboard() {
-            // Strictly exclude Outward / Stock Out / Delivery from Physical Stock
-            const physicalStock = vehiclesDB.filter(v => v.status !== 'Outward' && !v.location.includes('Outward'));
-            const displayCars = physicalStock.filter(v => v.location.includes('Display'));
+            // Strictly exclude Outward / Stock Out / Transferred vehicles
+            const physicalStock = vehiclesDB.filter(v => isPhysicalStock(v));
+            const displayCars = physicalStock.filter(v => v.location.toUpperCase().includes('DISPLAY'));
             const pendingPdi = physicalStock.filter(v => v.status === 'Pending PDI');
             const pdiOk = physicalStock.filter(v => v.status === 'PDI OK');
             const holdCars = physicalStock.filter(v => v.status === 'HOLD');
@@ -890,7 +902,7 @@ Inward Date: ${inwardDate || 'N/A'}`;
             let list = [];
             let titleText = "Physical Stock";
             
-            if (currentDashFilter === 'Physical') { list = physicalStock; titleText = "Physical Stock (Yard & Display - Excluding Outward)"; }
+            if (currentDashFilter === 'Physical') { list = physicalStock; titleText = "Physical Stock (Yard & Display)"; }
             else if (currentDashFilter === 'Pending PDI') { list = pendingPdi; titleText = "Pending PDI Vehicles"; }
             else if (currentDashFilter === 'PDI OK') { list = pdiOk; titleText = "PDI Done Vehicles"; }
             else if (currentDashFilter === 'HOLD') { list = holdCars; titleText = "On Hold Vehicles"; }
@@ -923,12 +935,12 @@ Inward Date: ${inwardDate || 'N/A'}`;
         }
 
         function downloadFilteredList(format) {
-            let physicalStock = vehiclesDB.filter(v => v.status !== 'Outward' && !v.location.includes('Outward'));
+            let physicalStock = vehiclesDB.filter(v => isPhysicalStock(v));
             let list = currentDashFilter === 'Physical' ? physicalStock :
                        (currentDashFilter === 'Pending PDI' ? vehiclesDB.filter(v => v.status === 'Pending PDI') :
                        (currentDashFilter === 'PDI OK' ? vehiclesDB.filter(v => v.status === 'PDI OK') :
                        (currentDashFilter === 'HOLD' ? vehiclesDB.filter(v => v.status === 'HOLD') :
-                       (currentDashFilter === 'Display' ? physicalStock.filter(v => v.location.includes('Display')) :
+                       (currentDashFilter === 'Display' ? physicalStock.filter(v => v.location.toUpperCase().includes('DISPLAY')) :
                        (currentDashFilter === 'Aging' ? physicalStock.filter(v => {
                            if (!v.inwardDate) return false;
                            return Math.ceil(Math.abs(new Date() - new Date(v.inwardDate)) / (1000 * 60 * 60 * 24)) > 90;
@@ -1020,7 +1032,7 @@ Inward Date: ${inwardDate || 'N/A'}`;
                 return;
             }
             container.innerHTML = pendingList.map(v => `
-                <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer;">
+                <div class="vehicle-item" onclick="onSelectPdiVehicle('${v.chassis}')" style="cursor:pointer; background:${currentPdiChassis===v.chassis?'#eff6ff':'#fff'}">
                     <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div>
                     <span class="badge ${v.status=='REVIEW_PENDING'?'badge-conf':(v.status=='HOLD'?'badge-hold':'badge-pending')}">${v.status}</span>
                 </div>
@@ -1028,8 +1040,14 @@ Inward Date: ${inwardDate || 'N/A'}`;
         }
 
         function onSelectPdiVehicle(c) {
-            const v = vehiclesDB.find(item => item.chassis === c || item.chassis.endsWith(c));
-            if (!v) { document.getElementById('pdi-banner').style.display = 'none'; currentPdiChassis = ''; return; }
+            const cleanC = c.trim().toUpperCase();
+            const v = vehiclesDB.find(item => item.chassis.toUpperCase() === cleanC || item.chassis.toUpperCase().endsWith(cleanC));
+            if (!v) { 
+                document.getElementById('pdi-banner').style.display = 'none'; 
+                currentPdiChassis = ''; 
+                alert('Vehicle not found for PDI selection.');
+                return; 
+            }
             currentPdiChassis = v.chassis;
             document.getElementById('pdi-banner').style.display = 'block';
             document.getElementById('pdi-b-chassis').innerText = v.chassis;
@@ -1170,20 +1188,23 @@ Inward Date: ${inwardDate || 'N/A'}`;
 
         function renderOperationsList() {
             const q = document.getElementById('op-search').value.trim().toUpperCase();
-            let list = vehiclesDB.filter(v => v.status !== 'Outward');
+            let list = vehiclesDB.filter(v => isPhysicalStock(v));
             if (q) list = list.filter(v => v.chassis.includes(q));
             document.getElementById('op-list').innerHTML = list.map(v => `
                 <div class="vehicle-item" onclick="openOpEd('${v.chassis}')" style="cursor:pointer;">
                     <div class="v-info"><h4>${v.chassis}</h4><p>${v.model} • ${v.location}</p></div>
                     <span class="badge ${v.status=='PDI OK'?'badge-ok':'badge-pending'}">${v.status}</span>
                 </div>
-            `).join('') || '<div style="text-align:center; color:var(--slate);">No vehicles.</div>';
+            `).join('') || '<div style="text-align:center; color:var(--slate);">No physical stock vehicles found.</div>';
         }
 
         function openOpEd(c) {
-            currentOpChassis = c;
-            const v = vehiclesDB.find(x => x.chassis === c);
-            if (!v) return;
+            currentOpChassis = c.trim().toUpperCase();
+            const v = vehiclesDB.find(x => x.chassis.toUpperCase() === currentOpChassis);
+            if (!v) {
+                alert('Vehicle not found.');
+                return;
+            }
             document.getElementById('op-editor').style.display = 'block';
             document.getElementById('op-ed-chassis').innerText = `Operations: ${v.chassis} (${v.model})`;
         }
@@ -1196,8 +1217,8 @@ Inward Date: ${inwardDate || 'N/A'}`;
         }
 
         function confirmOperationsDispatch() {
-            const v = vehiclesDB.find(x => x.chassis === currentOpChassis);
-            if (!v) return;
+            const v = vehiclesDB.find(x => x.chassis.toUpperCase() === currentOpChassis);
+            if (!v) { alert('Select a vehicle first.'); return; }
             const act = document.getElementById('op-action-type').value;
             const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -1387,7 +1408,7 @@ Inward Date: ${inwardDate || 'N/A'}`;
 
             const deliveryReady = matchedPdi.filter(v => v.status === 'PDI OK').length;
             const stockTransfer = vehiclesDB.filter(v => v.location.includes('Transferred') || v.location.includes('Transfer')).length;
-            const stockOut = vehiclesDB.filter(v => v.status === 'Outward').length;
+            const stockOut = vehiclesDB.filter(v => v.status === 'Outward' || v.location.includes('Outward')).length;
 
             let techCounts = {};
             matchedPdi.forEach(v => {
