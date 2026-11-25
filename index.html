@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Luxon Yard Management System — Premium Edition</title>
+    <title>Vehicle Yard Management System</title>
     <!-- Barcode Scanner, Generator, PDF & Icons -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -211,242 +211,85 @@
         .alert-box { padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; margin-bottom: 14px; display: none; }
         .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
         .alert-error { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
-    
-/* ============================================================
-   LUXON PREMIUM UI — COMPLETE PRESENTATION REDESIGN
-   Original application DOM, IDs, handlers, data logic and
-   integrations are intentionally preserved.
-   ============================================================ */
-:root {
- --primary:#16766e; --primary-light:#25a094; --primary-dark:#10564f; --primary-bg:#e8f5f2;
- --success:#16845e; --success-bg:#e8f6ee; --warning:#b7791f; --warning-bg:#fff5df;
- --danger:#c34b51; --danger-bg:#fff0ef; --dark:#172d33; --slate:#71858b;
- --light:#f2f6f5; --white:#fff; --border:#dfe9e7; --radius:18px;
- --shadow:0 12px 32px rgba(19,53,58,.075); --card-bg:#fff; --sidebar-width:258px;
-}
-[data-theme="dark"] {
- --primary:#58b9ad; --primary-light:#78d0c5; --primary-dark:#32988d; --primary-bg:#193b39;
- --success:#4fc18d; --success-bg:#15392e; --warning:#e8b95f; --warning-bg:#43351b;
- --danger:#f0787d; --danger-bg:#45282a; --dark:#e7f0ef; --slate:#9aafb1;
- --light:#0d191d; --white:#14262b; --border:#294047; --card-bg:#14262b;
- --shadow:0 12px 34px rgba(0,0,0,.23);
-}
-html { scroll-behavior:smooth; }
-body { background:var(--light); color:var(--dark); padding-bottom:0; letter-spacing:-.012em; }
-* { -webkit-tap-highlight-color:transparent; }
-button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .18s ease; }
 
-/* Header / identity */
-.app-header {
- min-height:76px; padding:12px 25px;
- background:linear-gradient(112deg,#102d33 0%,#164b4b 58%,#16766e 100%);
- color:#fff; border:0; box-shadow:0 8px 26px rgba(12,48,51,.17);
-}
-.brand-box { gap:13px; }
-.brand-icon {
- width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#5bd0bd,#168276);
- box-shadow:0 7px 20px rgba(21,153,137,.32);font-size:19px;
-}
-.brand-title { color:#fff;font-size:18px;font-weight:800;letter-spacing:-.7px; }
-.brand-sub { color:#b5d5d0;font-size:10px;letter-spacing:.09em;text-transform:uppercase; }
-.header-actions { gap:9px; }
-.theme-toggle-btn,.menu-btn {
- border:1px solid #ffffff30;background:#ffffff14;color:#fff;border-radius:11px;
- min-height:39px;
-}
-.theme-toggle-btn:hover,.menu-btn:hover { background:#ffffff28;color:#fff; }
-.app-header .btn-outline { background:#ffffff14;color:#fff;border:1px solid #ffffff30;box-shadow:none; }
-.app-header .btn-outline:hover { background:#ffffff25;color:#fff; }
-.menu-dropdown { border-radius:14px;box-shadow:0 18px 44px rgba(0,0,0,.2); }
 
-/* Overall workspace */
-.app-layout { align-items:stretch; }
-.app-sidebar {
- width:var(--sidebar-width);min-width:var(--sidebar-width);height:calc(100vh - 76px);
- top:76px;padding:22px 14px;background:#112e34;color:#d8e8e5;
- border:0;box-shadow:8px 0 26px rgba(17,46,52,.07);
-}
-.sidebar-section-title {
- color:#779b98;font-size:10px;letter-spacing:1.45px;
- margin:17px 11px 9px;font-weight:800;
-}
-.sidebar-link {
- color:#aec3c0;padding:12px 13px;border-radius:11px;margin:3px 0;
- font-size:12px;font-weight:650;position:relative;
-}
-.sidebar-link i { color:#8aadaa;width:19px;font-size:14px; }
-.sidebar-link:hover { background:#ffffff12;color:#fff;transform:translateX(2px); }
-.sidebar-link:hover i { color:#76d2c4; }
-.sidebar-link.active {
- background:linear-gradient(100deg,#1d6d66,#1c5554);color:#fff;
- box-shadow:inset 3px 0 #6bd2c3,0 5px 15px rgba(0,0,0,.12);
-}
-.sidebar-link.active i { color:#8be0d2; }
-.main-content { max-width:none;width:auto;padding:25px 27px 38px; }
-.nav-tabs {
- padding:7px;gap:6px;border:1px solid var(--border);border-radius:15px;
- background:var(--card-bg);box-shadow:var(--shadow);margin-bottom:21px;
-}
-.tab-btn {
- border:0;background:transparent;padding:11px 15px;border-radius:10px;
- color:var(--slate);font-size:12px;font-weight:750;
-}
-.tab-btn:hover { background:var(--primary-bg);color:var(--primary); }
-.tab-btn.active {
- color:#fff;background:linear-gradient(120deg,var(--primary),var(--primary-light));
- box-shadow:0 5px 14px rgba(22,118,110,.22);
-}
+        /* PREMIUM VEHICLE YARD UI REFRESH */
+        :root { --primary:#078f91; --primary-light:#22b8b3; --primary-dark:#075e68; --primary-bg:#e8f7f6; --success:#16845b; --warning:#c98217; --danger:#c83d4b; --dark:#13243a; --slate:#68798e; --light:#f2f6fb; --border:#dce5ef; --radius:18px; --shadow:0 8px 28px rgba(20,45,75,.075); --card-bg:#fff; --sidebar-width:248px; }
+        [data-theme="dark"] { --primary:#27c4bb; --primary-light:#50d5ce; --primary-dark:#0c8e91; --primary-bg:#123b43; --success:#34c58a; --warning:#f0b44f; --danger:#ff707b; --dark:#edf4fb; --slate:#9aabc0; --light:#0b1524; --white:#111f31; --border:#26384d; --card-bg:#132338; --shadow:0 8px 28px rgba(0,0,0,.22); }
+        body { background:radial-gradient(circle at 90% 0%,rgba(13,148,136,.07),transparent 28%),var(--light); color:var(--dark); padding-bottom:92px; }
+        .app-header { background:rgba(15,34,55,.97); color:#fff; border:0; padding:12px 22px; box-shadow:0 8px 24px rgba(7,20,38,.18); }
+        .brand-icon { background:linear-gradient(135deg,#17c7b7,#087c87); border-radius:14px; box-shadow:0 8px 20px rgba(0,190,176,.2); }
+        .brand-title { color:#fff; letter-spacing:-.35px; font-size:16px; }
+        .brand-sub { color:#b7c9d9; }
+        .theme-toggle-btn,.menu-btn { background:#233c56; color:#eaf5ff; border:1px solid rgba(255,255,255,.13); }
+        .app-sidebar { background:linear-gradient(180deg,#10243a,#0c1b2d); border:0; padding:22px 13px; top:66px; height:calc(100vh - 66px); }
+        .sidebar-section-title { color:#7f9ab2; letter-spacing:1px; }
+        .sidebar-link { color:#c1cfdd; border-radius:12px; padding:12px 13px; }
+        .sidebar-link:hover,.sidebar-link.active { color:#fff; background:linear-gradient(100deg,#087f83,#0b9d9b); box-shadow:0 7px 18px rgba(0,153,145,.22); }
+        .main-content { max-width:1600px; padding:24px; }
+        .nav-tabs { border:0; background:transparent; box-shadow:none; padding:0; margin-bottom:18px; }
+        .tab-btn { border:1px solid var(--border); border-radius:12px; background:var(--card-bg); }
+        .tab-btn.active { background:linear-gradient(120deg,#087f83,#0ba9a1); border-color:transparent; }
+        .card,.stat-card { background:var(--card-bg); border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); }
+        .card { padding:18px; margin-bottom:18px; }
+        .card-header { border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:14px; }
+        .card-title { font-size:15px; font-weight:800; letter-spacing:-.25px; }
+        .card-title i { color:var(--primary); }
+        .dashboard-welcome { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:8px 2px 18px; }
+        .dashboard-welcome .eyebrow { font-size:10px; font-weight:800; color:var(--primary); letter-spacing:1.5px; margin-bottom:6px; }
+        .dashboard-welcome h1 { font-size:27px; font-weight:800; letter-spacing:-1px; color:var(--dark); }
+        .dashboard-welcome p,.section-heading p { color:var(--slate); font-size:12px; margin-top:4px; }
+        .welcome-date,.live-pill,.today-chip { display:inline-flex; align-items:center; gap:7px; border:1px solid var(--border); background:var(--card-bg); border-radius:999px; padding:9px 13px; color:var(--slate); font-size:11px; font-weight:700; }
+        .live-pill { color:var(--success); background:var(--success-bg); border:0; }
+        .live-pill i { font-size:7px; }
+        .section-heading { display:flex; align-items:center; justify-content:space-between; margin:2px 0 12px; }
+        .section-heading h2 { font-size:18px; font-weight:800; letter-spacing:-.5px; }
+        .stats-grid { grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+        .stat-card { padding:16px; min-height:112px; border-radius:17px; }
+        .stat-card:first-child { grid-column:span 2; background:linear-gradient(125deg,#073c4c,#087f83); border:0; color:#fff; }
+        .stat-card:first-child .stat-label,.stat-card:first-child .stat-val { color:#fff!important; }
+        .stat-card:first-child .stat-val { font-size:34px; }
+        .stat-label { font-size:11px; font-weight:800; color:var(--slate); }
+        .stat-val { font-size:27px; font-weight:800; margin-top:8px; letter-spacing:-.8px; }
+        .stat-card:hover { transform:translateY(-2px); }
+        .dashboard-two-col { display:grid; grid-template-columns:1fr 1.15fr; gap:16px; }
+        .activity-card,.quick-actions-card { min-width:0; }
+        .activity-metrics { display:grid; grid-template-columns:repeat(3,1fr); }
+        .activity-metrics>div { display:grid; grid-template-columns:42px 1fr; grid-template-rows:auto auto; column-gap:9px; align-items:center; padding:5px 10px; border-right:1px solid var(--border); }
+        .activity-metrics>div:last-child { border:0; }
+        .activity-icon { grid-row:span 2; width:40px; height:40px; border-radius:13px; display:grid; place-items:center; background:var(--primary-bg); color:var(--primary); }
+        .activity-metrics strong { font-size:23px; line-height:1.1; }
+        .activity-metrics small { color:var(--slate); font-size:10px; font-weight:700; }
+        .today-chip { padding:5px 10px; background:var(--primary-bg); color:var(--primary); border:0; }
+        .quick-actions-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; }
+        .quick-action { min-height:82px; border:0; border-radius:14px; color:#fff; padding:12px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; font-weight:800; font-size:11px; cursor:pointer; box-shadow:0 7px 16px rgba(20,50,80,.12); }
+        .quick-action i { font-size:22px; }
+        .quick-action:hover { transform:translateY(-2px); filter:brightness(1.06); }
+        .qa-inward { background:linear-gradient(135deg,#0aa99d,#087b7c); }
+        .qa-pdi { background:linear-gradient(135deg,#2778d4,#174a91); }
+        .qa-operations { background:linear-gradient(135deg,#6654c9,#40328e); }
+        .qa-reports { background:linear-gradient(135deg,#345879,#172d48); }
+        .filter-bar { gap:10px; }
+        input,select,textarea { border-radius:11px!important; border:1px solid var(--border)!important; background:var(--card-bg)!important; color:var(--dark)!important; min-height:42px; }
+        input:focus,select:focus,textarea:focus { outline:2px solid rgba(8,145,145,.18); border-color:var(--primary)!important; }
+        .btn { border-radius:10px; font-weight:800; }
+        .btn-primary { background:linear-gradient(120deg,#07898c,#0ba9a1); border-color:transparent; }
+        .vehicle-item { border:1px solid var(--border); border-radius:13px; margin-bottom:8px; padding:13px; background:var(--card-bg); }
+        .vehicle-item:hover { border-color:var(--primary-light); box-shadow:0 5px 16px rgba(10,100,110,.08); }
+        .badge { border-radius:999px; padding:5px 9px; }
+        .modal-card { border-radius:20px; border:1px solid var(--border); box-shadow:0 24px 70px rgba(0,0,0,.25); }
+        .mobile-bottom-nav { background:rgba(13,31,51,.98); border:0; padding:8px 6px calc(8px + env(safe-area-inset-bottom)); }
+        .bnav-item { color:#b6c7d8; border-radius:12px; }
+        .bnav-item.active { background:#087f83; color:#fff; }
+        .bnav-item i { font-size:17px; }
+        .form-group { margin-bottom:15px; }
+        .form-group label { color:var(--slate); font-weight:800; font-size:11px; letter-spacing:.2px; }
+        .photo-grid { gap:9px; }
+        @media(max-width:1150px) { .stats-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } .stat-card:first-child { grid-column:span 1; } }
+        @media(max-width:900px) { .main-content { padding:14px; } .dashboard-two-col { grid-template-columns:1fr; } .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; } .stat-card:first-child { grid-column:span 2; } .quick-actions-grid { grid-template-columns:repeat(4,1fr); } .dashboard-welcome h1 { font-size:23px; } }
+        @media(max-width:520px) { .app-header { padding:10px 12px; } .brand-title { font-size:13px; } .brand-sub { font-size:9px; } .brand-icon { width:36px;height:36px;font-size:17px; } .header-actions { gap:5px; } .header-actions .btn { padding:7px 8px!important;font-size:10px!important; } .main-content { padding:11px; } .dashboard-welcome { align-items:flex-start; } .dashboard-welcome h1 { font-size:21px; } .welcome-date { font-size:9px;padding:7px 9px; } .section-heading h2 { font-size:16px; } .stats-grid { gap:8px; } .stat-card { padding:12px; min-height:94px; } .stat-val { font-size:23px; } .stat-card:first-child .stat-val { font-size:30px; } .activity-metrics>div { grid-template-columns:1fr; text-align:center; justify-items:center; padding:4px; gap:5px; } .activity-icon { grid-row:auto; } .activity-metrics strong { font-size:20px; } .activity-metrics small { font-size:9px; } .quick-actions-grid { grid-template-columns:repeat(2,1fr); } .quick-action { min-height:70px; flex-direction:row; justify-content:flex-start; padding:12px; } .quick-action i { font-size:18px; } .card { padding:13px; } .mobile-bottom-nav { padding-left:2px;padding-right:2px; } .bnav-item { padding:6px 8px;font-size:9px; } }
 
-/* Content rhythm and cards */
-.module-section.active { animation:luxonIn .25s ease both; }
-@keyframes luxonIn { from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none} }
-.stats-grid { gap:14px;margin-bottom:18px; }
-.stat-card {
- border:1px solid var(--border);border-radius:17px;background:var(--card-bg);
- padding:18px 18px 17px;box-shadow:var(--shadow);min-height:108px;
-}
-.stat-card:before {
- content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
- background:linear-gradient(180deg,var(--primary-light),var(--primary));
-}
-.stat-card:hover { transform:translateY(-3px);border-color:var(--primary-light);box-shadow:0 16px 32px rgba(19,53,58,.12); }
-.stat-card.active-filter { border:2px solid var(--primary);background:var(--primary-bg); }
-.stat-label { font-size:10px;letter-spacing:.075em;font-weight:800;color:var(--slate);margin-bottom:10px; }
-.stat-val { font:800 29px/1.1 'Inter',sans-serif;letter-spacing:-1.2px; }
-.card {
- background:var(--card-bg);border:1px solid var(--border);border-radius:18px;
- padding:20px;margin-bottom:17px;box-shadow:var(--shadow);
-}
-.card-header { padding-bottom:13px;border-bottom:1px solid var(--border);margin-bottom:17px; }
-.card-title { font-size:14px;font-weight:800;letter-spacing:-.2px; }
-.card-title i { color:var(--primary); }
-.filter-bar { gap:9px;margin-bottom:15px; }
-.vehicle-list { gap:9px;padding:2px 4px 2px 0; }
-.vehicle-item {
- border:1px solid var(--border);border-radius:13px;padding:13px 15px;
- background:var(--card-bg);box-shadow:0 3px 10px rgba(17,48,53,.035);
-}
-.vehicle-item:hover { border-color:var(--primary-light);background:var(--primary-bg);transform:translateY(-1px); }
-.vehicle-item.selected-item { border:2px solid var(--primary);background:var(--primary-bg); }
-.v-info h4 { font-size:14px;letter-spacing:.01em; }
-.v-info p { font-size:11px;line-height:1.5; }
-
-/* Inputs / forms */
-.form-group { margin-bottom:15px; }
-.form-group label {
- color:var(--slate);font-size:10px;font-weight:800;letter-spacing:.07em;margin-bottom:7px;
-}
-.filter-bar input,.filter-bar select,.form-group input,.form-group select,.form-group textarea {
- background:var(--light);color:var(--dark);border:1px solid var(--border);
- border-radius:11px;padding:12px 13px;font-size:13px;font-weight:550;min-height:43px;
-}
-.filter-bar input:focus,.filter-bar select:focus,.form-group input:focus,.form-group select:focus,.form-group textarea:focus {
- border-color:var(--primary-light);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 14%,transparent);
-}
-.form-group textarea { min-height:90px;line-height:1.5; }
-.btn {
- border-radius:11px;padding:11px 16px;font-size:12px;font-weight:750;
- box-shadow:0 3px 8px rgba(16,48,52,.055);
-}
-.btn-primary,.btn-success {
- background:linear-gradient(120deg,var(--primary),var(--primary-light));
- color:#fff;box-shadow:0 6px 15px rgba(22,118,110,.2);
-}
-.btn-primary:hover,.btn-success:hover { filter:brightness(1.06);transform:translateY(-1px); }
-.btn-danger { background:var(--danger); }
-.btn-outline { background:var(--card-bg);color:var(--slate);border:1px solid var(--border); }
-.btn-outline:hover { background:var(--primary-bg);color:var(--primary);border-color:var(--primary-light); }
-.btn-dark { background:#17363c;color:#fff; }
-.badge { padding:5px 10px;font-size:10px;letter-spacing:.035em; }
-.badge-pending { background:var(--warning-bg);color:var(--warning);border-color:transparent; }
-.badge-ok { background:var(--success-bg);color:var(--success);border-color:transparent; }
-.badge-hold { background:var(--danger-bg);color:var(--danger);border-color:transparent; }
-.badge-conf { background:#e9f2ff;color:#477ec4;border-color:transparent; }
-.badge-out { background:#eef1f3;color:#64748b;border-color:transparent; }
-
-/* Photos, report tiles and modal surfaces */
-.photo-grid { grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px; }
-.thumb-wrapper { height:105px;border-radius:12px;border-color:var(--border); }
-.thumb-remove { width:25px;height:25px; }
-.empty-photo-hint { background:var(--light);border:1px dashed var(--border);border-radius:11px;padding:13px; }
-.report-grid { gap:11px; }
-.report-box {
- border:1px solid var(--border);border-radius:14px;padding:15px 12px;
- background:var(--card-bg);box-shadow:0 4px 12px rgba(17,48,53,.04);
-}
-.report-box:hover { transform:translateY(-2px);border-color:var(--primary-light);background:var(--primary-bg); }
-.report-box.active-rep { border:2px solid var(--primary);background:var(--primary-bg); }
-.report-box-lbl { font-size:9px;letter-spacing:.08em; }
-.report-box-val { font-size:23px;font-weight:850; }
-.modal-overlay { background:rgba(6,25,29,.66);backdrop-filter:blur(8px); }
-.modal-card {
- max-width:680px;border-radius:21px;padding:23px;
- border:1px solid var(--border);box-shadow:0 28px 75px rgba(0,0,0,.28);
-}
-.alert-box { border-radius:12px;padding:13px 15px; }
-.toast-container { bottom:24px;right:24px; }
-.toast { border-radius:13px;padding:13px 17px;box-shadow:0 12px 30px rgba(0,0,0,.2); }
-
-/* Scrollbars */
-* { scrollbar-width:thin;scrollbar-color:#b7cbc7 transparent; }
-::-webkit-scrollbar { width:7px;height:7px; }
-::-webkit-scrollbar-thumb { background:#b7cbc7;border-radius:10px; }
-
-/* Responsive redesign */
-@media (min-width:1500px) {
- .main-content { padding-left:34px;padding-right:34px; }
- .stats-grid { grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); }
-}
-@media (max-width:1100px) {
- :root { --sidebar-width:225px; }
- .main-content { padding:19px; }
- .stats-grid { grid-template-columns:repeat(auto-fit,minmax(135px,1fr)); }
-}
-@media (max-width:900px) {
- .app-header { min-height:66px;padding:9px 14px; }
- .brand-icon { width:38px;height:38px;border-radius:12px;font-size:17px; }
- .brand-title { font-size:15px; }
- .brand-sub { font-size:9px; }
- .app-sidebar { display:none; }
- .mobile-bottom-nav {
-  display:flex;justify-content:space-around;align-items:center;
-  padding:8px 5px max(8px,env(safe-area-inset-bottom));
-  background:color-mix(in srgb,var(--card-bg) 94%,transparent);
-  border-top:1px solid var(--border);box-shadow:0 -8px 28px rgba(16,48,52,.09);
-  backdrop-filter:blur(18px);
- }
- body { padding-bottom:82px; }
- .main-content { padding:13px 12px 24px; }
- .nav-tabs { border-radius:13px;padding:6px;margin-bottom:14px; }
- .tab-btn { padding:10px 12px;font-size:11px; }
- .card { padding:15px;border-radius:15px;margin-bottom:13px; }
- .card-header { margin-bottom:13px; }
- .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:13px; }
- .stat-card { min-height:94px;padding:14px 13px;border-radius:14px; }
- .stat-val { font-size:25px; }
- .stat-label { font-size:9px; }
- .filter-bar { gap:8px; }
- .filter-bar input { min-width:100%; }
- .filter-bar select { min-width:calc(50% - 5px); }
- .vehicle-item { padding:12px; }
- .photo-grid { grid-template-columns:repeat(auto-fill,minmax(86px,1fr)); }
- .thumb-wrapper { height:88px; }
- .modal-overlay { padding:10px;align-items:flex-end; }
- .modal-card { max-height:92vh;border-radius:20px 20px 12px 12px;padding:18px; }
- .toast-container { left:12px;right:12px;bottom:92px; }
-}
-@media (max-width:380px) {
- .header-actions { gap:5px; }
- .app-header .btn-outline { padding:7px 9px!important;font-size:10px!important; }
- .menu-btn { padding:8px 10px;font-size:11px; }
- .brand-box { gap:8px; }
- .stats-grid { gap:8px; }
- .stat-card { padding:12px 10px; }
- .stat-val { font-size:23px; }
- .bnav-item { padding:6px 7px;font-size:9px; }
-}
-
-</style>
+    </style>
 </head>
 <body>
 
@@ -458,7 +301,7 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
         <div class="brand-box">
             <div class="brand-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
             <div>
-                <div class="brand-title">Luxon Yard Management</div>
+                <div class="brand-title">Vehicle Yard Management</div>
                 <div class="brand-sub" id="sync-status-text">Connected to Cloud Sync</div>
             </div>
         </div>
@@ -511,6 +354,11 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
 
             <!-- MODULE 1: DASHBOARD -->
             <section id="mod-dashboard" class="module-section active">
+                <div class="dashboard-welcome">
+                    <div><div class="eyebrow">YARD OPERATIONS OVERVIEW</div><h1>Good day!</h1><p>Your complete yard status at a glance</p></div>
+                    <div class="welcome-date"><i class="fa-regular fa-calendar"></i> <span id="dashboard-today-label">Today</span></div>
+                </div>
+                <div class="section-heading"><div><h2>Stock Overview</h2><p>Current vehicle inventory status</p></div><span class="live-pill"><i class="fa-solid fa-circle"></i> Live overview</span></div>
                 <div class="stats-grid">
                     <div class="stat-card" id="card-Physical" onclick="filterDashboardList('Physical')">
                         <div class="stat-label">Physical Stock</div>
@@ -539,6 +387,26 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
                     <div class="stat-card" id="card-ReviewPending" onclick="filterDashboardList('ReviewPending')">
                         <div class="stat-label">Hold Review Pending</div>
                         <div class="stat-val" id="count-review" style="color: #0284c7;">0</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-two-col">
+                    <div class="card activity-card">
+                        <div class="card-header"><div class="card-title"><i class="fa-regular fa-calendar-check"></i> Today's Activity</div><span class="today-chip">Today</span></div>
+                        <div class="activity-metrics">
+                            <div><span class="activity-icon"><i class="fa-solid fa-truck-ramp-box"></i></span><strong id="today-inward-count">0</strong><small>Inward</small></div>
+                            <div><span class="activity-icon"><i class="fa-solid fa-clipboard-check"></i></span><strong id="today-pdi-count">0</strong><small>PDI Done</small></div>
+                            <div><span class="activity-icon"><i class="fa-solid fa-truck-fast"></i></span><strong id="today-outward-count">0</strong><small>Outward</small></div>
+                        </div>
+                    </div>
+                    <div class="card quick-actions-card">
+                        <div class="card-header"><div class="card-title"><i class="fa-solid fa-bolt"></i> Quick Actions</div></div>
+                        <div class="quick-actions-grid">
+                            <button type="button" class="quick-action qa-inward" onclick="openModule('inward')"><i class="fa-solid fa-circle-plus"></i><span>New Inward</span></button>
+                            <button type="button" class="quick-action qa-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i><span>Start PDI</span></button>
+                            <button type="button" class="quick-action qa-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Operations</span></button>
+                            <button type="button" class="quick-action qa-reports" onclick="openReportsModal('daily')"><i class="fa-solid fa-chart-column"></i><span>Reports</span></button>
+                        </div>
                     </div>
                 </div>
 
@@ -748,8 +616,9 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
             <section id="mod-operations" class="module-section">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title"><i class="fa-solid fa-arrows-split-up-and-left"></i> Yard Operations, Stock Transfer &amp; Delivery Outward</div>
+                        <div class="card-title"><i class="fa-solid fa-arrows-split-up-and-left"></i> Vehicle Operations &amp; Movement Management</div>
                     </div>
+                    <p style="font-size:12px;color:var(--slate);margin:-4px 0 14px;">Manage delivery outward, stock transfer, display movement and yard-to-yard location changes from one place.</p>
 
                     <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
                         <button type="button" class="btn btn-primary" style="flex:1;" onclick="toggleCameraScanner('op')"><i class="fa-solid fa-camera"></i> Scan Chassis</button>
@@ -778,16 +647,16 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
                         </div>
 
                         <div class="form-group">
-                            <label>Select Operation Type *</label>
+                            <label>Select Vehicle Operation *</label>
                             <select id="op-action-type" onchange="toggleOpActionUI()">
-                                <option value="LOCATION">Internal Yard / Display Location Change</option>
-                                <option value="DISPATCH">Delivery Dispatch (Outward to Showroom)</option>
-                                <option value="TRANSFER">Regional Stock Transfer</option>
+                                <option value="LOCATION">Yard / Display Location Change</option>
+                                <option value="DISPATCH">Delivery Outward</option>
+                                <option value="TRANSFER">Stock Transfer to Another Yard / Hub</option>
                             </select>
                         </div>
 
                         <div class="form-group" id="op-loc-box">
-                            <label>New Yard / Display Location *</label>
+                            <label>New Yard / Display Location (Yard / Display Move) *</label>
                             <select id="op-ed-newloc"></select>
                         </div>
 
@@ -817,7 +686,7 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
                         <button type="button" class="btn btn-primary btn-full" onclick="confirmOperationsDispatch()"><i class="fa-solid fa-check"></i> Update Operation &amp; Sync Sheet</button>
                     </div>
 
-                    <label style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; display:block; text-transform:uppercase;">Physical Stock Vehicles (Tap any vehicle to select):</label>
+                    <label style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; display:block; text-transform:uppercase;">Select a vehicle to update its operation:</label>
                     <div id="op-list" class="vehicle-list" style="max-height:260px;"></div>
                 </div>
             </section>
@@ -1400,7 +1269,27 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
             }};
         }
 
+        function updateDashboardActivity() {
+            const today = new Date();
+            const isoToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
+            const label = document.getElementById('dashboard-today-label');
+            if (label) label.textContent = today.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+            const sameDay = value => {
+                if (!value) return false;
+                const raw = String(value).trim();
+                if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return raw.slice(0,10) === isoToday;
+                const parsed = new Date(raw);
+                return !isNaN(parsed.getTime()) && parsed.getFullYear()===today.getFullYear() && parsed.getMonth()===today.getMonth() && parsed.getDate()===today.getDate();
+            };
+            const inward = (vehiclesDB || []).filter(v => sameDay(v.inwardDate)).length;
+            const pdi = (vehiclesDB || []).filter(v => sameDay(v.pdiDate)).length;
+            const outward = (vehiclesDB || []).filter(v => sameDay(v.outwardDate) && ['Outward','Stock Transfer'].includes(v.status)).length;
+            const set = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+            set('today-inward-count', inward); set('today-pdi-count', pdi); set('today-outward-count', outward);
+        }
+
         function renderDashboard() {
+            updateDashboardActivity();
             const { list, titleText, counts } = getDashboardFilteredVehicles();
 
             document.getElementById('count-physical').innerText = counts.physical;
@@ -1901,7 +1790,7 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
 
             doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 28, 'F');
             doc.setTextColor(255, 255, 255); doc.setFontSize(14);
-            doc.text('LUXON TATA - PDI CHECKING REPORT', 12, 11);
+            doc.text('VEHICLE YARD - PDI CHECKING REPORT', 12, 11);
             doc.setFontSize(10);
             doc.text(`Chassis: ${v.chassis}  |  Status: ${statusLabel}  |  Inspector: ${v.inspector || 'N/A'}`, 12, 20);
 
@@ -1995,7 +1884,7 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
                 const doc = new jsPDF('l', 'mm', 'a4');
                 doc.setFillColor(15, 23, 42); doc.rect(0, 0, 297, 22, 'F');
                 doc.setTextColor(255, 255, 255); doc.setFontSize(13);
-                doc.text(`LUXON TATA YMS - ${title.toUpperCase()}`, 12, 14);
+                doc.text(`VEHICLE YARD MANAGEMENT - ${title.toUpperCase()}`, 12, 14);
 
                 let y = 30;
                 doc.setFillColor(30, 64, 175); doc.rect(10, y - 6, 277, 8, 'F');
@@ -2042,7 +1931,7 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
                 ctx.fillRect(0, 0, width, 70);
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 22px sans-serif';
-                ctx.fillText(`LUXON TATA YMS - ${title}`, 24, 34);
+                ctx.fillText(`VEHICLE YARD MANAGEMENT - ${title}`, 24, 34);
                 ctx.fillStyle = '#93c5fd';
                 ctx.font = '13px sans-serif';
                 ctx.fillText(`Generated: ${new Date().toLocaleString('en-IN')}  |  Total Vehicles: ${list.length}`, 24, 56);
@@ -2095,7 +1984,7 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
 
         function downloadCurrentDashboardList(format) {
             const { list, titleText } = getDashboardFilteredVehicles();
-            exportVehicleTable(titleText, list, format, `Luxon_Dashboard_${currentDashFilter}`);
+            exportVehicleTable(titleText, list, format, `Yard_Dashboard_${currentDashFilter}`);
         }
 
         // REPORTS MODAL
@@ -2303,9 +2192,9 @@ button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .
                     }).join('') : `<div style="color:var(--slate); text-align:center; padding:16px;">No vehicles currently in ${labelTitle}.</div>`}
                 </div>
                 <div style="display:flex; gap:6px;">
-                    <button class="btn btn-primary" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'csv', 'Luxon_${statusKey}_Report')"><i class="fa-solid fa-file-excel"></i> Excel</button>
-                    <button class="btn btn-danger" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'pdf', 'Luxon_${statusKey}_Report')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-                    <button class="btn btn-dark" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'image', 'Luxon_${statusKey}_Report')"><i class="fa-solid fa-image"></i> Image</button>
+                    <button class="btn btn-primary" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'csv', 'Yard_${statusKey}_Report')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'pdf', 'Yard_${statusKey}_Report')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button class="btn btn-dark" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'image', 'Yard_${statusKey}_Report')"><i class="fa-solid fa-image"></i> Image</button>
                 </div>
             `;
         }
