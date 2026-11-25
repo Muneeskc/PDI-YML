@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Luxon TATA - Enterprise Yard Management System (YMS)</title>
+    <title>Luxon Yard Management System (YMS)</title>
     <!-- Barcode Scanner, Generator, PDF & Icons -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -211,7 +211,142 @@
         .alert-box { padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; margin-bottom: 14px; display: none; }
         .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
         .alert-error { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
-    </style>
+    
+/* ==========================================================
+   LUXON PREMIUM UI REFRESH — presentation layer only
+   Existing IDs, handlers, data model and integrations retained.
+   ========================================================== */
+:root {
+  --primary:#176b67; --primary-light:#218b83; --primary-dark:#104d4a;
+  --primary-bg:#e8f5f2; --success:#16835d; --success-bg:#e7f6ee;
+  --warning:#b7791f; --warning-bg:#fff5df; --danger:#c44747; --danger-bg:#fff0ef;
+  --dark:#172b35; --slate:#6c8189; --light:#f2f6f6; --white:#ffffff;
+  --border:#dce7e7; --radius:18px; --shadow:0 12px 34px rgba(23,55,61,.075);
+  --card-bg:#fff; --sidebar-width:264px;
+}
+[data-theme="dark"] {
+  --primary:#53b8ad; --primary-light:#72c9bf; --primary-dark:#32958b;
+  --primary-bg:#183b3a; --success:#49bd8b; --success-bg:#15392e;
+  --warning:#e6b75c; --warning-bg:#46381c; --danger:#f07878; --danger-bg:#442727;
+  --dark:#e8f0f0; --slate:#9bb0b4; --light:#0c171b; --white:#142328;
+  --border:#263b40; --card-bg:#142328; --shadow:0 12px 34px rgba(0,0,0,.22);
+}
+* { scrollbar-width:thin; scrollbar-color:#b8cecb transparent; }
+body { background:var(--light); color:var(--dark); letter-spacing:-.012em; }
+header, .app-header, .top-header {
+  background:linear-gradient(115deg,#102e35 0%,#174b50 58%,#176b67 100%) !important;
+  color:#fff !important; box-shadow:0 8px 28px rgba(12,48,52,.18);
+}
+header *, .app-header *, .top-header * { color:inherit; }
+.app-layout { gap:22px; padding:22px; align-items:flex-start; }
+.app-sidebar {
+  background:var(--card-bg); border:1px solid var(--border); border-radius:20px;
+  padding:18px 12px; box-shadow:var(--shadow); top:16px;
+}
+.sidebar-section-title {
+  color:var(--slate); font-size:10px; font-weight:800; letter-spacing:.13em;
+  padding:14px 12px 8px; text-transform:uppercase;
+}
+.sidebar-link {
+  border-radius:12px; margin:3px 0; padding:12px 13px; color:var(--slate);
+  font-weight:650; transition:all .18s ease;
+}
+.sidebar-link:hover { background:var(--primary-bg); color:var(--primary); transform:translateX(2px); }
+.sidebar-link.active {
+  background:linear-gradient(100deg,var(--primary-bg),transparent);
+  color:var(--primary); box-shadow:inset 3px 0 0 var(--primary);
+}
+.main-content { min-width:0; }
+.nav-tabs {
+  background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+  padding:7px; gap:6px; box-shadow:var(--shadow); margin-bottom:20px;
+}
+.tab-btn { border-radius:11px; padding:11px 15px; font-weight:700; color:var(--slate); }
+.tab-btn.active {
+  color:#fff !important; background:linear-gradient(120deg,var(--primary),var(--primary-light)) !important;
+  box-shadow:0 5px 14px rgba(23,107,103,.22);
+}
+.module-section { animation:luxonEnter .28s ease both; }
+@keyframes luxonEnter { from {opacity:0;transform:translateY(7px)} to {opacity:1;transform:none} }
+.stats-grid { gap:14px; margin-bottom:20px; }
+.stat-card, .card, .modal-card {
+  background:var(--card-bg); border:1px solid var(--border); border-radius:19px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.stat-card {
+  position:relative; padding:19px 18px; min-height:112px;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.stat-card:before {
+  content:""; position:absolute; inset:0 auto 0 0; width:4px;
+  background:linear-gradient(180deg,var(--primary-light),var(--primary));
+}
+.stat-card:hover { transform:translateY(-3px); box-shadow:0 16px 34px rgba(23,55,61,.12); }
+.stat-label { color:var(--slate); font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.stat-val { font-size:clamp(25px,3vw,34px); font-weight:850; letter-spacing:-.05em; margin-top:9px; color:var(--dark); }
+.card { padding:20px; margin-bottom:18px; }
+.card-header { border-bottom:1px solid var(--border); padding-bottom:14px; margin-bottom:17px; gap:12px; }
+.card-title { color:var(--dark); font-size:15px; font-weight:800; letter-spacing:-.02em; }
+.card-title i { color:var(--primary); margin-right:7px; }
+.form-group { margin-bottom:15px; }
+.form-group label { display:block; color:var(--slate); font-size:11px; font-weight:800; letter-spacing:.055em; margin-bottom:7px; text-transform:uppercase; }
+input, select, textarea {
+  background:var(--light) !important; color:var(--dark) !important;
+  border:1px solid var(--border) !important; border-radius:11px !important;
+  min-height:43px; padding:10px 12px !important; outline:none;
+  box-shadow:inset 0 1px 2px rgba(10,40,45,.025);
+}
+input:focus, select:focus, textarea:focus {
+  border-color:var(--primary-light) !important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 13%,transparent) !important;
+}
+.btn { border-radius:11px !important; font-weight:750 !important; letter-spacing:-.01em; padding:11px 15px; }
+.btn-primary, .btn-success {
+  background:linear-gradient(120deg,var(--primary),var(--primary-light)) !important;
+  border:0 !important; color:#fff !important; box-shadow:0 5px 13px rgba(23,107,103,.18);
+}
+.btn-primary:hover, .btn-success:hover { filter:brightness(1.06); transform:translateY(-1px); }
+.btn-outline { border:1px solid var(--border) !important; color:var(--primary) !important; background:var(--card-bg) !important; }
+.filter-bar { gap:10px; margin-bottom:15px; }
+.vehicle-list { gap:9px; }
+.vehicle-item, .vehicle-card, .list-item {
+  border:1px solid var(--border); border-radius:13px; background:var(--card-bg);
+  padding:13px; transition:border-color .18s ease,transform .18s ease;
+}
+.vehicle-item:hover, .vehicle-card:hover, .list-item:hover { border-color:var(--primary-light); transform:translateY(-1px); }
+.modal-overlay { backdrop-filter:blur(7px); background:rgba(7,24,29,.58); }
+.modal-card { border-radius:21px; padding:21px; max-width:min(720px,94vw); }
+.mobile-bottom-nav {
+  background:color-mix(in srgb,var(--card-bg) 94%,transparent);
+  border-top:1px solid var(--border); box-shadow:0 -8px 28px rgba(15,45,48,.08);
+  backdrop-filter:blur(18px); padding:8px 5px max(8px,env(safe-area-inset-bottom));
+}
+.bnav-item { color:var(--slate); border-radius:11px; font-weight:700; }
+.bnav-item.active { color:var(--primary); background:var(--primary-bg); }
+#mod-dashboard .stats-grid { grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); }
+#mod-dashboard .card { margin-top:14px; }
+@media (min-width:900px) {
+  body { padding-bottom:24px; }
+  .app-layout { max-width:1600px; width:100%; margin:0 auto; }
+  .app-sidebar { position:sticky; }
+}
+@media (max-width:899px) {
+  .app-layout { display:block; padding:12px; }
+  .app-sidebar { display:none; }
+  .main-content { width:100%; }
+  .nav-tabs { overflow-x:auto; white-space:nowrap; }
+  .tab-btn { flex:0 0 auto; font-size:11px; padding:10px 12px; }
+  .card { padding:15px; border-radius:16px; }
+  .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .stat-card { min-height:98px; padding:15px 13px; }
+  .stat-val { font-size:27px; }
+}
+@media (max-width:380px) {
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .stat-card { padding:12px 10px; }
+}
+
+</style>
 </head>
 <body>
 
@@ -1666,7 +1801,7 @@
 
             doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 28, 'F');
             doc.setTextColor(255, 255, 255); doc.setFontSize(14);
-            doc.text('LUXON TATA - PDI CHECKING REPORT', 12, 11);
+            doc.text('LUXON - PDI CHECKING REPORT', 12, 11);
             doc.setFontSize(10);
             doc.text(`Chassis: ${v.chassis}  |  Status: ${statusLabel}  |  Inspector: ${v.inspector || 'N/A'}`, 12, 20);
 
