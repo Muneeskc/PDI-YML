@@ -8,6 +8,7 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -345,6 +346,7 @@
             <a class="sidebar-link" id="sidebar-inward" onclick="openModule('inward')"><i class="fa-solid fa-truck-arrow-right"></i> Vehicle Inward</a>
             <a class="sidebar-link" id="sidebar-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> PDI Inspection</a>
             <a class="sidebar-link" id="sidebar-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrows-split-up-and-left"></i> Operations &amp; Outward</a>
+            <a class="sidebar-link" id="sidebar-warranty" onclick="openModule('warranty')"><i class="fa-solid fa-shield-halved"></i> Warranty Report</a>
 
             <div class="sidebar-section-title">Quick Reports</div>
             <a class="sidebar-link" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Operations</a>
@@ -363,6 +365,7 @@
                 <button class="tab-btn" id="tabbtn-inward" onclick="openModule('inward')"><i class="fa-solid fa-truck-arrow-right"></i> 1. Inward</button>
                 <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> 2. PDI Checking</button>
                 <button class="tab-btn" id="tabbtn-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrows-split-up-and-left"></i> 3. Operations</button>
+                <button class="tab-btn" id="tabbtn-warranty" onclick="openModule('warranty')"><i class="fa-solid fa-shield-halved"></i> Warranty</button>
             </nav>
 
             <!-- MODULE 1: DASHBOARD -->
@@ -692,6 +695,28 @@
                     <label style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; display:block; text-transform:uppercase;">Select a vehicle to update its operation:</label>
                     <div id="op-list" class="vehicle-list" style="max-height:260px;"></div>
                 </div>
+            </section>
+
+            <!-- WARRANTY REPORT MODULE -->
+            <section id="mod-warranty" class="module-section">
+              <div class="card">
+                <div class="card-header"><div class="card-title"><i class="fa-solid fa-shield-halved"></i> Warranty Report</div><span class="badge">Before / After</span></div>
+                <p style="font-size:12px;color:var(--slate);margin-bottom:14px">Select a vehicle, capture reference photos and complaints, then generate a PowerPoint report.</p>
+                <div class="form-group"><label>Select Existing Vehicle</label><select id="war-vehicle" onchange="warrantySelectVehicle(this.value)"><option value="">-- Select vehicle --</option></select></div>
+                <div class="form-group"><label>Or enter / scan Chassis Number</label><input id="war-chassis" placeholder="Enter chassis number" oninput="warrantyFindVehicle(this.value)"></div>
+                <div class="form-group"><label>Vehicle Model (optional)</label><input id="war-model" placeholder="Vehicle model"></div>
+                <div class="form-group"><label>Registration Number (optional)</label><input id="war-reg" placeholder="Registration number"></div>
+                <div class="form-group"><label>Chassis Number Photo (printed / punched)</label><input id="war-chassis-photo" type="file" accept="image/*" capture="environment" onchange="warrantyPhoto('chassis',this)"></div><div id="war-chassis-preview"></div>
+                <div class="form-group"><label>Front Photo</label><input id="war-front-photo" type="file" accept="image/*" capture="environment" onchange="warrantyPhoto('front',this)"></div><div id="war-front-preview"></div>
+                <div class="form-group"><label>Odometer Photo</label><input id="war-odo-photo" type="file" accept="image/*" capture="environment" onchange="warrantyPhoto('odo',this)"></div><div id="war-odo-preview"></div>
+                <div class="form-group"><label>Complaints / Remarks &amp; Photos</label><div id="war-complaints"></div><button type="button" class="btn btn-outline btn-full" onclick="warrantyAddComplaint()"><i class="fa-solid fa-plus"></i> Add Photo &amp; Remark</button></div>
+                <div class="form-group"><label>Optional Video</label><input id="war-video" type="file" accept="video/*" capture="environment" onchange="warrantySaveDraft()"><small style="color:var(--slate)">Video is retained in this device draft; it is not embedded in the PPT.</small></div>
+                <div class="form-group"><label>Location watermark (optional)</label><div style="display:flex;gap:8px;align-items:center"><input id="war-location" placeholder="Optional location" style="flex:1"><button type="button" class="btn btn-outline" onclick="warrantyGetLocation()">Get location</button></div></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" style="flex:1" onclick="warrantyGeneratePpt()"><i class="fa-solid fa-file-powerpoint"></i> Generate PPT</button><button class="btn btn-success" style="flex:1" onclick="warrantyShareWhatsApp()"><i class="fa-brands fa-whatsapp"></i> WhatsApp Share</button></div>
+                <button class="btn btn-outline btn-full" style="margin-top:8px" onclick="warrantyClearForm()">Clear Form</button>
+                <p id="war-status" style="font-size:12px;color:var(--slate);margin-top:10px">Draft is saved on this device until you clear it.</p>
+              </div>
+            </section>
             </section>
         </main>
     </div>
@@ -1171,7 +1196,7 @@
 
         function openModule(name, resetDashToAll = false) {
             stopScanner();
-            ['dashboard', 'inward', 'pdi', 'operations'].forEach(m => {
+            ['dashboard', 'inward', 'pdi', 'operations', 'warranty'].forEach(m => {
                 const mod = document.getElementById('mod-' + m);
                 const tab = document.getElementById('tabbtn-' + m);
                 const side = document.getElementById('sidebar-' + m);
@@ -1201,6 +1226,7 @@
             if (name === 'operations') {
                 renderOperationsList();
             }
+            if (name === 'warranty') warrantyInit();
         }
 
         function filterDashboardList(filterName) {
@@ -2372,6 +2398,31 @@
         // Ensure configurable operation destinations are ready after the existing startup routine.
         document.addEventListener('DOMContentLoaded',()=>{fillOperationLists();renderModelDatalist();});
         setTimeout(()=>{fillOperationLists();renderModelDatalist();},300);
+
+
+        // Warranty report: device-local draft; chassis number is NOT printed in photo watermark.
+        const warrantyState={photos:{},complaints:[],video:null,lastPpt:null};
+        function warrantyInit(){
+          const sel=document.getElementById('war-vehicle'); if(!sel)return;
+          const keep=sel.value; sel.innerHTML='<option value="">-- Select vehicle --</option>'+(vehiclesDB||[]).map(v=>`<option value="${escapeHtml(v.chassis)}">${escapeHtml(v.chassis)} • ${escapeHtml(v.model||'')}</option>`).join('');
+          if(keep)sel.value=keep; warrantyLoadDraft();
+        }
+        function warrantySelectVehicle(ch){const v=(vehiclesDB||[]).find(x=>x.chassis===ch);if(v){document.getElementById('war-chassis').value=v.chassis||'';document.getElementById('war-model').value=v.model||'';document.getElementById('war-reg').value=v.registration||v.regNo||'';warrantySaveDraft();}}
+        function warrantyFindVehicle(q){const v=(vehiclesDB||[]).find(x=>String(x.chassis||'').toLowerCase()===String(q||'').trim().toLowerCase());if(v){document.getElementById('war-vehicle').value=v.chassis;warrantySelectVehicle(v.chassis);}warrantySaveDraft();}
+        function warrantyPhoto(kind,input){const f=input.files&&input.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{warrantyState.photos[kind]=r.result;const el=document.getElementById('war-'+kind+'-preview');if(el)el.innerHTML=`<img src="${r.result}" style="max-width:100%;max-height:150px;border-radius:10px;margin:6px 0">`;warrantySaveDraft();};r.readAsDataURL(f);}
+        function warrantyAddComplaint(data={}){const id='wc-'+Date.now()+'-'+Math.random().toString(36).slice(2,6);warrantyState.complaints.push({id,remark:data.remark||'',photo:data.photo||''});warrantyRenderComplaints();warrantySaveDraft();}
+        function warrantyRenderComplaints(){const root=document.getElementById('war-complaints');if(!root)return;root.innerHTML=warrantyState.complaints.map((c,i)=>`<div class="card" style="padding:12px;margin:8px 0"><div style="display:flex;justify-content:space-between;align-items:center"><b>Photo &amp; Remark</b><button class="btn btn-outline" onclick="warrantyRemoveComplaint('${c.id}')">Remove</button></div><input type="file" accept="image/*" capture="environment" onchange="warrantyComplaintPhoto('${c.id}',this)" style="margin:8px 0"><div id="${c.id}-preview">${c.photo?`<img src="${c.photo}" style="max-width:100%;max-height:160px;border-radius:8px">`:''}</div><textarea rows="2" placeholder="Type the complaint / problem remark" oninput="warrantyComplaintRemark('${c.id}',this.value)">${escapeHtml(c.remark)}</textarea></div>`).join('');}
+        function warrantyComplaintPhoto(id,input){const f=input.files&&input.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const c=warrantyState.complaints.find(x=>x.id===id);if(c)c.photo=r.result;warrantyRenderComplaints();warrantySaveDraft();};r.readAsDataURL(f);}
+        function warrantyComplaintRemark(id,val){const c=warrantyState.complaints.find(x=>x.id===id);if(c)c.remark=val;warrantySaveDraft();}
+        function warrantyRemoveComplaint(id){warrantyState.complaints=warrantyState.complaints.filter(x=>x.id!==id);warrantyRenderComplaints();warrantySaveDraft();}
+        function warrantySaveDraft(){try{const data={chassis:document.getElementById('war-chassis')?.value||'',model:document.getElementById('war-model')?.value||'',reg:document.getElementById('war-reg')?.value||'',location:document.getElementById('war-location')?.value||'',photos:warrantyState.photos,complaints:warrantyState.complaints};localStorage.setItem('yms_warranty_draft',JSON.stringify(data));const st=document.getElementById('war-status');if(st)st.textContent='Draft saved on this device. It remains until Clear Form is pressed.';}catch(e){const st=document.getElementById('war-status');if(st)st.textContent='Draft could not be saved (device storage may be full).';}}
+        function warrantyLoadDraft(){try{const raw=localStorage.getItem('yms_warranty_draft');if(!raw)return;const d=JSON.parse(raw);['chassis','model','reg','location'].forEach(k=>{const el=document.getElementById('war-'+k);if(el&&d[k])el.value=d[k];});warrantyState.photos=d.photos||{};warrantyState.complaints=d.complaints||[];['chassis','front','odo'].forEach(k=>{const el=document.getElementById('war-'+k+'-preview');if(el&&warrantyState.photos[k])el.innerHTML=`<img src="${warrantyState.photos[k]}" style="max-width:100%;max-height:150px;border-radius:10px;margin:6px 0">`;});warrantyRenderComplaints();}catch(e){console.warn('Warranty draft load failed',e);}}
+        function warrantyGetLocation(){if(!navigator.geolocation){alert('Location is not available on this device.');return;}navigator.geolocation.getCurrentPosition(pos=>{document.getElementById('war-location').value=pos.coords.latitude.toFixed(5)+', '+pos.coords.longitude.toFixed(5);warrantySaveDraft();},()=>alert('Could not get location. You can enter it manually.'),{enableHighAccuracy:true,timeout:10000});}
+        function warrantyWatermark(data){return new Promise(resolve=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const x=c.getContext('2d');x.drawImage(img,0,0);const fs=Math.max(18,Math.round(c.width*.022));const lines=[new Date().toLocaleDateString(),new Date().toLocaleTimeString(),document.getElementById('war-location').value.trim()].filter(Boolean);const h=fs*1.7*lines.length;x.fillStyle='rgba(0,0,0,.62)';x.fillRect(0,c.height-h,c.width,h);x.fillStyle='#fff';x.font=`600 ${fs}px Arial`;lines.forEach((t,i)=>x.fillText(t,fs,c.height-h+fs*(i+1)*1.35));resolve(c.toDataURL('image/jpeg',.88));};img.onerror=()=>resolve(data);img.src=data;});}
+        async function warrantyGeneratePpt(){if(!window.pptxgen){alert('PowerPoint library could not load. Connect to internet and try again.');return;}const chassis=document.getElementById('war-chassis').value.trim();if(!chassis){alert('Select a vehicle or enter its chassis number first.');return;}const PptxGenJS=window.pptxgen;const pptx=new PptxGenJS();pptx.layout='LAYOUT_WIDE';pptx.author='Vehicle Yard Management';pptx.subject='Vehicle Warranty Inspection';pptx.title='Warranty Report - '+chassis;pptx.theme={headFontFace:'Arial',bodyFontFace:'Arial',lang:'en-US'};const addPhoto=async(title,data)=>{const slide=pptx.addSlide();slide.addText(title,{x:.45,y:.25,w:12.4,h:.5,fontSize:22,bold:true,color:'17324D'});if(data){const wm=await warrantyWatermark(data);slide.addImage({data:wm,x:.7,y:1,w:11.9,h:5.7, sizingCrop:true});}else slide.addText('Photo not added',{x:1,y:2.5,w:11,h:1,fontSize:20,color:'999999',align:'center'});};await addPhoto('Chassis Number',warrantyState.photos.chassis);await addPhoto('Registration Number / Front View',warrantyState.photos.front);await addPhoto('Odometer',warrantyState.photos.odo);for(const c of warrantyState.complaints){const slide=pptx.addSlide();slide.addText('Before',{x:.45,y:.25,w:5.9,h:.4,fontSize:18,bold:true,color:'B7791F'});slide.addText('After',{x:6.85,y:.25,w:5.9,h:.4,fontSize:18,bold:true,color:'16865B'});if(c.photo){const wm=await warrantyWatermark(c.photo);slide.addImage({data:wm,x:.5,y:.8,w:5.9,h:4.6,sizingCrop:true});}else slide.addText('Before photo not added',{x:.7,y:2.5,w:5.5,h:.6,align:'center',color:'999999'});slide.addText('After photo to be added later',{x:6.9,y:2.5,w:5.5,h:.6,align:'center',color:'999999'});if(c.remark)slide.addText(c.remark,{x:.6,y:5.65,w:12.1,h:1,fontSize:16,breakLine:false,margin:.08,color:'222222'});}const blob=await pptx.write('blob');warrantyState.lastPpt=blob;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Warranty_'+chassis.replace(/[^a-z0-9_-]/gi,'_')+'.pptx';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);document.getElementById('war-status').textContent='PPT generated and downloaded. Your draft remains saved.';return blob;}
+        async function warrantyShareWhatsApp(){let blob=warrantyState.lastPpt;if(!blob){await warrantyGeneratePpt();blob=warrantyState.lastPpt;}if(!blob)return;const file=new File([blob],'Warranty_Report.pptx',{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'});if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Warranty Report',text:'Vehicle warranty inspection report'});return;}catch(e){if(e.name==='AbortError')return;}}alert('Your PPT is downloaded. Attach Warranty_Report.pptx in WhatsApp to send it to the Warranty Team.');window.open('https://wa.me/','_blank');}
+        function warrantyClearForm(){if(!confirm('Clear all Warranty Report details and photos from this device?'))return;localStorage.removeItem('yms_warranty_draft');warrantyState.photos={};warrantyState.complaints=[];warrantyState.lastPpt=null;['war-chassis','war-model','war-reg','war-location','war-video'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['chassis','front','odo'].forEach(k=>{const el=document.getElementById('war-'+k+'-photo');if(el)el.value='';const pv=document.getElementById('war-'+k+'-preview');if(pv)pv.innerHTML='';});warrantyRenderComplaints();document.getElementById('war-status').textContent='Form cleared.';}
+        document.addEventListener('DOMContentLoaded',()=>{warrantyInit();warrantyAddComplaint();});
 
     </script>
 </body>
