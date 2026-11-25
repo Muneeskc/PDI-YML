@@ -1,0 +1,16 @@
+{
+  "name": "Luxon Yard Management System",
+  "short_name": "Luxon YMS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f6f5",
+  "theme_color": "#102b31",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
