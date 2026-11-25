@@ -1,206 +1,2412 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#102b31"><title>Luxon • Yard Management</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<style>
-:root{--bg:#f3f6f5;--panel:#fff;--ink:#142b31;--muted:#71848a;--line:#e4ecea;--brand:#14766e;--brand2:#20a092;--soft:#e8f5f2;--nav:#102b31;--good:#16865f;--warn:#c58a26;--bad:#c84d52;--blue:#477ec4;--shadow:0 12px 34px rgba(18,53,58,.07);--r:18px}
-[data-theme=dark]{--bg:#0c191d;--panel:#14262b;--ink:#e7f0ef;--muted:#9aadae;--line:#294047;--brand:#58b9ad;--brand2:#2e9c90;--soft:#1b3938;--nav:#0b2025;--shadow:0 12px 34px rgba(0,0,0,.22)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px 'DM Sans',sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:252px;background:var(--nav);color:#dce9e7;padding:22px 15px;display:flex;flex-direction:column;z-index:20}.brand{display:flex;align-items:center;gap:12px;padding:4px 10px 28px}.brandmark{width:39px;height:39px;border-radius:13px;background:linear-gradient(145deg,#40c3b0,#14766e);display:grid;place-items:center;color:white;font-size:18px;box-shadow:0 7px 20px #16847755}.brand strong{font:800 17px Manrope}.brand small{display:block;color:#88a7a5;font-size:10px;letter-spacing:2px;margin-top:2px}.navlabel{font-size:10px;font-weight:800;color:#76918f;letter-spacing:1.7px;padding:16px 12px 8px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#a9bfbd;text-align:left;padding:12px;border-radius:11px;display:flex;align-items:center;gap:13px;font-weight:600;transition:.2s}.nav button i{width:18px;text-align:center;font-size:15px}.nav button:hover,.nav button.active{background:#ffffff14;color:#fff}.nav button.active{box-shadow:inset 3px 0 #4bc4b3}.sidefoot{margin-top:auto;border-top:1px solid #ffffff1c;padding:15px 8px 4px;color:#8da7a5;font-size:11px}.main{margin-left:252px;min-height:100vh}.topbar{height:76px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:15}.crumb{font:800 17px Manrope}.crumb small{display:block;color:var(--muted);font:500 11px 'DM Sans';margin-top:3px}.topactions{display:flex;align-items:center;gap:10px}.iconbtn{width:38px;height:38px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--muted)}.syncstate{font-size:11px;color:var(--muted);margin-right:7px}.avatar{width:36px;height:36px;border-radius:12px;background:var(--soft);color:var(--brand);display:grid;place-items:center;font-weight:800}.content{padding:27px 30px 50px;max-width:1600px;margin:auto}.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;margin-bottom:22px}.eyebrow{font-size:10px;color:var(--brand);font-weight:800;letter-spacing:1.8px;text-transform:uppercase}.pagehead h1{font:800 25px Manrope;margin:5px 0}.sub{color:var(--muted);font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:10px 14px;border-radius:10px;font-weight:700;font-size:12px}.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 6px 15px #14766e2b}.btn.soft{background:var(--soft);border-color:transparent;color:var(--brand)}.btn.danger{color:var(--bad)}.grid{display:grid;gap:15px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}.stat:after{content:"";position:absolute;width:85px;height:85px;border-radius:50%;right:-25px;top:-30px;background:var(--soft)}.stathead{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;font-weight:700}.staticon{width:31px;height:31px;border-radius:10px;background:var(--soft);color:var(--brand);display:grid;place-items:center}.statnum{font:800 27px Manrope;margin:13px 0 4px}.statfoot{font-size:10px;color:var(--muted)}.two{grid-template-columns:1.45fr 1fr}.three{grid-template-columns:repeat(3,1fr)}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;min-width:0}.panelhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px}.panelhead h3{font:800 13px Manrope;margin:0}.panelhead span{font-size:10px;color:var(--muted)}.chartbox{height:245px}.chartbox.small{height:210px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;white-space:nowrap}th{background:var(--bg);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.8px;text-align:left;padding:12px;font-weight:800}td{padding:12px;border-top:1px solid var(--line);font-size:12px}tbody tr:hover{background:var(--soft)}.tag{display:inline-flex;padding:5px 8px;border-radius:20px;font-size:10px;font-weight:800;background:var(--soft);color:var(--brand)}.tag.good{background:#e7f6ee;color:#16865f}.tag.warn{background:#fff4dc;color:#a87313}.tag.bad{background:#fff0ef;color:#bd4148}.tag.blue{background:#eaf2ff;color:#477ec4}.muted{color:var(--muted)}.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.field{display:grid;gap:6px;margin-bottom:13px}.field label{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.8px}.field input,.field select,.field textarea,.search{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--ink);outline:none}.field input:focus,.field select:focus,.field textarea:focus,.search:focus{border-color:var(--brand);box-shadow:0 0 0 3px #14766e1b}.field textarea{min-height:85px;resize:vertical}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}.span2{grid-column:span 2}.empty{text-align:center;padding:30px;color:var(--muted);font-size:12px}.module{display:none}.module.active{display:block;animation:fade .25s ease}@keyframes fade{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.quick button{border:1px solid var(--line);background:var(--panel);border-radius:13px;padding:14px;text-align:left;color:var(--ink)}.quick i{color:var(--brand);font-size:17px}.quick strong{display:block;margin-top:9px;font-size:11px}.quick small{color:var(--muted);font-size:10px}.modal{position:fixed;inset:0;background:#061b20a8;backdrop-filter:blur(5px);z-index:50;display:none;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.dialog{background:var(--panel);width:min(720px,100%);max-height:92vh;overflow:auto;border-radius:20px;padding:22px;box-shadow:0 25px 80px #0004}.dialoghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.dialoghead h2{font:800 17px Manrope;margin:0}.close{border:0;background:var(--bg);width:32px;height:32px;border-radius:9px;color:var(--muted)}.toast{position:fixed;right:22px;bottom:22px;background:var(--nav);color:white;padding:13px 17px;border-radius:12px;z-index:80;box-shadow:var(--shadow);display:none;font-size:12px}.toast.show{display:block}.mobilehead,.bottomnav{display:none}.photo-preview{display:flex;gap:8px;flex-wrap:wrap}.photo-preview img{width:75px;height:75px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}.progress{height:7px;border-radius:10px;background:var(--bg);overflow:hidden}.progress i{display:block;height:100%;background:var(--brand);border-radius:10px}.activity{display:grid;gap:13px}.activityrow{display:flex;gap:11px;align-items:flex-start}.dot{width:9px;height:9px;background:var(--brand);border-radius:50%;margin-top:4px;box-shadow:0 0 0 4px var(--soft)}.activityrow strong{font-size:11px}.activityrow small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
-@media(max-width:1050px){.sidebar{width:220px}.main{margin-left:220px}.content{padding:22px}.stats{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
-@media(max-width:700px){.sidebar{display:none}.main{margin:0;padding-bottom:76px}.topbar{height:62px;padding:0 15px}.content{padding:18px 14px 30px}.pagehead{align-items:flex-start;flex-direction:column}.pagehead h1{font-size:22px}.stats{gap:9px}.stat{padding:13px}.statnum{font-size:23px}.stathead{font-size:10px}.quick{grid-template-columns:repeat(2,1fr)}.formgrid{grid-template-columns:1fr}.span2{grid-column:auto}.bottomnav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);z-index:30;justify-content:space-around;padding:8px 4px max(8px,env(safe-area-inset-bottom))}.bottomnav button{border:0;background:transparent;color:var(--muted);font-size:9px;display:grid;gap:4px;justify-items:center;padding:5px}.bottomnav button i{font-size:17px}.bottomnav button.active{color:var(--brand)}.syncstate{display:none}.crumb{font-size:14px}.topactions{gap:5px}.iconbtn{width:34px;height:34px}.avatar{width:32px;height:32px}.chartbox{height:205px}}
-</style><link rel="manifest" href="manifest.webmanifest"></head>
-<body><div class="shell">
-<aside class="sidebar">
- <div class="brand"><div class="brandmark"><i class="fa-solid fa-cubes-stacked"></i></div><div><strong>LUXON</strong><small>YARD MANAGEMENT</small></div></div>
- <div class="navlabel">WORKSPACE</div><nav class="nav">
- <button class="active" data-page="dashboard"><i class="fa-solid fa-chart-pie"></i> Overview</button>
- <button data-page="inventory"><i class="fa-solid fa-car-side"></i> Vehicle Inventory</button>
- <button data-page="inward"><i class="fa-solid fa-truck-ramp-box"></i> Vehicle Inward</button>
- <button data-page="pdi"><i class="fa-solid fa-clipboard-check"></i> PDI Inspection</button>
- <button data-page="operations"><i class="fa-solid fa-arrows-rotate"></i> Yard Operations</button>
- </nav><div class="navlabel">INSIGHTS & CONTROL</div><nav class="nav">
- <button data-page="reports"><i class="fa-solid fa-chart-column"></i> Reports & Analytics</button>
- <button data-page="activity"><i class="fa-solid fa-clock-rotate-left"></i> Activity Log</button>
- <button data-page="settings"><i class="fa-solid fa-sliders"></i> System Settings</button>
- </nav><div class="sidefoot">LUXON YMS • PREMIUM EDITION<br><span id="sideVersion">Workspace · Offline ready</span></div>
-</aside>
-<main class="main">
- <header class="topbar"><div class="crumb" id="crumb">Overview<small id="today"></small></div><div class="topactions"><span class="syncstate" id="syncState">● Local mode</span><button class="iconbtn" title="Sync" onclick="syncCloud()"><i class="fa-solid fa-rotate" id="syncIcon"></i></button><button class="iconbtn" title="Theme" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="themeIcon"></i></button><div class="avatar">YMS</div></div></header>
- <div class="content">
- <section class="module active" id="page-dashboard">
-  <div class="pagehead"><div><div class="eyebrow">YARD CONTROL CENTER</div><h1>Good day. Here's your yard pulse.</h1><div class="sub">Live overview of vehicle stock, inspection and movement.</div></div><div class="actions"><button class="btn" onclick="exportCSV()"><i class="fa-solid fa-download"></i> Export</button><button class="btn primary" onclick="openPage('inward')"><i class="fa-solid fa-plus"></i> New Inward</button></div></div>
-  <div class="grid stats">
-   <div class="stat"><div class="stathead">Physical Stock <span class="staticon"><i class="fa-solid fa-car"></i></span></div><div class="statnum" id="s-total">0</div><div class="statfoot">Vehicles currently in yard</div></div>
-   <div class="stat"><div class="stathead">Pending PDI <span class="staticon"><i class="fa-solid fa-hourglass-half"></i></span></div><div class="statnum" id="s-pending">0</div><div class="statfoot">Awaiting inspection</div></div>
-   <div class="stat"><div class="stathead">PDI Approved <span class="staticon"><i class="fa-solid fa-circle-check"></i></span></div><div class="statnum" id="s-ok">0</div><div class="statfoot">Ready for next process</div></div>
-   <div class="stat"><div class="stathead">On Hold <span class="staticon"><i class="fa-solid fa-triangle-exclamation"></i></span></div><div class="statnum" id="s-hold">0</div><div class="statfoot">Requires attention</div></div>
-  </div>
-  <div class="grid two">
-   <div class="panel"><div class="panelhead"><h3>Stock movement overview</h3><span>Current stock by status</span></div><div class="chartbox"><canvas id="statusChart"></canvas></div></div>
-   <div class="panel"><div class="panelhead"><h3>Stock distribution</h3><span>By yard location</span></div><div class="chartbox"><canvas id="locationChart"></canvas></div></div>
-  </div>
-  <div class="grid two" style="margin-top:15px">
-   <div class="panel"><div class="panelhead"><h3>Recently updated vehicles</h3><button class="btn soft" onclick="openPage('inventory')">View inventory</button></div><div id="recentTable"></div></div>
-   <div class="panel"><div class="panelhead"><h3>Quick actions</h3><span>Common workflows</span></div><div class="quick">
-    <button onclick="openPage('inward')"><i class="fa-solid fa-truck-arrow-right"></i><strong>Vehicle Inward</strong><small>Register a new arrival</small></button>
-    <button onclick="openPage('pdi')"><i class="fa-solid fa-clipboard-check"></i><strong>Start PDI</strong><small>Inspect a vehicle</small></button>
-    <button onclick="openPage('operations')"><i class="fa-solid fa-right-left"></i><strong>Move Stock</strong><small>Transfer or dispatch</small></button>
-    <button onclick="openPage('reports')"><i class="fa-solid fa-file-chart-column"></i><strong>View Reports</strong><small>Analyse yard data</small></button>
-   </div><div class="panelhead" style="margin-top:19px"><h3>Recent activity</h3><button class="btn soft" onclick="openPage('activity')">All activity</button></div><div class="activity" id="miniActivity"></div></div>
-  </div>
- </section>
- <section class="module" id="page-inventory">
-  <div class="pagehead"><div><div class="eyebrow">STOCK MANAGEMENT</div><h1>Vehicle Inventory</h1><div class="sub">Search, filter and manage every vehicle in your yard.</div></div><div class="actions"><button class="btn" onclick="exportCSV()"> <i class="fa-solid fa-file-csv"></i> Export CSV</button><button class="btn primary" onclick="openPage('inward')"><i class="fa-solid fa-plus"></i> Add Vehicle</button></div></div>
-  <div class="panel"><div class="toolbar"><input class="search" id="invSearch" placeholder="Search chassis, model, location..." style="max-width:300px" oninput="renderInventory()"><select class="search" id="invStatus" style="max-width:170px" onchange="renderInventory()"><option value="">All statuses</option><option>Pending PDI</option><option>PDI OK</option><option>HOLD</option><option>REVIEW_PENDING</option></select><select class="search" id="invLocation" style="max-width:170px" onchange="renderInventory()"><option value="">All locations</option></select><button class="btn" onclick="resetFilters()">Reset filters</button><span class="muted" id="invCount" style="margin-left:auto;font-size:11px"></span></div><div id="inventoryTable"></div></div>
- </section>
- <section class="module" id="page-inward">
-  <div class="pagehead"><div><div class="eyebrow">VEHICLE RECEIVING</div><h1>Vehicle Inward</h1><div class="sub">Create a structured record for every incoming vehicle.</div></div><div class="actions"><button class="btn" onclick="startScanner('inward')"><i class="fa-solid fa-qrcode"></i> Scan VIN</button></div></div>
-  <div class="grid two"><div class="panel"><div class="panelhead"><h3>New inward entry</h3><span>Required fields marked *</span></div>
-   <form id="inwardForm" onsubmit="saveInward(event)"><div class="formgrid">
-    <div class="field span2"><label>Chassis / VIN number *</label><input id="in-chassis" required placeholder="Enter or scan chassis number"></div>
-    <div class="field"><label>Vehicle model *</label><input id="in-model" required placeholder="e.g. Nexon, Punch"></div><div class="field"><label>Colour</label><input id="in-color" placeholder="Vehicle colour"></div>
-    <div class="field"><label>Engine number</label><input id="in-engine"></div><div class="field"><label>Yard location *</label><input id="in-location" list="locations" required placeholder="Select / enter location"></div>
-    <div class="field"><label>Inward type</label><select id="in-type"><option>New Inward</option><option>Re-Inward</option><option>Stock Transfer In</option></select></div>
-    <div class="field"><label>Inward date</label><input type="date" id="in-date" required></div>
-    <div class="field span2"><label>Remarks</label><textarea id="in-remarks" placeholder="Optional notes about vehicle arrival"></textarea></div>
-    <div class="field span2"><label>Vehicle photos</label><input type="file" id="in-photos" accept="image/*" multiple><div class="photo-preview" id="in-photo-preview"></div></div>
-   </div><button class="btn primary" type="submit"><i class="fa-solid fa-check"></i> Save inward entry</button> <button class="btn" type="reset">Clear form</button></form>
-  </div><div class="panel"><div class="panelhead"><h3>Receiving checklist</h3><span>Before saving</span></div><div class="activity">
-   <div class="activityrow"><i class="dot"></i><div><strong>Verify chassis number</strong><small>Match VIN with vehicle documents and windshield barcode.</small></div></div>
-   <div class="activityrow"><i class="dot"></i><div><strong>Confirm model and colour</strong><small>Record accurate vehicle identity details.</small></div></div>
-   <div class="activityrow"><i class="dot"></i><div><strong>Capture arrival condition</strong><small>Attach photos for traceability where available.</small></div></div>
-   <div class="activityrow"><i class="dot"></i><div><strong>Assign yard location</strong><small>Choose the correct physical parking location.</small></div></div>
-  </div><div id="scanner-inward" style="margin-top:18px"></div><div class="sub" style="margin-top:18px">New inward records are stored locally first. Cloud sync is available when an Apps Script URL is configured.</div></div></div>
- </section>
- <section class="module" id="page-pdi">
-  <div class="pagehead"><div><div class="eyebrow">QUALITY ASSURANCE</div><h1>PDI Inspection</h1><div class="sub">Record inspection decisions, defects and evidence.</div></div><div class="actions"><button class="btn" onclick="startScanner('pdi')"><i class="fa-solid fa-qrcode"></i> Scan VIN</button></div></div>
-  <div class="grid two"><div class="panel"><div class="panelhead"><h3>Inspection record</h3><span>Pre-delivery inspection</span></div>
-   <form id="pdiForm" onsubmit="savePdi(event)"><div class="formgrid">
-    <div class="field span2"><label>Select vehicle *</label><select id="pdi-vehicle" required onchange="fillPdiVehicle()"><option value="">Choose a pending vehicle</option></select></div>
-    <div class="field"><label>Chassis number</label><input id="pdi-chassis" readonly></div><div class="field"><label>Inspector / technician *</label><input id="pdi-inspector" required placeholder="Inspector name"></div>
-    <div class="field"><label>Odometer (km)</label><input id="pdi-speed" type="number" min="0" placeholder="0"></div><div class="field"><label>Inspection date</label><input id="pdi-date" type="date" required></div>
-    <div class="field"><label>Inspection decision *</label><select id="pdi-status"><option>PDI OK</option><option>HOLD</option><option>REVIEW_PENDING</option></select></div><div class="field"><label>Defect category</label><select id="pdi-defect"><option>None</option><option>Body / Paint</option><option>Electrical</option><option>Mechanical</option><option>Glass / Trim</option><option>Documentation</option><option>Other</option></select></div>
-    <div class="field span2"><label>Inspection checklist</label><div class="formgrid" id="checklist"></div></div>
-    <div class="field span2"><label>Remarks / defect details</label><textarea id="pdi-remarks" placeholder="Describe defects or inspection notes"></textarea></div>
-    <div class="field span2"><label>Inspection photos</label><input type="file" id="pdi-photos" accept="image/*" multiple><div class="photo-preview" id="pdi-photo-preview"></div></div>
-   </div><button class="btn primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Submit inspection</button></form>
-  </div><div class="panel"><div class="panelhead"><h3>Pending inspection queue</h3><span id="pdiQueueCount">0 vehicles</span></div><div id="pdiQueue"></div><div id="scanner-pdi" style="margin-top:15px"></div></div></div>
- </section>
- <section class="module" id="page-operations">
-  <div class="pagehead"><div><div class="eyebrow">YARD MOVEMENT</div><h1>Yard Operations</h1><div class="sub">Manage location changes, stock transfers and outward dispatch.</div></div></div>
-  <div class="grid two"><div class="panel"><div class="panelhead"><h3>Vehicle movement</h3><span>Update selected stock</span></div><form id="opsForm" onsubmit="saveOperation(event)">
-   <div class="field"><label>Vehicle *</label><select id="op-vehicle" required><option value="">Select physical stock vehicle</option></select></div>
-   <div class="field"><label>Operation *</label><select id="op-type" onchange="toggleOperationFields()"><option value="LOCATION">Change yard location</option><option value="TRANSFER">Stock transfer</option><option value="HOLD">Place on hold</option><option value="UNHOLD">Release hold</option><option value="OUTWARD">Outward dispatch</option></select></div>
-   <div class="field" id="op-location-wrap"><label>New location</label><input id="op-location" list="locations" placeholder="New yard / display location"></div>
-   <div class="field" id="op-dest-wrap" style="display:none"><label>Destination / showroom</label><input id="op-dest" placeholder="Destination"></div>
-   <div class="field" id="op-driver-wrap" style="display:none"><label>Driver / transporter</label><input id="op-driver"></div>
-   <div class="field"><label>Remarks</label><textarea id="op-remarks"></textarea></div>
-   <button class="btn primary" type="submit">Confirm movement</button>
-  </form></div><div class="panel"><div class="panelhead"><h3>Movement guide</h3><span>Operational controls</span></div><div class="activity">
-   <div class="activityrow"><i class="dot"></i><div><strong>Location change</strong><small>Updates the current yard position without removing the vehicle from stock.</small></div></div>
-   <div class="activityrow"><i class="dot"></i><div><strong>Stock transfer</strong><small>Records destination and movement history.</small></div></div>
-   <div class="activityrow"><i class="dot"></i><div><strong>Hold / Unhold</strong><small>Tracks quality or administrative holds separately from physical stock.</small></div></div>
-   <div class="activityrow"><i class="dot"></i><div><strong>Outward dispatch</strong><small>Marks the vehicle as dispatched and removes it from active yard stock.</small></div></div>
-  </div></div></div>
- </section>
- <section class="module" id="page-reports">
-  <div class="pagehead"><div><div class="eyebrow">BUSINESS INTELLIGENCE</div><h1>Reports & Analytics</h1><div class="sub">Understand stock composition and inspection performance.</div></div><div class="actions"><button class="btn primary" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Download CSV</button></div></div>
-  <div class="grid stats">
-   <div class="stat"><div class="stathead">Total inward</div><div class="statnum" id="r-inward">0</div><div class="statfoot">All recorded arrivals</div></div>
-   <div class="stat"><div class="stathead">PDI completed</div><div class="statnum" id="r-pdi">0</div><div class="statfoot">Inspection records</div></div>
-   <div class="stat"><div class="stathead">Outward dispatch</div><div class="statnum" id="r-out">0</div><div class="statfoot">Vehicles dispatched</div></div>
-   <div class="stat"><div class="stathead">Hold review</div><div class="statnum" id="r-review">0</div><div class="statfoot">Pending resolution</div></div>
-  </div>
-  <div class="grid two"><div class="panel"><div class="panelhead"><h3>Inspection outcome</h3></div><div class="chartbox small"><canvas id="reportChart"></canvas></div></div><div class="panel"><div class="panelhead"><h3>Location stock summary</h3></div><div id="locationReport"></div></div></div>
- </section>
- <section class="module" id="page-activity">
-  <div class="pagehead"><div><div class="eyebrow">AUDIT TRAIL</div><h1>Activity Log</h1><div class="sub">Chronological history of changes made in this workspace.</div></div><button class="btn" onclick="clearActivity()">Clear local activity</button></div>
-  <div class="panel"><div id="activityTable"></div></div>
- </section>
- <section class="module" id="page-settings">
-  <div class="pagehead"><div><div class="eyebrow">CONFIGURATION</div><h1>System Settings</h1><div class="sub">Connect cloud sync and configure your workspace.</div></div></div>
-  <div class="grid two"><div class="panel"><div class="panelhead"><h3>Google Sheets connection</h3><span id="cloudBadge" class="tag warn">Not connected</span></div>
-   <div class="field"><label>Apps Script Web App URL</label><input id="cfg-url" placeholder="https://script.google.com/macros/s/.../exec"></div>
-   <div class="field"><label>Sync mode</label><select id="cfg-sync"><option value="manual">Manual sync</option><option value="on">Sync after updates</option></select></div>
-   <button class="btn primary" onclick="saveSettings()">Save connection</button> <button class="btn" onclick="syncCloud()">Test / Sync now</button>
-   <p class="sub" style="margin-top:13px">Deploy the included Code.gs as a Web App. Keep access settings appropriate for your team. Test with a copy of your spreadsheet first.</p>
-  </div><div class="panel"><div class="panelhead"><h3>Workspace preferences</h3></div>
-   <div class="field"><label>Default yard locations (comma separated)</label><textarea id="cfg-locations" placeholder="Main Yard, Display, Workshop, Transit"></textarea></div>
-   <div class="field"><label>Default inspector</label><input id="cfg-inspector" placeholder="Technician name"></div>
-   <button class="btn primary" onclick="savePreferences()">Save preferences</button>
-   <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
-   <div class="panelhead"><h3>Data tools</h3></div><button class="btn" onclick="downloadBackup()">Download local backup</button> <button class="btn danger" onclick="restorePrompt()">Restore backup</button>
-  </div></div>
- </section>
- <datalist id="locations"></datalist>
- </div>
-</main>
-<nav class="bottomnav" id="bottomnav">
- <button class="active" data-page="dashboard"><i class="fa-solid fa-chart-pie"></i>Home</button><button data-page="inventory"><i class="fa-solid fa-car"></i>Stock</button><button data-page="inward"><i class="fa-solid fa-truck"></i>Inward</button><button data-page="pdi"><i class="fa-solid fa-clipboard-check"></i>PDI</button><button data-page="operations"><i class="fa-solid fa-arrows-rotate"></i>Move</button>
-</nav>
-</div>
-<div class="modal" id="detailModal"><div class="dialog"><div class="dialoghead"><h2 id="detailTitle">Vehicle details</h2><button class="close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div><div id="detailBody"></div></div></div>
-<div class="toast" id="toast"></div>
-<script>
-const KEY='luxon_yms_premium_v2';
-const defaultState={vehicles:[],pdi:[],outward:[],activity:[],locations:['Main Yard','Display','Workshop','Transit'],settings:{url:'',sync:'manual',inspector:''}};
-let db=loadDB(),charts={},scanner=null;
-function loadDB(){try{return JSON.parse(localStorage.getItem(KEY))||defaultState}catch(e){return structuredClone(defaultState)}}
-function persist(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
-function id(){return 'V'+Date.now().toString(36)+Math.random().toString(36).slice(2,6).toUpperCase()}
-function dateNow(){return new Date().toISOString().slice(0,10)}
-function stamp(){return new Date().toLocaleString()}
-function log(action,chassis,detail=''){db.activity.unshift({id:id(),action,chassis,detail,time:stamp()});db.activity=db.activity.slice(0,500)}
-function toast(s){let t=document.getElementById('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
-function openPage(p){document.querySelectorAll('.module').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));let labels={dashboard:'Overview',inventory:'Vehicle Inventory',inward:'Vehicle Inward',pdi:'PDI Inspection',operations:'Yard Operations',reports:'Reports & Analytics',activity:'Activity Log',settings:'System Settings'};document.getElementById('crumb').innerHTML=labels[p]+'<small>'+new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'</small>';if(p==='pdi')fillVehicleSelects();if(p==='operations')fillVehicleSelects();renderAll();window.scrollTo(0,0)}
-document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.page)));
-function toggleTheme(){let d=document.documentElement;d.dataset.theme=d.dataset.theme==='dark'?'light':'dark';localStorage.setItem('luxon_theme',d.dataset.theme);document.getElementById('themeIcon').className=d.dataset.theme==='dark'?'fa-solid fa-sun':'fa-solid fa-moon';renderCharts()}
-if(localStorage.getItem('luxon_theme'))document.documentElement.dataset.theme=localStorage.getItem('luxon_theme');
-function physical(){return db.vehicles.filter(v=>!v.outward)}
-function statusTag(s){let c=s==='PDI OK'?'good':s==='HOLD'?'bad':s==='REVIEW_PENDING'?'warn':'blue';return `<span class="tag ${c}">${esc(s||'Pending PDI')}</span>`}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function renderAll(){renderDashboard();renderInventory();renderReports();renderActivity();updateLocations()}
-function updateLocations(){let dl=document.getElementById('locations');if(dl)dl.innerHTML=db.locations.map(x=>`<option>${esc(x)}</option>`).join('');let sel=document.getElementById('invLocation');if(sel){let old=sel.value;sel.innerHTML='<option value="">All locations</option>'+db.locations.map(x=>`<option>${esc(x)}</option>`).join('');sel.value=old}let cfg=document.getElementById('cfg-locations');if(cfg&&document.activeElement!==cfg)cfg.value=db.locations.join(', ')}
-function renderDashboard(){let v=physical();let n=s=>v.filter(x=>x.status===s).length;setText('s-total',v.length);setText('s-pending',n('Pending PDI'));setText('s-ok',n('PDI OK'));setText('s-hold',n('HOLD')+n('REVIEW_PENDING'));let recent=[...db.vehicles].sort((a,b)=>(b.updated||'').localeCompare(a.updated||'')).slice(0,6);document.getElementById('recentTable').innerHTML=tableVehicles(recent,true);document.getElementById('miniActivity').innerHTML=db.activity.slice(0,4).map(a=>`<div class="activityrow"><i class="dot"></i><div><strong>${esc(a.action)} · ${esc(a.chassis)}</strong><small>${esc(a.detail)} · ${esc(a.time)}</small></div></div>`).join('')||'<div class="empty">No activity yet</div>';renderCharts()}
-function setText(id,v){let e=document.getElementById(id);if(e)e.textContent=v}
-function tableVehicles(list,short=false){if(!list.length)return '<div class="empty">No vehicle records yet. Add an inward entry to get started.</div>';return `<div class="tablewrap"><table><thead><tr><th>Chassis / VIN</th><th>Model</th><th>Location</th><th>Status</th>${short?'':'<th>Inward date</th>'}<th></th></tr></thead><tbody>${list.map(v=>`<tr><td><strong>${esc(v.chassis)}</strong></td><td>${esc(v.model)}</td><td>${esc(v.location)}</td><td>${statusTag(v.status)}</td>${short?'':`<td>${esc(v.date||'')}</td>`}<td><button class="btn soft" onclick="showDetail('${v.id}')">View</button></td></tr>`).join('')}</tbody></table></div>`}
-function renderInventory(){let q=(document.getElementById('invSearch')?.value||'').toLowerCase(),s=document.getElementById('invStatus')?.value||'',l=document.getElementById('invLocation')?.value||'';let arr=physical().filter(v=>(!q||[v.chassis,v.model,v.location].join(' ').toLowerCase().includes(q))&&(!s||v.status===s)&&(!l||v.location===l));setText('invCount',arr.length+' vehicles');document.getElementById('inventoryTable').innerHTML=tableVehicles(arr)}
-function resetFilters(){['invSearch','invStatus','invLocation'].forEach(x=>document.getElementById(x).value='');renderInventory()}
-function fillVehicleSelects(){let pending=physical().filter(v=>!['PDI OK'].includes(v.status));document.getElementById('pdi-vehicle').innerHTML='<option value="">Choose a pending vehicle</option>'+pending.map(v=>`<option value="${v.id}">${esc(v.chassis)} · ${esc(v.model)}</option>`).join('');document.getElementById('op-vehicle').innerHTML='<option value="">Select physical stock vehicle</option>'+physical().map(v=>`<option value="${v.id}">${esc(v.chassis)} · ${esc(v.model)}</option>`).join('');document.getElementById('pdiQueue').innerHTML=tableVehicles(pending,true);setText('pdiQueueCount',pending.length+' vehicles')}
-function fillPdiVehicle(){let v=db.vehicles.find(x=>x.id===document.getElementById('pdi-vehicle').value);document.getElementById('pdi-chassis').value=v?.chassis||''}
-function saveInward(e){e.preventDefault();let ch=document.getElementById('in-chassis').value.trim().toUpperCase();if(db.vehicles.some(v=>v.chassis===ch&&!v.outward)){toast('This chassis is already in physical stock');return}let v={id:id(),chassis:ch,model:val('in-model'),color:val('in-color'),engine:val('in-engine'),location:val('in-location'),type:val('in-type'),date:val('in-date'),status:'Pending PDI',remarks:val('in-remarks'),outward:false,updated:stamp()};db.vehicles.push(v);if(!db.locations.includes(v.location))db.locations.push(v.location);log('Vehicle inward',ch,v.model+' · '+v.location);persist();e.target.reset();setVal('in-date',dateNow());document.getElementById('in-photo-preview').innerHTML='';toast('Vehicle inward saved');if(db.settings.sync==='on')syncCloud()}
-function savePdi(e){e.preventDefault();let v=db.vehicles.find(x=>x.id===val('pdi-vehicle'));if(!v){toast('Select a vehicle');return}let checklist=[...document.querySelectorAll('#checklist input:checked')].map(x=>x.value);let rec={id:id(),chassis:v.chassis,model:v.model,inspector:val('pdi-inspector'),speed:val('pdi-speed'),date:val('pdi-date'),status:val('pdi-status'),defect:val('pdi-defect'),checklist,remarks:val('pdi-remarks'),time:stamp()};db.pdi.push(rec);v.status=rec.status;v.inspector=rec.inspector;v.updated=stamp();v.remarks=rec.remarks;log('PDI '+rec.status,v.chassis,rec.inspector+' · '+rec.defect);persist();e.target.reset();setVal('pdi-date',dateNow());setVal('pdi-inspector',db.settings.inspector);fillVehicleSelects();toast('PDI record saved');if(db.settings.sync==='on')syncCloud()}
-function toggleOperationFields(){let t=val('op-type');document.getElementById('op-location-wrap').style.display=['LOCATION','TRANSFER'].includes(t)?'grid':'none';document.getElementById('op-dest-wrap').style.display=t==='OUTWARD'?'grid':'none';document.getElementById('op-driver-wrap').style.display=t==='OUTWARD'?'grid':'none'}
-function saveOperation(e){e.preventDefault();let v=db.vehicles.find(x=>x.id===val('op-vehicle'));if(!v){toast('Select a vehicle');return}let t=val('op-type'),rem=val('op-remarks');if(t==='LOCATION'||t==='TRANSFER'){let loc=val('op-location');if(!loc){toast('Enter destination location');return}v.location=loc;if(!db.locations.includes(loc))db.locations.push(loc)}else if(t==='HOLD')v.status='HOLD';else if(t==='UNHOLD')v.status='Pending PDI';else if(t==='OUTWARD'){v.outward=true;v.outwardDest=val('op-dest');v.driver=val('op-driver');v.outwardDate=dateNow();db.outward.push({chassis:v.chassis,model:v.model,destination:v.outwardDest,driver:v.driver,date:dateNow()})}v.updated=stamp();v.remarks=rem;log(t,v.chassis,rem||v.location||v.outwardDest||'');persist();e.target.reset();toggleOperationFields();fillVehicleSelects();toast('Vehicle operation updated');if(db.settings.sync==='on')syncCloud()}
-function renderCharts(){if(typeof Chart==='undefined')return;let v=physical(),status=['Pending PDI','PDI OK','HOLD','REVIEW_PENDING'],locs=[...new Set(v.map(x=>x.location).filter(Boolean))];makeChart('statusChart','doughnut',status.map(s=>v.filter(x=>x.status===s).length),status);makeChart('locationChart','bar',locs.map(l=>v.filter(x=>x.location===l).length),locs);makeChart('reportChart','doughnut',['PDI OK','HOLD','REVIEW_PENDING'].map(s=>db.pdi.filter(x=>x.status===s).length),['PDI OK','HOLD','Review pending'])}
-function makeChart(id,type,data,labels){let c=document.getElementById(id);if(!c)return;if(charts[id])charts[id].destroy();charts[id]=new Chart(c,{type,data:{labels,datasets:[{data,backgroundColor:['#168b78','#4e8dcc','#d6a044','#c95d62','#8c78c5'],borderWidth:0,borderRadius:type==='bar'?7:0,hoverOffset:7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:type==='doughnut'?'bottom':'none',labels:{color:getComputedStyle(document.body).getPropertyValue('--muted'),usePointStyle:true,boxWidth:7,font:{size:10}}}},scales:type==='bar'?{x:{ticks:{color:'#84969a'},grid:{display:false}},y:{ticks:{color:'#84969a'},grid:{color:'#edf1f0'}}}:{}}})}
-function renderReports(){setText('r-inward',db.vehicles.length);setText('r-pdi',db.pdi.length);setText('r-out',db.outward.length);setText('r-review',physical().filter(v=>v.status==='REVIEW_PENDING').length);let groups={};physical().forEach(v=>groups[v.location]=(groups[v.location]||0)+1);document.getElementById('locationReport').innerHTML=Object.entries(groups).map(([l,n])=>`<div style="margin:13px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><strong>${esc(l)}</strong><span class="muted">${n} vehicles</span></div><div class="progress"><i style="width:${Math.max(4,n/Math.max(1,physical().length)*100)}%"></i></div></div>`).join('')||'<div class="empty">No stock locations yet</div>';renderCharts()}
-function renderActivity(){document.getElementById('activityTable').innerHTML=db.activity.length?`<div class="tablewrap"><table><thead><tr><th>Time</th><th>Action</th><th>Chassis</th><th>Details</th></tr></thead><tbody>${db.activity.map(a=>`<tr><td>${esc(a.time)}</td><td>${esc(a.action)}</td><td><strong>${esc(a.chassis)}</strong></td><td>${esc(a.detail)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No activity recorded yet.</div>'}
-function clearActivity(){if(confirm('Clear activity history from this device?')){db.activity=[];persist()}}
-function showDetail(id){let v=db.vehicles.find(x=>x.id===id);if(!v)return;document.getElementById('detailTitle').textContent=v.chassis;document.getElementById('detailBody').innerHTML=`<div class="grid two"><div><div class="sub">MODEL</div><strong>${esc(v.model)}</strong></div><div><div class="sub">STATUS</div>${statusTag(v.status)}</div><div><div class="sub">LOCATION</div><strong>${esc(v.location)}</strong></div><div><div class="sub">COLOUR</div><strong>${esc(v.color||'—')}</strong></div><div><div class="sub">ENGINE NUMBER</div><strong>${esc(v.engine||'—')}</strong></div><div><div class="sub">INWARD DATE</div><strong>${esc(v.date||'—')}</strong></div><div><div class="sub">INSPECTOR</div><strong>${esc(v.inspector||'—')}</strong></div><div><div class="sub">UPDATED</div><strong>${esc(v.updated||'—')}</strong></div></div><hr style="border:0;border-top:1px solid var(--line);margin:17px 0"><div class="sub">REMARKS</div><p>${esc(v.remarks||'No remarks')}</p><div class="actions"><button class="btn" onclick="printVehicle('${v.id}')"><i class="fa-solid fa-print"></i> Print details</button><button class="btn danger" onclick="deleteVehicle('${v.id}')">Delete record</button></div>`;document.getElementById('detailModal').classList.add('show')}
-function closeModal(){document.getElementById('detailModal').classList.remove('show')}
-function deleteVehicle(id){if(!confirm('Delete this vehicle record from this device?'))return;let v=db.vehicles.find(x=>x.id===id);db.vehicles=db.vehicles.filter(x=>x.id!==id);log('Vehicle record deleted',v?.chassis||id,'Local record removal');closeModal();persist()}
-function printVehicle(id){let v=db.vehicles.find(x=>x.id===id);let w=window.open('','_blank');w.document.write(`<h2>Vehicle record</h2><pre>${esc(JSON.stringify(v,null,2))}</pre>`);w.print()}
-function val(id){return document.getElementById(id)?.value||''}function setVal(id,v){let e=document.getElementById(id);if(e)e.value=v}
-function exportCSV(){let rows=[['Chassis','Model','Colour','Engine','Location','Status','Inward Date','Inspector','Remarks','Outward'],...db.vehicles.map(v=>[v.chassis,v.model,v.color,v.engine,v.location,v.status,v.date,v.inspector,v.remarks,v.outward?'Yes':'No'])];let csv=rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');download(new Blob([csv],{type:'text/csv'}),'luxon_yard_inventory.csv')}
-function download(blob,name){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
-function downloadBackup(){download(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),'luxon_yms_backup.json')}
-function restorePrompt(){let i=document.createElement('input');i.type='file';i.accept='.json,application/json';i.onchange=()=>{let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.vehicles||!x.activity)throw Error();db=x;persist();toast('Backup restored')}catch(e){toast('Invalid backup file')}};r.readAsText(f)};i.click()}
-function saveSettings(){db.settings.url=val('cfg-url').trim();db.settings.sync=val('cfg-sync');persist();toast('Cloud settings saved');setCloudBadge()}
-function savePreferences(){db.locations=val('cfg-locations').split(',').map(x=>x.trim()).filter(Boolean);db.settings.inspector=val('cfg-inspector');persist();toast('Preferences saved')}
-function setCloudBadge(){let ok=!!db.settings.url;let b=document.getElementById('cloudBadge');if(b){b.textContent=ok?'Configured':'Not connected';b.className='tag '+(ok?'good':'warn')}}
-async function syncCloud(){let url=db.settings.url;if(!url){toast('Add Apps Script URL in Settings first');openPage('settings');return}let icon=document.getElementById('syncIcon');icon?.classList.add('fa-spin');setText('syncState','● Syncing');try{let resp=await fetch(url+'?action=GET_ALL&ts='+Date.now());let remote=await resp.json();if(remote.status==='success'&&remote.data){mergeRemote(remote.data)}let payload={action:'SYNC_ALL',data:db};await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});setText('syncState','● Sync requested · '+new Date().toLocaleTimeString());toast('Cloud sync request sent')}catch(e){setText('syncState','● Offline / sync unavailable');toast('Could not complete cloud sync. Check URL and deployment.')}finally{icon?.classList.remove('fa-spin');setCloudBadge()}}
-function mergeRemote(data){if(Array.isArray(data.vehicles)&&data.vehicles.length){let map=new Map(db.vehicles.map(v=>[v.chassis,v]));data.vehicles.forEach(v=>map.set(v.chassis,{...map.get(v.chassis),...v,id:map.get(v.chassis)?.id||id()}));db.vehicles=[...map.values()]}if(Array.isArray(data.pdi))db.pdi=data.pdi;if(Array.isArray(data.outward))db.outward=data.outward;localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
-async function startScanner(target){let box=document.getElementById('scanner-'+target);if(!box){toast('Scanner area unavailable');return}if(!window.Html5Qrcode){toast('Scanner library unavailable');return}box.innerHTML='<div id="qr-reader" style="max-width:420px"></div><button class="btn" onclick="stopScanner()">Stop scanner</button>';try{scanner=new Html5Qrcode('qr-reader');await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:240,height:140}},text=>{let input=document.getElementById(target==='inward'?'in-chassis':'pdi-chassis');if(input)input.value=text;else toast('Scanned: '+text);stopScanner();toast('Chassis scanned')})}catch(e){box.innerHTML='<div class="sub">Camera unavailable. Check browser camera permission.</div>'}}
-function stopScanner(){if(scanner){scanner.stop().then(()=>scanner.clear()).catch(()=>{});scanner=null}}
-function previewFiles(inputId,previewId){document.getElementById(inputId).addEventListener('change',e=>{let box=document.getElementById(previewId);box.innerHTML='';[...e.target.files].slice(0,8).forEach(f=>{let im=document.createElement('img');im.src=URL.createObjectURL(f);box.appendChild(im)})})}
-previewFiles('in-photos','in-photo-preview');previewFiles('pdi-photos','pdi-photo-preview');
-document.getElementById('checklist').innerHTML=['Exterior body & paint','Glass and mirrors','Lights & electrical','Tyres and wheels','Interior & seats','Documents and accessories'].map((x,i)=>`<label style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);padding:7px 0"><input type="checkbox" value="${esc(x)}" style="accent-color:var(--brand)"> ${esc(x)}</label>`).join('');
-document.getElementById('today').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-setVal('in-date',dateNow());setVal('pdi-date',dateNow());setVal('pdi-inspector',db.settings.inspector);setVal('cfg-url',db.settings.url);setVal('cfg-sync',db.settings.sync);setVal('cfg-inspector',db.settings.inspector);setCloudBadge();updateLocations();toggleOperationFields();renderAll();
-</script></body></html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luxon Yard Management System — Premium Edition</title>
+    <!-- Barcode Scanner, Generator, PDF & Icons -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563eb; --primary-light: #3b82f6; --primary-dark: #1d4ed8; --primary-bg: #eff6ff;
+            --success: #059669; --success-bg: #ecfdf5; --warning: #d97706; --warning-bg: #fffbeb;
+            --danger: #dc2626; --danger-bg: #fef2f2; --dark: #0f172a; --slate: #64748b;
+            --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --radius: 14px;
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08); --card-bg: #ffffff;
+            --sidebar-width: 260px;
+        }
+
+        [data-theme="dark"] {
+            --primary: #3b82f6; --primary-light: #60a5fa; --primary-dark: #2563eb; --primary-bg: #1e3a8a33;
+            --success: #10b981; --success-bg: #064e3b33; --warning: #f59e0b; --warning-bg: #78350f33;
+            --danger: #ef4444; --danger-bg: #7f1d1d33; --dark: #f8fafc; --slate: #94a3b8;
+            --light: #090d16; --white: #111827; --border: #1f2937; --radius: 14px;
+            --shadow: 0 4px 25px -2px rgba(0, 0, 0, 0.5); --card-bg: #111827;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+        body { background-color: var(--light); color: var(--dark); padding-bottom: 90px; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Toast Notifications */
+        .toast-container { position: fixed; bottom: 90px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: var(--dark); color: var(--white); padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3); pointer-events: auto; animation: slideUp 0.3s ease; display: flex; align-items: center; gap: 10px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* App Header */
+        .app-header {
+            background: var(--card-bg); color: var(--dark); padding: 12px 20px;
+            position: sticky; top: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .brand-box { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        .brand-title { font-size: 17px; font-weight: 800; letter-spacing: -0.5px; }
+        .brand-sub { font-size: 11px; color: var(--slate); font-weight: 500; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .theme-toggle-btn { background: var(--primary-bg); color: var(--primary); border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+        .theme-toggle-btn:hover { background: var(--primary); color: white; }
+
+        .menu-container { position: relative; }
+        .menu-btn { background: var(--primary-bg); color: var(--primary); border: 1px solid var(--border); padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .menu-btn:hover { background: var(--primary); color: white; }
+        .menu-dropdown { position: absolute; right: 0; top: 48px; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); width: 240px; display: none; z-index: 1000; overflow: hidden; border: 1px solid var(--border); }
+        .menu-dropdown.show { display: block; animation: slideUp 0.2s ease; }
+        .menu-item { padding: 12px 16px; font-size: 13px; font-weight: 700; color: var(--dark); border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .menu-item:hover { background: var(--primary-bg); color: var(--primary); }
+
+        /* App Layout Container with Sidebar */
+        .app-layout { display: flex; flex: 1; width: 100%; }
+
+        /* Desktop Sidebar (Hidden on mobile) */
+        .app-sidebar {
+            width: var(--sidebar-width); background: var(--card-bg); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 20px 14px; position: sticky; top: 67px; height: calc(100vh - 67px);
+            overflow-y: auto; z-index: 90;
+        }
+        .sidebar-section-title { font-size: 11px; font-weight: 800; color: var(--slate); text-transform: uppercase; letter-spacing: 0.5px; margin: 15px 10px 8px; }
+        .sidebar-link {
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px;
+            font-size: 13px; font-weight: 700; color: var(--slate); text-decoration: none; cursor: pointer; margin-bottom: 4px;
+        }
+        .sidebar-link:hover, .sidebar-link.active { background: var(--primary-bg); color: var(--primary); }
+        .sidebar-link i { width: 20px; font-size: 15px; }
+
+        /* Main Content Area */
+        .main-content { flex: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        /* Mobile Bottom Navigation Bar */
+        .mobile-bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
+            border-top: 1px solid var(--border); padding: 8px 12px; z-index: 100;
+            justify-content: space-around; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+        .bnav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none;
+            color: var(--slate); font-size: 11px; font-weight: 700; cursor: pointer; padding: 6px 12px; border-radius: 10px;
+        }
+        .bnav-item.active { color: var(--primary); background: var(--primary-bg); }
+        .bnav-item i { font-size: 18px; }
+
+        @media (max-width: 900px) {
+            .app-sidebar { display: none; }
+            .mobile-bottom-nav { display: flex; }
+            body { padding-bottom: 80px; }
+            .main-content { padding: 12px; }
+        }
+
+        /* Navigation Tabs (Top bar inside content) */
+        .nav-tabs {
+            background: var(--card-bg); display: flex; overflow-x: auto; gap: 8px; padding: 12px;
+            border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            border: 1px solid var(--border); background: var(--card-bg); color: var(--slate);
+            padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+
+        .module-section { display: none; animation: fadeIn 0.3s ease; }
+        .module-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Dashboard Stats Grid */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 16px; cursor: pointer; box-shadow: var(--shadow); position: relative; overflow: hidden;
+        }
+        .stat-card:hover { transform: translateY(-3px); border-color: var(--primary-light); box-shadow: 0 10px 25px -5px rgba(37,99,235,0.15); }
+        .stat-card.active-filter { border: 2px solid var(--primary); background: var(--primary-bg); }
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--slate); text-transform: uppercase; margin-bottom: 8px; }
+        .stat-val { font-size: 26px; font-weight: 800; color: var(--dark); letter-spacing: -1px; }
+
+        /* Cards & Forms */
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: var(--dark); }
+
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .filter-bar input, .filter-bar select, .form-group input, .form-group select, .form-group textarea {
+            background: var(--card-bg); color: var(--dark); border: 1px solid var(--border);
+            padding: 11px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; outline: none; width: 100%;
+        }
+        .filter-bar input:focus, .filter-bar select:focus, .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg);
+        }
+        .filter-bar input { flex: 2; min-width: 200px; }
+        .filter-bar select { flex: 1; min-width: 140px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--slate); margin-bottom: 6px; text-transform: uppercase; }
+
+        /* Buttons */
+        .btn {
+            border: none; padding: 11px 18px; border-radius: 10px; font-size: 13px; font-weight: 700;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #047857; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-outline { background: var(--card-bg); color: var(--slate); border: 1px solid var(--border); }
+        .btn-outline:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary-light); }
+        .btn-dark { background: var(--dark); color: var(--white); }
+        .btn-full { width: 100%; }
+
+        /* Vehicle List Items */
+        .vehicle-list { display: flex; flex-direction: column; gap: 10px; max-height: 520px; overflow-y: auto; padding-right: 4px; }
+        .vehicle-item {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+            display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .vehicle-item:hover { border-color: var(--primary-light); background: var(--primary-bg); }
+        .vehicle-item.selected-item { border: 2px solid var(--primary); background: var(--primary-bg); }
+        .v-info h4 { font-family: monospace; font-size: 15px; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+        .v-info p { font-size: 12px; color: var(--slate); margin-top: 3px; font-weight: 500; }
+
+        /* Badges */
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
+        .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
+        .badge-ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
+        .badge-hold { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
+        .badge-conf { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+        .badge-out { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+        /* Photo Grids & Uploads */
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 10px; }
+        .thumb-wrapper { position: relative; width: 100%; height: 90px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-remove { position: absolute; top: 4px; right: 4px; background: rgba(220,38,38,0.9); color: white; border: none; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .empty-photo-hint { font-size: 12px; color: var(--slate); font-style: italic; padding: 8px 0; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; }
+        .modal-card { background: var(--card-bg); width: 100%; max-width: 600px; border-radius: 20px; padding: 24px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); border: 1px solid var(--border); animation: slideUp 0.3s ease; }
+
+        /* Report Grids */
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 14px; }
+        .report-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+        .report-box:hover { border-color: var(--primary); background: var(--primary-bg); }
+        .report-box.active-rep { border: 2px solid var(--primary); background: var(--primary-bg); }
+        .report-box-lbl { font-size: 10px; font-weight: 700; color: var(--slate); text-transform: uppercase; margin-bottom: 4px; }
+        .report-box-val { font-size: 20px; font-weight: 800; color: var(--dark); }
+
+        .alert-box { padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; margin-bottom: 14px; display: none; }
+        .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
+        .alert-error { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
+    
+/* ============================================================
+   LUXON PREMIUM UI — COMPLETE PRESENTATION REDESIGN
+   Original application DOM, IDs, handlers, data logic and
+   integrations are intentionally preserved.
+   ============================================================ */
+:root {
+ --primary:#16766e; --primary-light:#25a094; --primary-dark:#10564f; --primary-bg:#e8f5f2;
+ --success:#16845e; --success-bg:#e8f6ee; --warning:#b7791f; --warning-bg:#fff5df;
+ --danger:#c34b51; --danger-bg:#fff0ef; --dark:#172d33; --slate:#71858b;
+ --light:#f2f6f5; --white:#fff; --border:#dfe9e7; --radius:18px;
+ --shadow:0 12px 32px rgba(19,53,58,.075); --card-bg:#fff; --sidebar-width:258px;
+}
+[data-theme="dark"] {
+ --primary:#58b9ad; --primary-light:#78d0c5; --primary-dark:#32988d; --primary-bg:#193b39;
+ --success:#4fc18d; --success-bg:#15392e; --warning:#e8b95f; --warning-bg:#43351b;
+ --danger:#f0787d; --danger-bg:#45282a; --dark:#e7f0ef; --slate:#9aafb1;
+ --light:#0d191d; --white:#14262b; --border:#294047; --card-bg:#14262b;
+ --shadow:0 12px 34px rgba(0,0,0,.23);
+}
+html { scroll-behavior:smooth; }
+body { background:var(--light); color:var(--dark); padding-bottom:0; letter-spacing:-.012em; }
+* { -webkit-tap-highlight-color:transparent; }
+button, .sidebar-link, .stat-card, .report-box, .vehicle-item { transition:all .18s ease; }
+
+/* Header / identity */
+.app-header {
+ min-height:76px; padding:12px 25px;
+ background:linear-gradient(112deg,#102d33 0%,#164b4b 58%,#16766e 100%);
+ color:#fff; border:0; box-shadow:0 8px 26px rgba(12,48,51,.17);
+}
+.brand-box { gap:13px; }
+.brand-icon {
+ width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#5bd0bd,#168276);
+ box-shadow:0 7px 20px rgba(21,153,137,.32);font-size:19px;
+}
+.brand-title { color:#fff;font-size:18px;font-weight:800;letter-spacing:-.7px; }
+.brand-sub { color:#b5d5d0;font-size:10px;letter-spacing:.09em;text-transform:uppercase; }
+.header-actions { gap:9px; }
+.theme-toggle-btn,.menu-btn {
+ border:1px solid #ffffff30;background:#ffffff14;color:#fff;border-radius:11px;
+ min-height:39px;
+}
+.theme-toggle-btn:hover,.menu-btn:hover { background:#ffffff28;color:#fff; }
+.app-header .btn-outline { background:#ffffff14;color:#fff;border:1px solid #ffffff30;box-shadow:none; }
+.app-header .btn-outline:hover { background:#ffffff25;color:#fff; }
+.menu-dropdown { border-radius:14px;box-shadow:0 18px 44px rgba(0,0,0,.2); }
+
+/* Overall workspace */
+.app-layout { align-items:stretch; }
+.app-sidebar {
+ width:var(--sidebar-width);min-width:var(--sidebar-width);height:calc(100vh - 76px);
+ top:76px;padding:22px 14px;background:#112e34;color:#d8e8e5;
+ border:0;box-shadow:8px 0 26px rgba(17,46,52,.07);
+}
+.sidebar-section-title {
+ color:#779b98;font-size:10px;letter-spacing:1.45px;
+ margin:17px 11px 9px;font-weight:800;
+}
+.sidebar-link {
+ color:#aec3c0;padding:12px 13px;border-radius:11px;margin:3px 0;
+ font-size:12px;font-weight:650;position:relative;
+}
+.sidebar-link i { color:#8aadaa;width:19px;font-size:14px; }
+.sidebar-link:hover { background:#ffffff12;color:#fff;transform:translateX(2px); }
+.sidebar-link:hover i { color:#76d2c4; }
+.sidebar-link.active {
+ background:linear-gradient(100deg,#1d6d66,#1c5554);color:#fff;
+ box-shadow:inset 3px 0 #6bd2c3,0 5px 15px rgba(0,0,0,.12);
+}
+.sidebar-link.active i { color:#8be0d2; }
+.main-content { max-width:none;width:auto;padding:25px 27px 38px; }
+.nav-tabs {
+ padding:7px;gap:6px;border:1px solid var(--border);border-radius:15px;
+ background:var(--card-bg);box-shadow:var(--shadow);margin-bottom:21px;
+}
+.tab-btn {
+ border:0;background:transparent;padding:11px 15px;border-radius:10px;
+ color:var(--slate);font-size:12px;font-weight:750;
+}
+.tab-btn:hover { background:var(--primary-bg);color:var(--primary); }
+.tab-btn.active {
+ color:#fff;background:linear-gradient(120deg,var(--primary),var(--primary-light));
+ box-shadow:0 5px 14px rgba(22,118,110,.22);
+}
+
+/* Content rhythm and cards */
+.module-section.active { animation:luxonIn .25s ease both; }
+@keyframes luxonIn { from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none} }
+.stats-grid { gap:14px;margin-bottom:18px; }
+.stat-card {
+ border:1px solid var(--border);border-radius:17px;background:var(--card-bg);
+ padding:18px 18px 17px;box-shadow:var(--shadow);min-height:108px;
+}
+.stat-card:before {
+ content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+ background:linear-gradient(180deg,var(--primary-light),var(--primary));
+}
+.stat-card:hover { transform:translateY(-3px);border-color:var(--primary-light);box-shadow:0 16px 32px rgba(19,53,58,.12); }
+.stat-card.active-filter { border:2px solid var(--primary);background:var(--primary-bg); }
+.stat-label { font-size:10px;letter-spacing:.075em;font-weight:800;color:var(--slate);margin-bottom:10px; }
+.stat-val { font:800 29px/1.1 'Inter',sans-serif;letter-spacing:-1.2px; }
+.card {
+ background:var(--card-bg);border:1px solid var(--border);border-radius:18px;
+ padding:20px;margin-bottom:17px;box-shadow:var(--shadow);
+}
+.card-header { padding-bottom:13px;border-bottom:1px solid var(--border);margin-bottom:17px; }
+.card-title { font-size:14px;font-weight:800;letter-spacing:-.2px; }
+.card-title i { color:var(--primary); }
+.filter-bar { gap:9px;margin-bottom:15px; }
+.vehicle-list { gap:9px;padding:2px 4px 2px 0; }
+.vehicle-item {
+ border:1px solid var(--border);border-radius:13px;padding:13px 15px;
+ background:var(--card-bg);box-shadow:0 3px 10px rgba(17,48,53,.035);
+}
+.vehicle-item:hover { border-color:var(--primary-light);background:var(--primary-bg);transform:translateY(-1px); }
+.vehicle-item.selected-item { border:2px solid var(--primary);background:var(--primary-bg); }
+.v-info h4 { font-size:14px;letter-spacing:.01em; }
+.v-info p { font-size:11px;line-height:1.5; }
+
+/* Inputs / forms */
+.form-group { margin-bottom:15px; }
+.form-group label {
+ color:var(--slate);font-size:10px;font-weight:800;letter-spacing:.07em;margin-bottom:7px;
+}
+.filter-bar input,.filter-bar select,.form-group input,.form-group select,.form-group textarea {
+ background:var(--light);color:var(--dark);border:1px solid var(--border);
+ border-radius:11px;padding:12px 13px;font-size:13px;font-weight:550;min-height:43px;
+}
+.filter-bar input:focus,.filter-bar select:focus,.form-group input:focus,.form-group select:focus,.form-group textarea:focus {
+ border-color:var(--primary-light);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 14%,transparent);
+}
+.form-group textarea { min-height:90px;line-height:1.5; }
+.btn {
+ border-radius:11px;padding:11px 16px;font-size:12px;font-weight:750;
+ box-shadow:0 3px 8px rgba(16,48,52,.055);
+}
+.btn-primary,.btn-success {
+ background:linear-gradient(120deg,var(--primary),var(--primary-light));
+ color:#fff;box-shadow:0 6px 15px rgba(22,118,110,.2);
+}
+.btn-primary:hover,.btn-success:hover { filter:brightness(1.06);transform:translateY(-1px); }
+.btn-danger { background:var(--danger); }
+.btn-outline { background:var(--card-bg);color:var(--slate);border:1px solid var(--border); }
+.btn-outline:hover { background:var(--primary-bg);color:var(--primary);border-color:var(--primary-light); }
+.btn-dark { background:#17363c;color:#fff; }
+.badge { padding:5px 10px;font-size:10px;letter-spacing:.035em; }
+.badge-pending { background:var(--warning-bg);color:var(--warning);border-color:transparent; }
+.badge-ok { background:var(--success-bg);color:var(--success);border-color:transparent; }
+.badge-hold { background:var(--danger-bg);color:var(--danger);border-color:transparent; }
+.badge-conf { background:#e9f2ff;color:#477ec4;border-color:transparent; }
+.badge-out { background:#eef1f3;color:#64748b;border-color:transparent; }
+
+/* Photos, report tiles and modal surfaces */
+.photo-grid { grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px; }
+.thumb-wrapper { height:105px;border-radius:12px;border-color:var(--border); }
+.thumb-remove { width:25px;height:25px; }
+.empty-photo-hint { background:var(--light);border:1px dashed var(--border);border-radius:11px;padding:13px; }
+.report-grid { gap:11px; }
+.report-box {
+ border:1px solid var(--border);border-radius:14px;padding:15px 12px;
+ background:var(--card-bg);box-shadow:0 4px 12px rgba(17,48,53,.04);
+}
+.report-box:hover { transform:translateY(-2px);border-color:var(--primary-light);background:var(--primary-bg); }
+.report-box.active-rep { border:2px solid var(--primary);background:var(--primary-bg); }
+.report-box-lbl { font-size:9px;letter-spacing:.08em; }
+.report-box-val { font-size:23px;font-weight:850; }
+.modal-overlay { background:rgba(6,25,29,.66);backdrop-filter:blur(8px); }
+.modal-card {
+ max-width:680px;border-radius:21px;padding:23px;
+ border:1px solid var(--border);box-shadow:0 28px 75px rgba(0,0,0,.28);
+}
+.alert-box { border-radius:12px;padding:13px 15px; }
+.toast-container { bottom:24px;right:24px; }
+.toast { border-radius:13px;padding:13px 17px;box-shadow:0 12px 30px rgba(0,0,0,.2); }
+
+/* Scrollbars */
+* { scrollbar-width:thin;scrollbar-color:#b7cbc7 transparent; }
+::-webkit-scrollbar { width:7px;height:7px; }
+::-webkit-scrollbar-thumb { background:#b7cbc7;border-radius:10px; }
+
+/* Responsive redesign */
+@media (min-width:1500px) {
+ .main-content { padding-left:34px;padding-right:34px; }
+ .stats-grid { grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); }
+}
+@media (max-width:1100px) {
+ :root { --sidebar-width:225px; }
+ .main-content { padding:19px; }
+ .stats-grid { grid-template-columns:repeat(auto-fit,minmax(135px,1fr)); }
+}
+@media (max-width:900px) {
+ .app-header { min-height:66px;padding:9px 14px; }
+ .brand-icon { width:38px;height:38px;border-radius:12px;font-size:17px; }
+ .brand-title { font-size:15px; }
+ .brand-sub { font-size:9px; }
+ .app-sidebar { display:none; }
+ .mobile-bottom-nav {
+  display:flex;justify-content:space-around;align-items:center;
+  padding:8px 5px max(8px,env(safe-area-inset-bottom));
+  background:color-mix(in srgb,var(--card-bg) 94%,transparent);
+  border-top:1px solid var(--border);box-shadow:0 -8px 28px rgba(16,48,52,.09);
+  backdrop-filter:blur(18px);
+ }
+ body { padding-bottom:82px; }
+ .main-content { padding:13px 12px 24px; }
+ .nav-tabs { border-radius:13px;padding:6px;margin-bottom:14px; }
+ .tab-btn { padding:10px 12px;font-size:11px; }
+ .card { padding:15px;border-radius:15px;margin-bottom:13px; }
+ .card-header { margin-bottom:13px; }
+ .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:13px; }
+ .stat-card { min-height:94px;padding:14px 13px;border-radius:14px; }
+ .stat-val { font-size:25px; }
+ .stat-label { font-size:9px; }
+ .filter-bar { gap:8px; }
+ .filter-bar input { min-width:100%; }
+ .filter-bar select { min-width:calc(50% - 5px); }
+ .vehicle-item { padding:12px; }
+ .photo-grid { grid-template-columns:repeat(auto-fill,minmax(86px,1fr)); }
+ .thumb-wrapper { height:88px; }
+ .modal-overlay { padding:10px;align-items:flex-end; }
+ .modal-card { max-height:92vh;border-radius:20px 20px 12px 12px;padding:18px; }
+ .toast-container { left:12px;right:12px;bottom:92px; }
+}
+@media (max-width:380px) {
+ .header-actions { gap:5px; }
+ .app-header .btn-outline { padding:7px 9px!important;font-size:10px!important; }
+ .menu-btn { padding:8px 10px;font-size:11px; }
+ .brand-box { gap:8px; }
+ .stats-grid { gap:8px; }
+ .stat-card { padding:12px 10px; }
+ .stat-val { font-size:23px; }
+ .bnav-item { padding:6px 7px;font-size:9px; }
+}
+
+</style>
+</head>
+<body>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="brand-box">
+            <div class="brand-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+            <div>
+                <div class="brand-title">Luxon Yard Management</div>
+                <div class="brand-sub" id="sync-status-text">Connected to Cloud Sync</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
+            <button class="btn btn-outline" style="padding: 8px 12px; font-size: 12px;" onclick="syncWithGoogleSheet(false)" title="Sync Sheet Now"><i class="fa-solid fa-rotate" id="sync-icon"></i> Sync</button>
+            <div class="menu-container">
+                <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+                <div class="menu-dropdown" id="app-menu-dropdown">
+                    <div class="menu-item" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Report</div>
+                    <div class="menu-item" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Summary</div>
+                    <div class="menu-item" onclick="openReportsModal('hold')"><i class="fa-solid fa-triangle-exclamation"></i> On Hold Vehicles</div>
+                    <div class="menu-item" onclick="openReportsModal('review')"><i class="fa-solid fa-clock-rotate-left"></i> Hold Review Pending</div>
+                    <div class="menu-item" onclick="addNewLocationPrompt()"><i class="fa-solid fa-location-plus"></i> Add New Location</div>
+                    <div class="menu-item" onclick="addNewInspectorPrompt()"><i class="fa-solid fa-user-plus"></i> Add Technician</div>
+                    <div class="menu-item" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> System Settings</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Layout Container -->
+    <div class="app-layout">
+        <!-- Desktop Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-section-title">Navigation</div>
+            <a class="sidebar-link active" id="sidebar-dashboard" onclick="openModule('dashboard', true)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a class="sidebar-link" id="sidebar-inward" onclick="openModule('inward')"><i class="fa-solid fa-truck-arrow-right"></i> Vehicle Inward</a>
+            <a class="sidebar-link" id="sidebar-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> PDI Inspection</a>
+            <a class="sidebar-link" id="sidebar-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrows-split-up-and-left"></i> Operations &amp; Outward</a>
+
+            <div class="sidebar-section-title">Quick Reports</div>
+            <a class="sidebar-link" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Operations</a>
+            <a class="sidebar-link" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Summary</a>
+            <a class="sidebar-link" onclick="openReportsModal('hold')"><i class="fa-solid fa-triangle-exclamation"></i> On Hold Stock</a>
+
+            <div class="sidebar-section-title">System</div>
+            <a class="sidebar-link" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> Bot &amp; Sheet Settings</a>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs">
+                <button class="tab-btn active" id="tabbtn-dashboard" onclick="openModule('dashboard', true)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+                <button class="tab-btn" id="tabbtn-inward" onclick="openModule('inward')"><i class="fa-solid fa-truck-arrow-right"></i> 1. Inward</button>
+                <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> 2. PDI Checking</button>
+                <button class="tab-btn" id="tabbtn-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrows-split-up-and-left"></i> 3. Operations</button>
+            </nav>
+
+            <!-- MODULE 1: DASHBOARD -->
+            <section id="mod-dashboard" class="module-section active">
+                <div class="stats-grid">
+                    <div class="stat-card" id="card-Physical" onclick="filterDashboardList('Physical')">
+                        <div class="stat-label">Physical Stock</div>
+                        <div class="stat-val" id="count-physical">0</div>
+                    </div>
+                    <div class="stat-card" id="card-PendingPDI" onclick="filterDashboardList('Pending PDI')">
+                        <div class="stat-label">Pending PDI</div>
+                        <div class="stat-val" id="count-pending" style="color: var(--warning);">0</div>
+                    </div>
+                    <div class="stat-card" id="card-PDIOK" onclick="filterDashboardList('PDI OK')">
+                        <div class="stat-label">PDI Done (OK)</div>
+                        <div class="stat-val" id="count-pdiok" style="color: var(--success);">0</div>
+                    </div>
+                    <div class="stat-card" id="card-HOLD" onclick="filterDashboardList('HOLD')">
+                        <div class="stat-label">PDI Hold</div>
+                        <div class="stat-val" id="count-hold" style="color: var(--danger);">0</div>
+                    </div>
+                    <div class="stat-card" id="card-Display" onclick="filterDashboardList('Display')">
+                        <div class="stat-label">Display Cars</div>
+                        <div class="stat-val" id="count-display" style="color: #0284c7;">0</div>
+                    </div>
+                    <div class="stat-card" id="card-Aging" onclick="filterDashboardList('Aging')">
+                        <div class="stat-label">Aging (>90 Days)</div>
+                        <div class="stat-val" id="count-aging" style="color: #9333ea;">0</div>
+                    </div>
+                    <div class="stat-card" id="card-ReviewPending" onclick="filterDashboardList('ReviewPending')">
+                        <div class="stat-label">Hold Review Pending</div>
+                        <div class="stat-val" id="count-review" style="color: #0284c7;">0</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fa-solid fa-list-ul"></i> 
+                            <span id="dash-list-title">All Vehicles (Master Google Sheet Stock)</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn btn-outline" id="btn-show-all" style="padding:6px 10px; font-size:11px; display:none;" onclick="filterDashboardList('ALL')">
+                                <i class="fa-solid fa-layer-group"></i> Show All Sheet Stock
+                            </button>
+                            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('pdf')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('image')"><i class="fa-solid fa-image"></i> Image</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <input type="text" id="dash-search" placeholder="Search Chassis, Model or Location..." oninput="renderDashboard()">
+                        <select id="dash-loc-filter" onchange="renderDashboard()">
+                            <option value="">All Locations</option>
+                        </select>
+                        <select id="dash-model-filter" onchange="renderDashboard()">
+                            <option value="">All Models</option>
+                        </select>
+                    </div>
+
+                    <div id="dash-vehicle-list" class="vehicle-list"></div>
+                </div>
+            </section>
+
+            <!-- MODULE 2: VEHICLE INWARD -->
+            <section id="mod-inward" class="module-section">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> New Vehicle Inward &amp; Barcode Scan</div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="toggleCameraScanner('inward')"><i class="fa-solid fa-camera"></i> Scan VIN / Barcode</button>
+                        <label class="btn btn-outline" style="flex:1; cursor:pointer; margin:0;">
+                            <i class="fa-solid fa-file-image"></i> Upload Barcode Image <input type="file" accept="image/*" style="display:none;" onchange="scanBarcodeFromFile(event, 'inward')">
+                        </label>
+                    </div>
+
+                    <div id="inward-camera-reader" style="width:100%; max-width:400px; margin:0 auto 14px; display:none; border-radius:12px; overflow:hidden;"></div>
+                    <div id="inward-status-alert" class="alert-box"></div>
+
+                    <div class="form-group">
+                        <label>VIN / Chassis Number *</label>
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" id="in-chassis" placeholder="e.g. MAT1234567890ABCD" oninput="saveDraft(); onInwardChassisInput()" style="text-transform:uppercase; font-family:monospace;">
+                            <button type="button" class="btn btn-dark" onclick="generateBarcode('inward')" title="Generate Barcode"><i class="fa-solid fa-barcode"></i></button>
+                        </div>
+                    </div>
+
+                    <div id="inward-barcode-box" style="text-align:center; margin-bottom:14px; display:none; background:#fff; padding:10px; border-radius:10px; border:1px solid var(--border);">
+                        <svg id="inward-barcode-svg"></svg>
+                        <div><button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11px; margin-top:6px;" onclick="downloadBarcode('inward-barcode-svg', document.getElementById('in-chassis').value)"><i class="fa-solid fa-download"></i> Download Barcode PNG</button></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Vehicle Model *</label>
+                        <input type="text" id="in-model" placeholder="e.g. Nexon EV Empowered Plus" list="tata-models-list" oninput="saveDraft()">
+                        <datalist id="tata-models-list">
+                            <option value="Nexon EV Empowered Plus">
+                            <option value="Punch Creative AMT">
+                            <option value="Harrier Fearless Plus">
+                            <option value="Safari Accomplished Plus">
+                            <option value="Tiago XZ+">
+                            <option value="Tigor XZ+">
+                            <option value="Punch EV Empowered">
+                            <option value="Nexon Creative Diesel">
+                        </datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Yard / Display Location *</label>
+                        <div style="display:flex; gap:6px;">
+                            <select id="in-location" style="flex:1;" onchange="saveDraft()"></select>
+                            <button type="button" class="btn btn-outline" onclick="removeSelectedLocation('in-location')" title="Remove Selected Location"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Inward Photos (Optional)</label>
+                        <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'inward')">
+                        <div id="grid-inward" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-full" id="btn-submit-inward" onclick="submitInward()"><i class="fa-solid fa-check"></i> Complete Inward</button>
+                </div>
+            </section>
+
+            <!-- MODULE 3: PDI CHECKING -->
+            <section id="mod-pdi" class="module-section">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> Pre-Delivery Inspection (PDI) Checking</div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="toggleCameraScanner('pdi')"><i class="fa-solid fa-camera"></i> Scan Chassis</button>
+                        <label class="btn btn-outline" style="flex:1; cursor:pointer; margin:0;">
+                            <i class="fa-solid fa-file-image"></i> Scan Barcode Image <input type="file" accept="image/*" style="display:none;" onchange="scanBarcodeFromFile(event, 'pdi')">
+                        </label>
+                    </div>
+
+                    <div id="pdi-camera-reader" style="width:100%; max-width:400px; margin:0 auto 12px; display:none; border-radius:12px; overflow:hidden;"></div>
+
+                    <div class="filter-bar">
+                        <input type="text" id="pdi-search-input" placeholder="Search Chassis or Model..." oninput="populatePdiMasterList()">
+                        <select id="pdi-dropdown-select" onchange="selectPdiByChassis(this.value)">
+                            <option value="">-- Select Vehicle from Dropdown --</option>
+                        </select>
+                    </div>
+
+                    <label style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; display:block; text-transform:uppercase;">Physical Stock Vehicles (Tap to Inspect):</label>
+                    <div id="pdi-master-list" class="vehicle-list" style="max-height:220px; margin-bottom:16px;"></div>
+
+                    <!-- SELECTED VEHICLE PDI FORM -->
+                    <div id="pdi-banner" style="display:none; background:var(--primary-bg); border:1.5px solid var(--primary); padding:16px; border-radius:12px; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <h3 id="pdi-b-chassis" style="font-family:monospace; color:var(--primary); font-size:18px; font-weight:800;"></h3>
+                                <p id="pdi-b-model" style="font-size:12px; color:var(--dark); margin-top:2px; font-weight:600;"></p>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button type="button" class="btn btn-dark" style="padding:5px 10px; font-size:11px;" onclick="generateBarcode('pdi')"><i class="fa-solid fa-barcode"></i> Barcode</button>
+                                <button type="button" class="btn btn-outline" style="padding:5px 10px; font-size:11px;" onclick="clearPdiSelection()">✕ Close</button>
+                            </div>
+                        </div>
+
+                        <div id="pdi-barcode-box" style="text-align:center; margin-top:10px; display:none; background:#fff; padding:10px; border-radius:8px;">
+                            <svg id="pdi-barcode-svg"></svg>
+                            <div><button type="button" class="btn btn-outline" style="padding:3px 8px; font-size:10px; margin-top:4px;" onclick="downloadBarcode('pdi-barcode-svg', currentPdiChassis)"><i class="fa-solid fa-download"></i> Download Barcode PNG</button></div>
+                        </div>
+                    </div>
+
+                    <div id="pdi-form-area">
+                        <div class="form-group">
+                            <label>Odometer Reading (km) *</label>
+                            <input type="number" id="pdi-speed" placeholder="e.g. 18" oninput="saveDraft()">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Inspector / Technician Name *</label>
+                            <div style="display:flex; gap:6px;">
+                                <select id="pdi-inspector-sel" style="flex:1;"></select>
+                                <button type="button" class="btn btn-outline" onclick="removeSelectedInspector('pdi-inspector-sel')" title="Remove Technician"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- 5 PHOTO BUCKETS -->
+                        <div class="form-group">
+                            <label>1. PDI Check Sheet Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_checksheet')">
+                            <div id="grid-pdi_checksheet" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>2. Chassis Stencil / Print Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_chassis')">
+                            <div id="grid-pdi_chassis" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>3. Form 22 / Documents Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_form22')">
+                            <div id="grid-pdi_form22" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>4. Battery Voltage / Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_battery')">
+                            <div id="grid-pdi_battery" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>5. Vehicle All-Round Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_vehicle')">
+                            <div id="grid-pdi_vehicle" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>PDI Decision Status *</label>
+                            <select id="pdi-decision" onchange="saveDraft(); toggleHoldUI()">
+                                <option value="PDI OK">PDI OK (Approved)</option>
+                                <option value="HOLD">PDI Hold (Defect / Issue)</option>
+                                <option value="REVIEW_PENDING">Send to Review (Hold Review Pending)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="pdi-remarks-box" style="display:none;">
+                            <label style="color:var(--danger);">Hold Reason / Remarks (Mandatory for Hold/Review)</label>
+                            <textarea id="pdi-remarks" rows="3" placeholder="Specify reason for hold or review..." oninput="saveDraft()"></textarea>
+                        </div>
+
+                        <button type="button" class="btn btn-success btn-full" id="btn-submit-pdi" onclick="submitPdiAndShare()"><i class="fa-solid fa-paper-plane"></i> Submit PDI &amp; Sync PDF to Cloud</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE 4: OPERATIONS & OUTWARD -->
+            <section id="mod-operations" class="module-section">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-arrows-split-up-and-left"></i> Yard Operations, Stock Transfer &amp; Delivery Outward</div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="toggleCameraScanner('op')"><i class="fa-solid fa-camera"></i> Scan Chassis</button>
+                        <label class="btn btn-outline" style="flex:1; cursor:pointer; margin:0;">
+                            <i class="fa-solid fa-file-image"></i> Scan Barcode Image <input type="file" accept="image/*" style="display:none;" onchange="scanBarcodeFromFile(event, 'op')">
+                        </label>
+                    </div>
+
+                    <div id="op-camera-reader" style="width:100%; max-width:400px; margin:0 auto 12px; display:none; border-radius:12px; overflow:hidden;"></div>
+
+                    <div class="filter-bar">
+                        <input type="text" id="op-search" placeholder="Search Chassis or Model..." oninput="renderOperationsList()">
+                        <select id="op-dropdown-select" onchange="openOpEd(this.value)">
+                            <option value="">-- Select Physical Stock Vehicle --</option>
+                        </select>
+                    </div>
+
+                    <!-- OPERATION EDITOR BOX -->
+                    <div id="op-editor" style="display:none; background:var(--primary-bg); border:1.5px solid var(--primary); padding:16px; border-radius:12px; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div>
+                                <h3 id="op-ed-chassis" style="font-family:monospace; color:var(--primary); font-size:18px;"></h3>
+                                <p id="op-ed-sub" style="font-size:12px; color:var(--slate); margin-top:2px;"></p>
+                            </div>
+                            <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="currentOpChassis=''; document.getElementById('op-editor').style.display='none'; renderOperationsList();">✕ Close</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select Operation Type *</label>
+                            <select id="op-action-type" onchange="toggleOpActionUI()">
+                                <option value="LOCATION">Internal Yard / Display Location Change</option>
+                                <option value="DISPATCH">Delivery Dispatch (Outward to Showroom)</option>
+                                <option value="TRANSFER">Regional Stock Transfer</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="op-loc-box">
+                            <label>New Yard / Display Location *</label>
+                            <select id="op-ed-newloc"></select>
+                        </div>
+
+                        <div class="form-group" id="op-dest-box" style="display:none;">
+                            <label>Delivery Showroom Destination *</label>
+                            <select id="op-ed-dest">
+                                <option value="Malappuram Showroom">Malappuram Showroom</option>
+                                <option value="Kottakkal Showroom">Kottakkal Showroom</option>
+                                <option value="Edappal Showroom">Edappal Showroom</option>
+                                <option value="Changanakkulam Showroom">Changanakkulam Showroom</option>
+                                <option value="Kondotty Showroom">Kondotty Showroom</option>
+                                <option value="Areekode Showroom">Areekode Showroom</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="op-region-box" style="display:none;">
+                            <label>Stock Transfer Region / Hub *</label>
+                            <select id="op-ed-region">
+                                <option value="Ernakulam Hub">Ernakulam Hub</option>
+                                <option value="Kollam Hub">Kollam Hub</option>
+                                <option value="Trivandrum Hub">Trivandrum Hub</option>
+                                <option value="Pathanamthitta - Konni">Pathanamthitta - Konni</option>
+                                <option value="Dealer Yard">Dealer Yard</option>
+                            </select>
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-full" onclick="confirmOperationsDispatch()"><i class="fa-solid fa-check"></i> Update Operation &amp; Sync Sheet</button>
+                    </div>
+
+                    <label style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; display:block; text-transform:uppercase;">Physical Stock Vehicles (Tap any vehicle to select):</label>
+                    <div id="op-list" class="vehicle-list" style="max-height:260px;"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav">
+        <button class="bnav-item active" id="bnav-dashboard" onclick="openModule('dashboard', true)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+        <button class="bnav-item" id="bnav-inward" onclick="openModule('inward')"><i class="fa-solid fa-truck-arrow-right"></i> Inward</button>
+        <button class="bnav-item" id="bnav-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> PDI</button>
+        <button class="bnav-item" id="bnav-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrows-split-up-and-left"></i> Operations</button>
+    </nav>
+
+    <!-- VEHICLE DETAILS & HOLD REVIEW MODAL -->
+    <div class="modal-overlay" id="vehicle-details-modal">
+        <div class="modal-card">
+            <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-car-side"></i> Vehicle Details &amp; Check Sheet PDF</div>
+                <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeVehicleDetailsModal()">✕</button>
+            </div>
+            <div id="vehicle-details-body"></div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-card">
+            <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-gear"></i> System &amp; Telegram Settings</div>
+                <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeSettingsModal()">✕</button>
+            </div>
+            <div class="form-group"><label>Google Apps Script Web App URL</label><input type="text" id="cfg-scripturl"></div>
+            <div class="form-group"><label>Telegram Bot Token</label><input type="text" id="cfg-token"></div>
+            <div class="form-group"><label>Telegram Chat ID</label><input type="text" id="cfg-chatid"></div>
+            <button class="btn btn-primary btn-full" onclick="saveSettings()">Save &amp; Sync Now</button>
+        </div>
+    </div>
+
+    <!-- REPORTS MODAL -->
+    <div class="modal-overlay" id="reports-modal">
+        <div class="modal-card">
+            <div class="card-header">
+                <div class="card-title" id="report-modal-title"><i class="fa-solid fa-chart-bar"></i> Reports</div>
+                <button class="btn btn-outline" style="padding:4px 8px;" onclick="closeReportsModal()">✕</button>
+            </div>
+            <div id="report-content-body" style="font-size:13px; line-height:1.6;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Dark & Light Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const current = html.getAttribute('data-theme');
+            if (current === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                if (icon) icon.className = 'fa-solid fa-moon';
+                localStorage.setItem('luxon_yms_theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                if (icon) icon.className = 'fa-solid fa-sun';
+                localStorage.setItem('luxon_yms_theme', 'dark');
+            }
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info';
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function cleanStr(val) {
+            return String(val === null || val === undefined ? '' : val).replace(/[\r\n\t]+/g, ' ').trim();
+        }
+        function cleanChassis(val) {
+            return cleanStr(val).toUpperCase();
+        }
+
+        function packMetaIntoRemarks(cleanRemark, tgMsgId, tgFileId, inspector) {
+            const base = cleanStr(cleanRemark).replace(/\s*\[#TG:[^\]]*\]/g, '').trim();
+            if (!tgMsgId && !tgFileId && !inspector) return base;
+            const metaTag = `[#TG:${cleanStr(tgMsgId)}|${cleanStr(tgFileId)}|${cleanStr(inspector)}]`;
+            return base ? `${base} ${metaTag}` : metaTag;
+        }
+
+        function unpackMetaFromRemarks(rawRemark) {
+            const str = cleanStr(rawRemark);
+            const match = str.match(/\[#TG:([^|\]]*)\|([^|\]]*)\|([^\]]*)\]/);
+            const cleanText = str.replace(/\s*\[#TG:[^\]]*\]/g, '').trim();
+            if (!match) {
+                return { cleanRemarks: cleanText, tgMsgId: '', tgFileId: '', metaInspector: '' };
+            }
+            return {
+                cleanRemarks: cleanText,
+                tgMsgId: cleanStr(match[1]),
+                tgFileId: cleanStr(match[2]),
+                metaInspector: cleanStr(match[3])
+            };
+        }
+
+        const defaultLocations = [
+            "Kottakkal Yard", "Changanakkal Yard", "Malappuram Yard",
+            "Kottakkal Display", "Malappuram Display", "Edappal Display",
+            "Changanakkulam Display", "Kondotty Display", "Areekode Display", "Body Shop"
+        ];
+        let savedLocs = [];
+        try { savedLocs = JSON.parse(localStorage.getItem('luxon_yms_locs')) || defaultLocations; } catch(e) { savedLocs = defaultLocations; }
+        let locationsList = savedLocs.filter(l => !cleanStr(l).toUpperCase().startsWith('MAIN YARD'));
+        if (!locationsList.length) locationsList = [...defaultLocations];
+        try { localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList)); } catch(e) {}
+
+        let inspectorsList = ["Munees KC", "Sahal", "Safuvan", "Sarfas"];
+        try { inspectorsList = JSON.parse(localStorage.getItem('luxon_yms_inspectors')) || inspectorsList; } catch(e) {}
+
+        function initDropdowns() {
+            const locOptions = locationsList.map(l => `<option value="${cleanStr(l)}">${cleanStr(l)}</option>`).join('');
+            ['in-location', 'op-ed-newloc'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = locOptions;
+            });
+
+            const insOptions = inspectorsList.map(i => `<option value="${cleanStr(i)}">${cleanStr(i)}</option>`).join('');
+            const pIns = document.getElementById('pdi-inspector-sel');
+            if (pIns) pIns.innerHTML = insOptions;
+
+            updateDashboardFilterDropdowns();
+        }
+
+        function updateDashboardFilterDropdowns() {
+            const locFilter = document.getElementById('dash-loc-filter');
+            const modFilter = document.getElementById('dash-model-filter');
+            if (locFilter) {
+                const currentLoc = locFilter.value;
+                const uniqueLocs = [...new Set(vehiclesDB.map(v => cleanStr(v.location)).filter(Boolean))];
+                locFilter.innerHTML = `<option value="">All Locations</option>` + uniqueLocs.map(l => `<option value="${l}">${l}</option>`).join('');
+                locFilter.value = currentLoc;
+            }
+            if (modFilter) {
+                const currentMod = modFilter.value;
+                const uniqueMods = [...new Set(vehiclesDB.map(v => cleanStr(v.model)).filter(Boolean))];
+                modFilter.innerHTML = `<option value="">All Models</option>` + uniqueMods.map(m => `<option value="${m}">${m}</option>`).join('');
+                modFilter.value = currentMod;
+            }
+        }
+
+        function addNewLocationPrompt() {
+            const nl = cleanStr(prompt("Enter new Yard / Display location name:"));
+            if (!nl) return;
+            if (!locationsList.includes(nl)) locationsList.push(nl);
+            try { localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList)); } catch(e) {}
+            initDropdowns();
+            showToast(`Location "${nl}" added successfully.`, 'success');
+        }
+
+        function removeSelectedLocation(selectId) {
+            const sel = document.getElementById(selectId);
+            if (!sel || !sel.value) return;
+            const target = sel.value;
+            if (locationsList.length <= 1) { alert("Cannot remove the last location."); return; }
+            if (confirm(`Remove location "${target}" from list?`)) {
+                locationsList = locationsList.filter(l => l !== target);
+                try { localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList)); } catch(e) {}
+                initDropdowns();
+                showToast(`Location "${target}" removed.`, 'info');
+            }
+        }
+
+        function addNewInspectorPrompt() {
+            const ni = cleanStr(prompt("Enter new Technician / Inspector name:"));
+            if (!ni) return;
+            if (!inspectorsList.includes(ni)) inspectorsList.push(ni);
+            try { localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList)); } catch(e) {}
+            initDropdowns();
+            showToast(`Technician "${ni}" added successfully.`, 'success');
+        }
+
+        function removeSelectedInspector(selectId) {
+            const sel = document.getElementById(selectId);
+            if (!sel || !sel.value) return;
+            const target = sel.value;
+            if (inspectorsList.length <= 1) { alert("Cannot remove the last technician."); return; }
+            if (confirm(`Remove technician "${target}" from list?`)) {
+                inspectorsList = inspectorsList.filter(i => i !== target);
+                try { localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList)); } catch(e) {}
+                initDropdowns();
+                showToast(`Technician "${target}" removed.`, 'info');
+            }
+        }
+
+        function toggleMenu() {
+            document.getElementById('app-menu-dropdown').classList.toggle('show');
+        }
+        window.onclick = function(e) {
+            if (!e.target.closest('.menu-container')) {
+                const drop = document.getElementById('app-menu-dropdown');
+                if (drop) drop.classList.remove('show');
+            }
+        };
+
+        let sessionPhotoCache = {};
+        let vehiclesDB = [];
+        try { vehiclesDB = JSON.parse(localStorage.getItem('luxon_yms_light_db')) || []; } catch(e) { vehiclesDB = []; }
+
+        let botConfig = { 
+            scriptUrl: 'https://script.google.com/macros/s/AKfycbyhtIDnBmd4yvJNYd60CpUqs5klkdwu97O8svx6PffXlmbmI8KuyZnDulPFALoAuUTdvQ/exec',
+            token: '9043876419:AAEKnIedVt0rcOPxtfJiJvmtWX32z7mvBZA', 
+            chatId: '-1004478595920' 
+        };
+        try {
+            const savedCfg = JSON.parse(localStorage.getItem('luxon_yms_bot_cfg'));
+            if (savedCfg && savedCfg.scriptUrl) botConfig = savedCfg;
+        } catch(e) {}
+
+        let photoBuckets = { inward: [], pdi_vehicle: [], pdi_checksheet: [], pdi_chassis: [], pdi_form22: [], pdi_battery: [] };
+        let currentPdiChassis = '';
+        let currentOpChassis = '';
+        let currentDashFilter = 'ALL';
+        let activeDailyCat = 'INWARD';
+        let activeMonthlyCat = 'INWARD';
+        let qrScanner = null, activeScannerMode = null;
+
+        function saveDB() {
+            try {
+                const lightList = vehiclesDB.map(v => ({
+                    chassis: v.chassis,
+                    model: v.model,
+                    location: v.location,
+                    status: v.status,
+                    inspector: v.inspector,
+                    remarks: v.remarks,
+                    tgMsgId: v.tgMsgId || '',
+                    tgFileId: v.tgFileId || '',
+                    tmlInvoiceDate: v.tmlInvoiceDate || '',
+                    inwardDate: v.inwardDate || '',
+                    pdiDate: v.pdiDate || '',
+                    outwardDate: v.outwardDate || '',
+                    speed: v.speed || ''
+                }));
+                localStorage.setItem('luxon_yms_light_db', JSON.stringify(lightList));
+                localStorage.removeItem('luxon_yms_photos_db');
+            } catch(e) {}
+        }
+
+        function normalizeStatus(rawStatus, rawLoc) {
+            const st = cleanStr(rawStatus).toUpperCase();
+            const loc = cleanStr(rawLoc).toUpperCase();
+            if (loc.includes('TRANSFERRED') || loc.includes('STOCK TRANSFER') || ['ERNAKULAM', 'KOLLAM', 'TRIVANDRUM', 'PATHANAMTHITTA - KONNI', 'PATHANAMTHITTA', 'KONNI', 'DEALER YARD'].includes(loc)) {
+                return 'Stock Transfer';
+            }
+            if (st === 'OUTWARD' || st === 'DELIVERED' || st === 'DELIVERY' || st === 'DISPATCHED' || loc.includes('OUTWARD') || loc.includes('DELIVERED')) {
+                return 'Outward';
+            }
+            if (st === 'PDI OK' || st === 'PDI DONE' || st === 'OK' || st === 'READY') return 'PDI OK';
+            if (st === 'REVIEW_PENDING' || st === 'HOLD REVIEW PENDING' || st === 'CONF_PENDING' || st === 'HOLD CONFIRMATION PENDING' || st === 'SEND TO REVIEW' || st === 'REVIEW') return 'REVIEW_PENDING';
+            if (st === 'HOLD' || st === 'PDI HOLD' || st === 'ON HOLD') return 'HOLD';
+            return 'Pending PDI';
+        }
+
+        function isPhysicalStock(v) {
+            if (!v) return false;
+            const st = cleanStr(v.status).toUpperCase();
+            const loc = cleanStr(v.location).toUpperCase();
+            const rem = cleanStr(v.remarks).toUpperCase();
+            if (st === 'OUTWARD' || st === 'STOCK TRANSFER' || st === 'DELIVERED' || st === 'DISPATCHED') return false;
+            if (loc.includes('OUTWARD') || loc.includes('TRANSFER') || loc.includes('DELIVERED')) return false;
+            const transferCities = ['ERNAKULAM', 'KOLLAM', 'TRIVANDRUM', 'PATHANAMTHITTA', 'KONNI', 'DEALER YARD'];
+            if (transferCities.some(city => loc.includes(city))) return false;
+            if (rem.includes('STOCK TRANSFER TO')) return false;
+            return true;
+        }
+
+        function isDisplayCar(v) {
+            return isPhysicalStock(v) && cleanStr(v.location).toUpperCase().includes('DISPLAY');
+        }
+
+        function isAgingOver90Days(v) {
+            if (!isPhysicalStock(v)) return false;
+            const dateStr = cleanStr(v.tmlInvoiceDate);
+            if (!dateStr) return false;
+            const parsed = new Date(dateStr);
+            if (isNaN(parsed.getTime())) return false;
+            const diffDays = Math.floor((new Date() - parsed) / (1000 * 60 * 60 * 24));
+            return diffDays > 90;
+        }
+
+        function parseIsoDate(dStr) {
+            if (!dStr) return '';
+            const str = cleanStr(dStr);
+            if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.slice(0, 10);
+            const d = new Date(str);
+            if (!isNaN(d.getTime())) {
+                const yr = d.getFullYear();
+                const mo = String(d.getMonth() + 1).padStart(2, '0');
+                const da = String(d.getDate()).padStart(2, '0');
+                return `${yr}-${mo}-${da}`;
+            }
+            return '';
+        }
+
+        function getTelegramMessageUrl(msgId) {
+            if (!msgId || !botConfig.chatId) return '';
+            let cleanChat = cleanStr(botConfig.chatId);
+            if (cleanChat.startsWith('-100')) {
+                cleanChat = cleanChat.slice(4);
+            } else if (cleanChat.startsWith('-')) {
+                cleanChat = cleanChat.slice(1);
+            }
+            return `https://t.me/c/${cleanChat}/${msgId}`;
+        }
+
+        async function openCloudPdfFromTelegram(fileId, msgId, chassis) {
+            if (msgId) {
+                const tgUrl = getTelegramMessageUrl(msgId);
+                if (tgUrl) {
+                    window.open(tgUrl, '_blank');
+                    return;
+                }
+            }
+            if (fileId && botConfig.token) {
+                try {
+                    const res = await fetch(`https://api.telegram.org/bot${botConfig.token}/getFile?file_id=${encodeURIComponent(fileId)}`);
+                    const data = await res.json();
+                    if (data && data.ok && data.result && data.result.file_path) {
+                        const fileUrl = `https://api.telegram.org/file/bot${botConfig.token}/${data.result.file_path}`;
+                        window.open(fileUrl, '_blank');
+                        return;
+                    }
+                } catch (e) {}
+            }
+            alert(`No Telegram Cloud PDF found yet for ${chassis}. Submit PDI with photos first.`);
+        }
+
+        window.onload = function() {
+            // Restore saved theme
+            const savedTheme = localStorage.getItem('luxon_yms_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) themeIcon.className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+            vehiclesDB = vehiclesDB.map(v => {
+                const unpacked = unpackMetaFromRemarks(v.remarks);
+                return {
+                    ...v,
+                    chassis: cleanChassis(v.chassis),
+                    model: cleanStr(v.model),
+                    location: cleanStr(v.location),
+                    status: normalizeStatus(v.status, v.location),
+                    inspector: cleanStr(v.inspector || unpacked.metaInspector),
+                    remarks: unpacked.cleanRemarks,
+                    tgMsgId: cleanStr(v.tgMsgId || unpacked.tgMsgId),
+                    tgFileId: cleanStr(v.tgFileId || unpacked.tgFileId),
+                    tmlInvoiceDate: cleanStr(v.tmlInvoiceDate || v.invDate || '')
+                };
+            }).filter(v => v.chassis);
+
+            initDropdowns();
+            loadDraft();
+            toggleHoldUI();
+            renderDashboard();
+            syncWithGoogleSheet(false);
+            setInterval(() => { syncWithGoogleSheet(true); }, 25000);
+        };
+
+        function saveDraft() {
+            try {
+                const draft = {
+                    inChassis: document.getElementById('in-chassis').value,
+                    inModel: document.getElementById('in-model').value,
+                    inLocation: document.getElementById('in-location').value,
+                    pdiSpeed: document.getElementById('pdi-speed').value,
+                    pdiDecision: document.getElementById('pdi-decision').value,
+                    pdiRemarks: document.getElementById('pdi-remarks').value
+                };
+                localStorage.setItem('luxon_yms_draft', JSON.stringify(draft));
+            } catch(e) {}
+        }
+
+        function loadDraft() {
+            try {
+                const draft = JSON.parse(localStorage.getItem('luxon_yms_draft'));
+                if (!draft) return;
+                if (draft.inChassis) document.getElementById('in-chassis').value = draft.inChassis;
+                if (draft.inModel) document.getElementById('in-model').value = draft.inModel;
+                if (draft.inLocation && locationsList.includes(draft.inLocation)) document.getElementById('in-location').value = draft.inLocation;
+                if (draft.pdiSpeed) document.getElementById('pdi-speed').value = draft.pdiSpeed;
+                if (draft.pdiDecision) document.getElementById('pdi-decision').value = draft.pdiDecision;
+                if (draft.pdiRemarks) document.getElementById('pdi-remarks').value = draft.pdiRemarks;
+            } catch(e) {}
+        }
+
+        function clearDraft() {
+            try { localStorage.removeItem('luxon_yms_draft'); } catch(e) {}
+        }
+
+        function syncWithGoogleSheet(isBackground = false) {
+            if (!botConfig.scriptUrl) { renderDashboard(); return; }
+            const icon = document.getElementById('sync-icon');
+            const subTxt = document.getElementById('sync-status-text');
+            if (icon && !isBackground) icon.classList.add('fa-spin');
+
+            fetch(botConfig.scriptUrl + '?t=' + Date.now())
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        const localMap = {};
+                        vehiclesDB.forEach(item => {
+                            const key = cleanChassis(item.chassis);
+                            if (key) localMap[key] = item;
+                        });
+
+                        const syncedList = [];
+                        const seenSet = new Set();
+
+                        data.forEach(row => {
+                            const ch = cleanChassis(row.chassis || row.Chassis || row.VIN || '');
+                            if (!ch || seenSet.has(ch)) return;
+                            seenSet.add(ch);
+
+                            const prev = localMap[ch] || {};
+                            const rawLoc = cleanStr(row.location || row.Location || prev.location || locationsList[0]);
+                            const rawStatus = cleanStr(row.status || row.Status || prev.status || 'Pending PDI');
+                            const normSt = normalizeStatus(rawStatus, rawLoc);
+
+                            const rawRem = cleanStr(row.remarks || row.Remarks || '');
+                            const unpacked = unpackMetaFromRemarks(rawRem);
+
+                            const tmlInv = cleanStr(row.tmlInvoiceDate || row['TML Invoice Date'] || row.invDate || row.invoiceDate || prev.tmlInvoiceDate || '');
+                            const inDt = parseIsoDate(row.inwardDate || row.inwardTime || prev.inwardDate) || new Date().toISOString().split('T')[0];
+                            const pdiDt = parseIsoDate(row.pdiDate || row.pdiTime || prev.pdiDate);
+                            const outDt = parseIsoDate(row.outwardDate || row.outwardTime || prev.outwardDate);
+
+                            syncedList.push({
+                                chassis: ch,
+                                model: cleanStr(row.model || row.Model || prev.model || 'Tata Vehicle'),
+                                location: rawLoc,
+                                status: normSt,
+                                inspector: cleanStr(row.inspector || row.Inspector || unpacked.metaInspector || prev.inspector || ''),
+                                remarks: unpacked.cleanRemarks || prev.remarks || '',
+                                tgMsgId: cleanStr(row.tgMsgId || unpacked.tgMsgId || prev.tgMsgId || ''),
+                                tgFileId: cleanStr(row.tgFileId || unpacked.tgFileId || prev.tgFileId || ''),
+                                tmlInvoiceDate: tmlInv,
+                                inwardDate: inDt,
+                                pdiDate: pdiDt,
+                                outwardDate: outDt,
+                                speed: cleanStr(row.speed || prev.speed || '')
+                            });
+                        });
+
+                        vehiclesDB = syncedList;
+                        saveDB();
+                        updateDashboardFilterDropdowns();
+                    }
+                    if (icon) icon.classList.remove('fa-spin');
+                    if (subTxt) subTxt.innerText = 'Synced: ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    renderDashboard();
+                    if (document.getElementById('mod-pdi').classList.contains('active')) populatePdiMasterList();
+                    if (document.getElementById('mod-operations').classList.contains('active')) renderOperationsList();
+                    if (!isBackground) showToast('Google Sheet synced successfully.', 'success');
+                })
+                .catch(err => {
+                    if (icon) icon.classList.remove('fa-spin');
+                    renderDashboard();
+                    if (!isBackground) showToast('Sync completed (Offline cache active).', 'info');
+                });
+        }
+
+        function openModule(name, resetDashToAll = false) {
+            stopScanner();
+            ['dashboard', 'inward', 'pdi', 'operations'].forEach(m => {
+                const mod = document.getElementById('mod-' + m);
+                const tab = document.getElementById('tabbtn-' + m);
+                const side = document.getElementById('sidebar-' + m);
+                const bnav = document.getElementById('bnav-' + m);
+                if (mod) mod.classList.remove('active');
+                if (tab) tab.classList.remove('active');
+                if (side) side.classList.remove('active');
+                if (bnav) bnav.classList.remove('active');
+            });
+            const targetMod = document.getElementById('mod-' + name);
+            const targetTab = document.getElementById('tabbtn-' + name);
+            const targetSide = document.getElementById('sidebar-' + name);
+            const targetBnav = document.getElementById('bnav-' + name);
+            if (targetMod) targetMod.classList.add('active');
+            if (targetTab) targetTab.classList.add('active');
+            if (targetSide) targetSide.classList.add('active');
+            if (targetBnav) targetBnav.classList.add('active');
+
+            if (name === 'dashboard') {
+                if (resetDashToAll) currentDashFilter = 'ALL';
+                renderDashboard();
+            }
+            if (name === 'pdi') {
+                populatePdiMasterList();
+                toggleHoldUI();
+            }
+            if (name === 'operations') {
+                renderOperationsList();
+            }
+        }
+
+        function filterDashboardList(filterName) {
+            if (currentDashFilter === filterName && filterName !== 'ALL') {
+                currentDashFilter = 'ALL';
+            } else {
+                currentDashFilter = filterName;
+            }
+            renderDashboard();
+        }
+
+        function getDashboardFilteredVehicles() {
+            const physicalStock = vehiclesDB.filter(v => isPhysicalStock(v));
+            const displayCars = physicalStock.filter(v => isDisplayCar(v));
+            const pendingPdi = physicalStock.filter(v => v.status === 'Pending PDI');
+            const pdiOk = physicalStock.filter(v => v.status === 'PDI OK');
+            const holdCars = physicalStock.filter(v => v.status === 'HOLD');
+            const reviewPending = physicalStock.filter(v => v.status === 'REVIEW_PENDING');
+            const agingCars = physicalStock.filter(v => isAgingOver90Days(v));
+
+            let list = vehiclesDB;
+            let titleText = `Total Stock - All Sheet Vehicles (${vehiclesDB.length})`;
+
+            if (currentDashFilter === 'Physical') {
+                list = physicalStock;
+                titleText = `Physical Stock - Yard & Display (${physicalStock.length})`;
+            } else if (currentDashFilter === 'Pending PDI') {
+                list = pendingPdi;
+                titleText = `Pending PDI Vehicles (${pendingPdi.length})`;
+            } else if (currentDashFilter === 'PDI OK') {
+                list = pdiOk;
+                titleText = `PDI Done Vehicles (${pdiOk.length})`;
+            } else if (currentDashFilter === 'HOLD') {
+                list = holdCars;
+                titleText = `On Hold Vehicles (${holdCars.length})`;
+            } else if (currentDashFilter === 'Display') {
+                list = displayCars;
+                titleText = `Display Cars (${displayCars.length})`;
+            } else if (currentDashFilter === 'Aging') {
+                list = agingCars;
+                titleText = `Aging >90 Days (TML Invoice Date) (${agingCars.length})`;
+            } else if (currentDashFilter === 'ReviewPending') {
+                list = reviewPending;
+                titleText = `Hold Review Pending (${reviewPending.length})`;
+            }
+
+            const q = cleanChassis(document.getElementById('dash-search').value);
+            const locF = cleanStr(document.getElementById('dash-loc-filter').value);
+            const modF = cleanStr(document.getElementById('dash-model-filter').value);
+
+            if (q) {
+                list = list.filter(v => v.chassis.includes(q) || v.model.toUpperCase().includes(q) || v.location.toUpperCase().includes(q));
+            }
+            if (locF) {
+                list = list.filter(v => cleanStr(v.location) === locF);
+            }
+            if (modF) {
+                list = list.filter(v => cleanStr(v.model) === modF);
+            }
+
+            return { list, titleText, counts: {
+                physical: physicalStock.length,
+                pending: pendingPdi.length,
+                pdiOk: pdiOk.length,
+                hold: holdCars.length,
+                display: displayCars.length,
+                aging: agingCars.length,
+                review: reviewPending.length
+            }};
+        }
+
+        function renderDashboard() {
+            const { list, titleText, counts } = getDashboardFilteredVehicles();
+
+            document.getElementById('count-physical').innerText = counts.physical;
+            document.getElementById('count-pending').innerText = counts.pending;
+            document.getElementById('count-pdiok').innerText = counts.pdiOk;
+            document.getElementById('count-hold').innerText = counts.hold;
+            document.getElementById('count-display').innerText = counts.display;
+            document.getElementById('count-aging').innerText = counts.aging;
+            document.getElementById('count-review').innerText = counts.review;
+
+            const cardMap = {
+                'Physical': 'card-Physical',
+                'Pending PDI': 'card-PendingPDI',
+                'PDI OK': 'card-PDIOK',
+                'HOLD': 'card-HOLD',
+                'Display': 'card-Display',
+                'Aging': 'card-Aging',
+                'ReviewPending': 'card-ReviewPending'
+            };
+            Object.values(cardMap).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('active-filter');
+            });
+            if (cardMap[currentDashFilter]) {
+                const activeEl = document.getElementById(cardMap[currentDashFilter]);
+                if (activeEl) activeEl.classList.add('active-filter');
+            }
+
+            document.getElementById('btn-show-all').style.display = currentDashFilter === 'ALL' ? 'none' : 'inline-flex';
+            document.getElementById('dash-list-title').innerText = titleText;
+
+            const container = document.getElementById('dash-vehicle-list');
+            if (!list.length) {
+                container.innerHTML = `<div style="text-align:center; padding:24px; color:var(--slate);">No vehicles match this filter.</div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(v => {
+                const badgeClass = v.status === 'Pending PDI' ? 'badge-pending' :
+                                   v.status === 'PDI OK' ? 'badge-ok' :
+                                   v.status === 'REVIEW_PENDING' ? 'badge-conf' :
+                                   v.status === 'HOLD' ? 'badge-hold' : 'badge-out';
+                const statusLabel = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
+                const encChassis = encodeURIComponent(v.chassis);
+                const hasCloudPdf = Boolean(v.tgFileId || v.tgMsgId);
+
+                return `
+                <div class="vehicle-item">
+                    <div class="v-info" onclick="openVehicleDetailsByEnc('${encChassis}')" style="cursor:pointer;">
+                        <h4>
+                            ${v.chassis}
+                            ${hasCloudPdf ? `<span class="badge badge-conf" style="font-size:10px;"><i class="fa-brands fa-telegram"></i> PDF Ready</span>` : ''}
+                        </h4>
+                        <p><b>${v.model}</b> ${v.inspector ? '• Tech: ' + v.inspector : ''}</p>
+                        <p><i class="fa-solid fa-location-dot"></i> ${v.location} ${v.tmlInvoiceDate ? '• Inv: ' + v.tmlInvoiceDate : ''}</p>
+                        ${v.remarks ? `<p style="color:var(--danger); font-weight:700;"><i class="fa-solid fa-comment-dots"></i> ${v.remarks}</p>` : ''}
+                    </div>
+                    <div style="text-align:right; display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
+                        <span class="badge ${badgeClass}">${statusLabel}</span>
+                        <div style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;">
+                            ${hasCloudPdf ? `<button type="button" class="btn btn-success" style="padding:5px 8px; font-size:11px;" onclick="openCloudPdfFromTelegram('${v.tgFileId}', '${v.tgMsgId}', '${v.chassis}')" title="Open Check Sheet PDF"><i class="fa-solid fa-file-pdf"></i> PDF</button>` : ''}
+                            <button type="button" class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="openVehicleDetailsByEnc('${encChassis}')" title="View Details & Actions"><i class="fa-solid fa-eye"></i></button>
+                            ${isPhysicalStock(v) ? `<button type="button" class="btn btn-primary" style="padding:5px 10px; font-size:11px;" onclick="jumpToPdiByEnc('${encChassis}')">PDI</button>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function jumpToPdiByEnc(encChassis) {
+            const ch = decodeURIComponent(encChassis);
+            openModule('pdi');
+            selectPdiByChassis(ch);
+        }
+
+        // PDI CHECKING SELECTION
+        function populatePdiMasterList() {
+            const container = document.getElementById('pdi-master-list');
+            const dropSel = document.getElementById('pdi-dropdown-select');
+            const q = cleanChassis(document.getElementById('pdi-search-input').value);
+
+            let pdiCandidates = vehiclesDB.filter(v => isPhysicalStock(v));
+            if (q) {
+                pdiCandidates = pdiCandidates.filter(v => v.chassis.includes(q) || v.model.toUpperCase().includes(q));
+            } else {
+                const priority = { 'Pending PDI': 1, 'REVIEW_PENDING': 2, 'HOLD': 3, 'PDI OK': 4 };
+                pdiCandidates.sort((a, b) => (priority[a.status] || 5) - (priority[b.status] || 5));
+            }
+
+            if (dropSel) {
+                dropSel.innerHTML = `<option value="">-- Select Vehicle from Dropdown (${pdiCandidates.length} available) --</option>` +
+                    pdiCandidates.map(v => `<option value="${v.chassis}" ${v.chassis === currentPdiChassis ? 'selected' : ''}>${v.chassis} - ${v.model} [${v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status}]</option>`).join('');
+            }
+
+            if (!pdiCandidates.length) {
+                container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--slate); font-size:12px;">No matching physical stock vehicles found.</div>`;
+                return;
+            }
+
+            container.innerHTML = pdiCandidates.map(v => {
+                const isSel = v.chassis === currentPdiChassis;
+                const enc = encodeURIComponent(v.chassis);
+                const statusLabel = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
+                const badgeClass = v.status === 'Pending PDI' ? 'badge-pending' : (v.status === 'REVIEW_PENDING' ? 'badge-conf' : (v.status === 'HOLD' ? 'badge-hold' : 'badge-ok'));
+                return `
+                <div class="vehicle-item ${isSel ? 'selected-item' : ''}" onclick="selectPdiByEnc('${enc}')" style="cursor:pointer;">
+                    <div class="v-info">
+                        <h4>${v.chassis} ${isSel ? '✓' : ''}</h4>
+                        <p><b>${v.model}</b> • ${v.location}</p>
+                    </div>
+                    <span class="badge ${badgeClass}">${statusLabel}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function selectPdiByEnc(enc) {
+            selectPdiByChassis(decodeURIComponent(enc));
+        }
+
+        function selectPdiByChassis(rawChassis) {
+            const target = cleanChassis(rawChassis);
+            if (!target) return;
+            const v = vehiclesDB.find(item => cleanChassis(item.chassis) === target || cleanChassis(item.chassis).endsWith(target));
+            if (!v) {
+                alert('Vehicle not found in stock list.');
+                return;
+            }
+            currentPdiChassis = v.chassis;
+            const banner = document.getElementById('pdi-banner');
+            banner.style.display = 'block';
+            document.getElementById('pdi-b-chassis').innerText = v.chassis;
+            document.getElementById('pdi-b-model').innerText = `${v.model} • Location: ${v.location} • Status: ${v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status}`;
+            document.getElementById('pdi-barcode-box').style.display = 'none';
+
+            const cached = sessionPhotoCache[v.chassis] || {};
+            document.getElementById('pdi-speed').value = v.speed || '';
+            photoBuckets.pdi_vehicle = [...(cached.pdi_vehicle || cached.inward || [])];
+            photoBuckets.pdi_checksheet = [...(cached.pdi_checksheet || [])];
+            photoBuckets.pdi_chassis = [...(cached.pdi_chassis || [])];
+            photoBuckets.pdi_form22 = [...(cached.pdi_form22 || [])];
+            photoBuckets.pdi_battery = [...(cached.pdi_battery || [])];
+
+            if (v.status === 'HOLD' || v.status === 'REVIEW_PENDING') {
+                document.getElementById('pdi-decision').value = v.status;
+                document.getElementById('pdi-remarks').value = v.remarks || '';
+            } else {
+                document.getElementById('pdi-decision').value = 'PDI OK';
+                document.getElementById('pdi-remarks').value = '';
+            }
+
+            toggleHoldUI();
+            populatePdiMasterList();
+            renderAllGrids();
+            banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function clearPdiSelection() {
+            currentPdiChassis = '';
+            document.getElementById('pdi-banner').style.display = 'none';
+            document.getElementById('pdi-speed').value = '';
+            document.getElementById('pdi-remarks').value = '';
+            Object.keys(photoBuckets).forEach(k => photoBuckets[k] = []);
+            renderAllGrids();
+            populatePdiMasterList();
+        }
+
+        function toggleHoldUI() {
+            const dec = document.getElementById('pdi-decision').value;
+            const remBox = document.getElementById('pdi-remarks-box');
+            if (dec === 'HOLD' || dec === 'REVIEW_PENDING') {
+                remBox.style.display = 'block';
+            } else {
+                remBox.style.display = 'none';
+            }
+        }
+
+        // OPERATIONS SELECTION
+        function renderOperationsList() {
+            const q = cleanChassis(document.getElementById('op-search').value);
+            let list = vehiclesDB.filter(v => isPhysicalStock(v));
+            if (q) {
+                list = list.filter(v => v.chassis.includes(q) || v.model.toUpperCase().includes(q) || v.location.toUpperCase().includes(q));
+            }
+
+            const dropSel = document.getElementById('op-dropdown-select');
+            if (dropSel) {
+                dropSel.innerHTML = `<option value="">-- Select Physical Stock Vehicle (${list.length} available) --</option>` +
+                    list.map(v => `<option value="${v.chassis}" ${v.chassis === currentOpChassis ? 'selected' : ''}>${v.chassis} - ${v.model} (${v.location})</option>`).join('');
+            }
+
+            const container = document.getElementById('op-list');
+            if (!list.length) {
+                container.innerHTML = `<div style="text-align:center; padding:18px; color:var(--slate);">No physical stock vehicles found.</div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(v => {
+                const isSel = v.chassis === currentOpChassis;
+                const enc = encodeURIComponent(v.chassis);
+                const statusLabel = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
+                return `
+                <div class="vehicle-item ${isSel ? 'selected-item' : ''}" onclick="openOpEdByEnc('${enc}')" style="cursor:pointer;">
+                    <div class="v-info">
+                        <h4>${v.chassis} ${isSel ? '✓' : ''}</h4>
+                        <p><b>${v.model}</b> • <i class="fa-solid fa-location-dot"></i> ${v.location}</p>
+                    </div>
+                    <span class="badge ${v.status==='PDI OK'?'badge-ok':(v.status==='HOLD'?'badge-hold':'badge-pending')}">${statusLabel}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function openOpEdByEnc(enc) {
+            openOpEd(decodeURIComponent(enc));
+        }
+
+        function openOpEd(rawChassis) {
+            const target = cleanChassis(rawChassis);
+            if (!target) return;
+            const v = vehiclesDB.find(x => cleanChassis(x.chassis) === target || cleanChassis(x.chassis).endsWith(target));
+            if (!v) {
+                alert('Vehicle not found.');
+                return;
+            }
+            currentOpChassis = v.chassis;
+            const editor = document.getElementById('op-editor');
+            editor.style.display = 'block';
+            document.getElementById('op-ed-chassis').innerText = v.chassis;
+            document.getElementById('op-ed-sub').innerText = `${v.model} • Current Location: ${v.location} • Status: ${v.status}`;
+            if (locationsList.includes(v.location)) {
+                document.getElementById('op-ed-newloc').value = v.location;
+            }
+            renderOperationsList();
+            editor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function toggleOpActionUI() {
+            const act = document.getElementById('op-action-type').value;
+            document.getElementById('op-loc-box').style.display = act === 'LOCATION' ? 'block' : 'none';
+            document.getElementById('op-dest-box').style.display = act === 'DISPATCH' ? 'block' : 'none';
+            document.getElementById('op-region-box').style.display = act === 'TRANSFER' ? 'block' : 'none';
+        }
+
+        function confirmOperationsDispatch() {
+            const v = vehiclesDB.find(x => cleanChassis(x.chassis) === currentOpChassis);
+            if (!v) { alert('Please select a vehicle first.'); return; }
+            const act = document.getElementById('op-action-type').value;
+            const todayDate = new Date().toISOString().split('T')[0];
+            const outwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+            if (act === 'LOCATION') {
+                const newLoc = document.getElementById('op-ed-newloc').value;
+                v.location = newLoc;
+                saveDB();
+                const packedRem = packMetaIntoRemarks(v.remarks, v.tgMsgId, v.tgFileId, v.inspector);
+                if (botConfig.scriptUrl) {
+                    fetch(botConfig.scriptUrl, {
+                        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, location: newLoc, status: v.status, remarks: packedRem })
+                    }).catch(() => {});
+                }
+                showToast(`Location updated to ${newLoc} for ${v.chassis}!`, 'success');
+            } else if (act === 'DISPATCH') {
+                const dest = document.getElementById('op-ed-dest').value;
+                v.status = 'Outward';
+                v.location = `Outward -> ${dest}`;
+                v.outwardDate = todayDate;
+                saveDB();
+                if (botConfig.scriptUrl) {
+                    fetch(botConfig.scriptUrl, {
+                        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'OUTWARD', outwardTime, outwardDate: todayDate, chassis: v.chassis, model: v.model, location: v.location, status: 'Outward', outwardDest: dest })
+                    }).catch(() => {});
+                }
+                showToast(`Delivery Dispatch confirmed to ${dest} for ${v.chassis}!`, 'success');
+            } else if (act === 'TRANSFER') {
+                const region = document.getElementById('op-ed-region').value;
+                v.status = 'Stock Transfer';
+                v.location = `Transferred -> ${region}`;
+                v.outwardDate = todayDate;
+                v.remarks = `Stock Transfer to ${region}`;
+                saveDB();
+                const packedRem = packMetaIntoRemarks(v.remarks, v.tgMsgId, v.tgFileId, v.inspector);
+                if (botConfig.scriptUrl) {
+                    fetch(botConfig.scriptUrl, {
+                        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'OPERATIONS_UPDATE', outwardTime, outwardDate: todayDate, chassis: v.chassis, model: v.model, location: v.location, status: 'Stock Transfer', remarks: packedRem })
+                    }).catch(() => {});
+                }
+                showToast(`Stock Transfer confirmed to ${region} for ${v.chassis}!`, 'success');
+            }
+
+            currentOpChassis = '';
+            document.getElementById('op-editor').style.display = 'none';
+            renderOperationsList();
+            renderDashboard();
+        }
+
+        // PHOTO COMPRESSION & BUCKETS
+        function compressImg(file, cb) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const max = 850; let w = img.width, h = img.height;
+                    if (w > h && w > max) { h = Math.round(h * max / w); w = max; }
+                    else if (h > max) { w = Math.round(w * max / h); h = max; }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    cb(canvas.toDataURL('image/jpeg', 0.65));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleMultiPhoto(e, bucket) {
+            const files = e.target.files; if (!files.length) return;
+            Array.from(files).forEach(f => {
+                compressImg(f, url => {
+                    photoBuckets[bucket].push(url);
+                    renderGrid(bucket);
+                });
+            });
+            e.target.value = '';
+        }
+
+        function removePhoto(bucket, idx) {
+            photoBuckets[bucket].splice(idx, 1);
+            renderGrid(bucket);
+        }
+
+        function renderGrid(bucket) {
+            const g = document.getElementById('grid-' + bucket); if (!g) return;
+            const arr = photoBuckets[bucket];
+            if (!arr.length) { g.innerHTML = `<span class="empty-photo-hint">No photos added.</span>`; return; }
+            g.innerHTML = arr.map((src, i) => `
+                <div class="thumb-wrapper">
+                    <img src="${src}" alt="photo">
+                    <button type="button" class="thumb-remove" onclick="removePhoto('${bucket}', ${i})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function renderAllGrids() { Object.keys(photoBuckets).forEach(b => renderGrid(b)); }
+
+        // INWARD SUBMISSION
+        function onInwardChassisInput() {
+            const c = cleanChassis(document.getElementById('in-chassis').value);
+            const alertEl = document.getElementById('inward-status-alert');
+            if (!c) { alertEl.style.display = 'none'; return; }
+            const ex = vehiclesDB.find(v => cleanChassis(v.chassis) === c);
+            if (ex && isPhysicalStock(ex)) {
+                alertEl.className = 'alert-box alert-error'; alertEl.style.display = 'block';
+                alertEl.innerHTML = `Already in Physical Stock: ${c} (${ex.model}) at ${ex.location}.`;
+            } else {
+                alertEl.className = 'alert-box alert-success'; alertEl.style.display = 'block';
+                alertEl.innerHTML = `Chassis ${c} ready for inward.`;
+            }
+        }
+
+        async function submitInward() {
+            const chassis = cleanChassis(document.getElementById('in-chassis').value);
+            const model = cleanStr(document.getElementById('in-model').value);
+            const location = cleanStr(document.getElementById('in-location').value);
+
+            if (!chassis || !model) { alert('Please enter Chassis Number and Vehicle Model.'); return; }
+            const exIdx = vehiclesDB.findIndex(v => cleanChassis(v.chassis) === chassis);
+            if (exIdx !== -1 && isPhysicalStock(vehiclesDB[exIdx])) {
+                alert('This chassis is already in Physical Stock!');
+                return;
+            }
+
+            const btn = document.getElementById('btn-submit-inward');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving Inward...';
+
+            const todayDate = new Date().toISOString().split('T')[0];
+            const inwardTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+            const rec = {
+                chassis, model, inwardDate: todayDate, pdiDate: '', outwardDate: '', tmlInvoiceDate: '',
+                location, status: 'Pending PDI', inspector: '',
+                tgMsgId: '', tgFileId: '', speed: '', remarks: ''
+            };
+
+            sessionPhotoCache[chassis] = { inward: [...photoBuckets.inward] };
+
+            if (photoBuckets.inward.length > 0 && botConfig.token && botConfig.chatId) {
+                const tgRes = await buildAndSendPdiPdf(rec, sessionPhotoCache[chassis], true, false);
+                if (tgRes.tgMsgId) rec.tgMsgId = tgRes.tgMsgId;
+                if (tgRes.tgFileId) rec.tgFileId = tgRes.tgFileId;
+            }
+
+            if (exIdx !== -1) vehiclesDB[exIdx] = rec; else vehiclesDB.unshift(rec);
+            saveDB();
+            clearDraft();
+            updateDashboardFilterDropdowns();
+
+            const packedRem = packMetaIntoRemarks('', rec.tgMsgId, rec.tgFileId, '');
+            if (botConfig.scriptUrl) {
+                fetch(botConfig.scriptUrl, {
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'INWARD', inwardTime, inwardDate: todayDate,
+                        chassis, model, location, status: 'Pending PDI',
+                        remarks: packedRem, tgMsgId: rec.tgMsgId, tgFileId: rec.tgFileId
+                    })
+                }).catch(() => {});
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Complete Inward';
+            document.getElementById('in-chassis').value = '';
+            document.getElementById('in-model').value = '';
+            document.getElementById('inward-status-alert').style.display = 'none';
+            photoBuckets.inward = []; renderGrid('inward');
+            showToast(`Inward saved for ${chassis}!`, 'success');
+            openModule('dashboard', true);
+        }
+
+        // PDI SUBMISSION & CLOUD TELEGRAM PDF SYNC
+        async function submitPdiAndShare() {
+            if (!currentPdiChassis) { alert('Please tap or select a vehicle from the list above first!'); return; }
+            const v = vehiclesDB.find(item => cleanChassis(item.chassis) === cleanChassis(currentPdiChassis));
+            if (!v) return;
+
+            const speed = cleanStr(document.getElementById('pdi-speed').value);
+            const decision = document.getElementById('pdi-decision').value;
+            const remarks = cleanStr(document.getElementById('pdi-remarks').value);
+            const inspector = cleanStr(document.getElementById('pdi-inspector-sel').value);
+            const todayDate = new Date().toISOString().split('T')[0];
+            const pdiTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+            if (!speed) {
+                alert('Please enter Odometer Reading!');
+                return;
+            }
+            if ((decision === 'HOLD' || decision === 'REVIEW_PENDING') && !remarks) {
+                alert('Remarks / Reason is mandatory when selecting PDI Hold or Send to Review!');
+                return;
+            }
+
+            const btn = document.getElementById('btn-submit-pdi');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading PDF to Telegram & Syncing...';
+
+            v.status = decision;
+            v.inspector = inspector;
+            v.remarks = decision === 'PDI OK' ? '' : remarks;
+            v.pdiDate = todayDate;
+            v.speed = speed;
+
+            const photoBundle = {
+                inward: (sessionPhotoCache[v.chassis] && sessionPhotoCache[v.chassis].inward) || [],
+                pdi_vehicle: [...photoBuckets.pdi_vehicle],
+                pdi_checksheet: [...photoBuckets.pdi_checksheet],
+                pdi_chassis: [...photoBuckets.pdi_chassis],
+                pdi_form22: [...photoBuckets.pdi_form22],
+                pdi_battery: [...photoBuckets.pdi_battery]
+            };
+            sessionPhotoCache[v.chassis] = photoBundle;
+
+            const tgRes = await buildAndSendPdiPdf(v, photoBundle, true, true);
+            if (tgRes.tgMsgId) v.tgMsgId = tgRes.tgMsgId;
+            if (tgRes.tgFileId) v.tgFileId = tgRes.tgFileId;
+
+            saveDB();
+            clearDraft();
+
+            const packedRem = packMetaIntoRemarks(v.remarks, v.tgMsgId, v.tgFileId, v.inspector);
+            if (botConfig.scriptUrl) {
+                fetch(botConfig.scriptUrl, {
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'PDI_UPDATE', pdiTime, pdiDate: todayDate,
+                        chassis: v.chassis, model: v.model, status: decision,
+                        speed, inspector, location: v.location,
+                        remarks: packedRem, tgMsgId: v.tgMsgId, tgFileId: v.tgFileId
+                    })
+                }).catch(() => {});
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit PDI & Sync PDF to Cloud';
+            showToast(`PDI Submitted for ${v.chassis}! PDF synced to Cloud.`, 'success');
+            clearPdiSelection();
+            openModule('dashboard');
+        }
+
+        async function buildAndSendPdiPdf(v, photoBundle, sendToTelegram = false, downloadLocally = true) {
+            let resultMeta = { tgMsgId: '', tgFileId: '' };
+            if (typeof window.jspdf === 'undefined') return resultMeta;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const statusLabel = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
+
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 28, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(14);
+            doc.text('LUXON TATA - PDI CHECKING REPORT', 12, 11);
+            doc.setFontSize(10);
+            doc.text(`Chassis: ${v.chassis}  |  Status: ${statusLabel}  |  Inspector: ${v.inspector || 'N/A'}`, 12, 20);
+
+            doc.setTextColor(15, 23, 42); doc.setFontSize(10);
+            let y = 36;
+            doc.text(`Model: ${v.model}`, 12, y);
+            doc.text(`Odometer: ${v.speed ? v.speed + ' km' : 'N/A'}`, 110, y); y += 6;
+            doc.text(`Location: ${v.location}`, 12, y);
+            doc.text(`Date: ${v.pdiDate || v.inwardDate || 'N/A'}`, 110, y); y += 6;
+            if (v.remarks) {
+                doc.setTextColor(220, 38, 38);
+                doc.text(`Remarks / Reason: ${v.remarks}`, 12, y);
+                doc.setTextColor(15, 23, 42);
+                y += 8;
+            } else {
+                y += 4;
+            }
+
+            function addCatToPDF(title, arr) {
+                if (!arr || !arr.length) return;
+                if (y > 230) { doc.addPage(); y = 15; }
+                doc.setFontSize(10); doc.setTextColor(30, 64, 175);
+                doc.text(`${title} (${arr.length}):`, 12, y); y += 4;
+                let x = 12;
+                arr.forEach((img, idx) => {
+                    if (y > 235) { doc.addPage(); y = 15; x = 12; }
+                    try { doc.addImage(img, 'JPEG', x, y, 55, 40); } catch(e){}
+                    x += 59;
+                    if ((idx + 1) % 3 === 0) { x = 12; y += 44; }
+                });
+                if (arr.length % 3 !== 0) y += 44;
+                y += 6;
+            }
+
+            if (photoBundle) {
+                addCatToPDF('PDI Check Sheet Photos', photoBundle.pdi_checksheet);
+                addCatToPDF('Chassis Stencil / Print', photoBundle.pdi_chassis);
+                addCatToPDF('Form 22 Photos', photoBundle.pdi_form22);
+                addCatToPDF('Battery Photos', photoBundle.pdi_battery);
+                addCatToPDF('Vehicle Photos', photoBundle.pdi_vehicle);
+                addCatToPDF('Inward Photos', photoBundle.inward);
+            }
+
+            const pdfName = `PDI_${v.chassis}.pdf`;
+            if (downloadLocally) {
+                doc.save(pdfName);
+            }
+
+            if (sendToTelegram && botConfig.token && botConfig.chatId) {
+                try {
+                    const pdfBlob = doc.output('blob');
+                    const fd = new FormData();
+                    fd.append('chat_id', botConfig.chatId);
+                    fd.append('document', pdfBlob, pdfName);
+                    fd.append('caption', `✅ PDI CHECK SHEET\nChassis: ${v.chassis}\nModel: ${v.model}\nStatus: ${statusLabel}\nInspector: ${v.inspector || 'N/A'}\nLocation: ${v.location}${v.remarks ? '\nRemarks: ' + v.remarks : ''}`);
+                    const res = await fetch(`https://api.telegram.org/bot${botConfig.token}/sendDocument`, { method: 'POST', body: fd });
+                    const json = await res.json();
+                    if (json && json.ok && json.result) {
+                        resultMeta.tgMsgId = String(json.result.message_id || '');
+                        if (json.result.document && json.result.document.file_id) {
+                            resultMeta.tgFileId = String(json.result.document.file_id);
+                        }
+                    }
+                } catch(e) {
+                    console.log('Telegram upload notice:', e);
+                }
+            }
+            return resultMeta;
+        }
+
+        // UNIVERSAL EXPORT ENGINE (EXCEL CSV, PDF, HIGH-RES TABLE IMAGE)
+        function exportVehicleTable(title, list, format, filenameBase) {
+            if (!list || !list.length) {
+                alert('No vehicles in this list to download.');
+                return;
+            }
+
+            if (format === 'csv') {
+                let csv = "Sl No,Chassis Number,Model,Location,Status,Inspector,Inward Date,PDI Date,TML Invoice Date,Remarks\n";
+                list.forEach((v, i) => {
+                    const st = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
+                    csv += `${i+1},"${v.chassis}","${v.model}","${v.location}","${st}","${v.inspector || ''}","${v.inwardDate || ''}","${v.pdiDate || ''}","${v.tmlInvoiceDate || ''}","${(v.remarks || '').replace(/"/g, '""')}"\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `${filenameBase}.csv`;
+                link.click();
+            } else if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('l', 'mm', 'a4');
+                doc.setFillColor(15, 23, 42); doc.rect(0, 0, 297, 22, 'F');
+                doc.setTextColor(255, 255, 255); doc.setFontSize(13);
+                doc.text(`LUXON TATA YMS - ${title.toUpperCase()}`, 12, 14);
+
+                let y = 30;
+                doc.setFillColor(30, 64, 175); doc.rect(10, y - 6, 277, 8, 'F');
+                doc.setTextColor(255, 255, 255); doc.setFontSize(9);
+                doc.text("#", 12, y - 1);
+                doc.text("Chassis Number", 22, y - 1);
+                doc.text("Model", 72, y - 1);
+                doc.text("Location", 115, y - 1);
+                doc.text("Status", 165, y - 1);
+                doc.text("Inspector", 205, y - 1);
+                doc.text("Remarks", 240, y - 1);
+
+                y += 6;
+                doc.setTextColor(15, 23, 42);
+                list.forEach((v, i) => {
+                    if (y > 195) { doc.addPage(); y = 20; }
+                    if (i % 2 === 0) { doc.setFillColor(241, 245, 249); doc.rect(10, y - 5, 277, 7, 'F'); }
+                    const st = v.status === 'REVIEW_PENDING' ? 'Review Pending' : v.status;
+                    doc.text(String(i + 1), 12, y);
+                    doc.text(v.chassis.slice(0, 22), 22, y);
+                    doc.text((v.model || '').slice(0, 20), 72, y);
+                    doc.text((v.location || '').slice(0, 24), 115, y);
+                    doc.text(st.slice(0, 18), 165, y);
+                    doc.text((v.inspector || '-').slice(0, 16), 205, y);
+                    doc.text((v.remarks || '-').slice(0, 24), 240, y);
+                    y += 7;
+                });
+                doc.save(`${filenameBase}.pdf`);
+            } else if (format === 'image') {
+                const scale = 2;
+                const rowH = 38;
+                const width = 1200;
+                const height = 150 + (list.length * rowH);
+                const canvas = document.createElement('canvas');
+                canvas.width = width * scale;
+                canvas.height = height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(scale, scale);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, width, 70);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 22px sans-serif';
+                ctx.fillText(`LUXON TATA YMS - ${title}`, 24, 34);
+                ctx.fillStyle = '#93c5fd';
+                ctx.font = '13px sans-serif';
+                ctx.fillText(`Generated: ${new Date().toLocaleString('en-IN')}  |  Total Vehicles: ${list.length}`, 24, 56);
+
+                const cols = [
+                    { name: 'SL', x: 20, w: 50 },
+                    { name: 'CHASSIS NUMBER', x: 70, w: 230 },
+                    { name: 'MODEL', x: 300, w: 190 },
+                    { name: 'LOCATION', x: 490, w: 220 },
+                    { name: 'STATUS', x: 710, w: 160 },
+                    { name: 'INSPECTOR', x: 870, w: 140 },
+                    { name: 'REMARKS', x: 1010, w: 170 }
+                ];
+
+                let y = 85;
+                ctx.fillStyle = '#1e40af';
+                ctx.fillRect(20, y, width - 40, rowH);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 13px sans-serif';
+                cols.forEach(c => ctx.fillText(c.name, c.x + 8, y + 24));
+
+                y += rowH;
+                list.forEach((v, idx) => {
+                    ctx.fillStyle = idx % 2 === 0 ? '#f8fafc' : '#ffffff';
+                    ctx.fillRect(20, y, width - 40, rowH);
+                    ctx.strokeStyle = '#cbd5e1';
+                    ctx.strokeRect(20, y, width - 40, rowH);
+
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = '13px sans-serif';
+                    const st = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
+                    ctx.fillText(String(idx + 1), cols[0].x + 8, y + 24);
+                    ctx.font = 'bold 13px monospace';
+                    ctx.fillText(v.chassis, cols[1].x + 8, y + 24);
+                    ctx.font = '13px sans-serif';
+                    ctx.fillText((v.model || '').slice(0, 22), cols[2].x + 8, y + 24);
+                    ctx.fillText((v.location || '').slice(0, 25), cols[3].x + 8, y + 24);
+                    ctx.fillText(st, cols[4].x + 8, y + 24);
+                    ctx.fillText((v.inspector || '-').slice(0, 16), cols[5].x + 8, y + 24);
+                    ctx.fillText((v.remarks || '-').slice(0, 20), cols[6].x + 8, y + 24);
+                    y += rowH;
+                });
+
+                const link = document.createElement('a');
+                link.download = `${filenameBase}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+        }
+
+        function downloadCurrentDashboardList(format) {
+            const { list, titleText } = getDashboardFilteredVehicles();
+            exportVehicleTable(titleText, list, format, `Luxon_Dashboard_${currentDashFilter}`);
+        }
+
+        // REPORTS MODAL
+        function openReportsModal(type) {
+            document.getElementById('app-menu-dropdown').classList.remove('show');
+            document.getElementById('reports-modal').style.display = 'flex';
+            const body = document.getElementById('report-content-body');
+            const title = document.getElementById('report-modal-title');
+
+            if (type === 'daily') {
+                title.innerHTML = `<i class="fa-solid fa-calendar-day"></i> Daily Operations Report`;
+                const todayStr = new Date().toISOString().split('T')[0];
+                body.innerHTML = `
+                    <div class="form-group">
+                        <label>Select Report Date:</label>
+                        <input type="date" id="rep-daily-date" value="${todayStr}" onchange="updateDailyReportView()">
+                    </div>
+                    <div id="rep-daily-results"></div>
+                `;
+                activeDailyCat = 'INWARD';
+                updateDailyReportView();
+            } else if (type === 'monthly') {
+                title.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Monthly Summary Report`;
+                const currMonth = new Date().toISOString().slice(0, 7);
+                body.innerHTML = `
+                    <div class="form-group">
+                        <label>Select Report Month:</label>
+                        <input type="month" id="rep-monthly-val" value="${currMonth}" onchange="updateMonthlyReportView()">
+                    </div>
+                    <div id="rep-monthly-results"></div>
+                `;
+                activeMonthlyCat = 'INWARD';
+                updateMonthlyReportView();
+            } else if (type === 'hold') {
+                title.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> On Hold Vehicles Report`;
+                renderSpecialStatusReport('HOLD', 'On Hold Vehicles');
+            } else if (type === 'review') {
+                title.innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i> Hold Review Pending Report`;
+                renderSpecialStatusReport('REVIEW_PENDING', 'Hold Review Pending Vehicles');
+            }
+        }
+
+        function setDailyCat(cat) {
+            activeDailyCat = cat;
+            updateDailyReportView();
+        }
+
+        function updateDailyReportView() {
+            const dtInput = document.getElementById('rep-daily-date');
+            const resDiv = document.getElementById('rep-daily-results');
+            if (!dtInput || !resDiv) return;
+            const selectedDate = dtInput.value;
+
+            const inwardToday = vehiclesDB.filter(v => parseIsoDate(v.inwardDate) === selectedDate);
+            const pdiDoneToday = vehiclesDB.filter(v => parseIsoDate(v.pdiDate) === selectedDate && v.status === 'PDI OK');
+            const pdiHoldToday = vehiclesDB.filter(v => (parseIsoDate(v.pdiDate) === selectedDate && v.status === 'HOLD') || v.status === 'HOLD');
+            const pendingPdiAll = vehiclesDB.filter(v => isPhysicalStock(v) && v.status === 'Pending PDI');
+            const outwardToday = vehiclesDB.filter(v => parseIsoDate(v.outwardDate) === selectedDate && (v.status === 'Outward' || v.status === 'Stock Transfer'));
+
+            const techMap = {};
+            vehiclesDB.filter(v => parseIsoDate(v.pdiDate) === selectedDate).forEach(v => {
+                const t = v.inspector || 'Unassigned';
+                techMap[t] = (techMap[t] || 0) + 1;
+            });
+            const techSummaryHtml = Object.keys(techMap).length
+                ? Object.keys(techMap).map(k => `<span class="badge badge-ok" style="margin-right:6px;">${k}: ${techMap[k]} PDI</span>`).join('')
+                : `<span style="color:var(--slate); font-size:12px;">No PDI recorded on ${selectedDate}</span>`;
+
+            const catMap = {
+                'INWARD': { title: `Inwarded on ${selectedDate}`, list: inwardToday },
+                'PDI_OK': { title: `PDI Done on ${selectedDate}`, list: pdiDoneToday },
+                'HOLD': { title: `On Hold Vehicles`, list: pdiHoldToday },
+                'PENDING': { title: `Pending PDI Vehicles`, list: pendingPdiAll },
+                'OUTWARD': { title: `Dispatched / Transferred on ${selectedDate}`, list: outwardToday }
+            };
+            const currentObj = catMap[activeDailyCat] || catMap['INWARD'];
+            window._activeReportList = currentObj.list;
+            window._activeReportTitle = currentObj.title;
+
+            resDiv.innerHTML = `
+                <div style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; text-transform:uppercase;">Tap any category below to view &amp; download its list:</div>
+                <div class="report-grid">
+                    <div class="report-box ${activeDailyCat==='INWARD'?'active-rep':''}" onclick="setDailyCat('INWARD')"><div class="report-box-lbl">Today Inward</div><div class="report-box-val">${inwardToday.length}</div></div>
+                    <div class="report-box ${activeDailyCat==='PDI_OK'?'active-rep':''}" onclick="setDailyCat('PDI_OK')"><div class="report-box-lbl">PDI Done</div><div class="report-box-val">${pdiDoneToday.length}</div></div>
+                    <div class="report-box ${activeDailyCat==='HOLD'?'active-rep':''}" onclick="setDailyCat('HOLD')"><div class="report-box-lbl">PDI Hold</div><div class="report-box-val">${pdiHoldToday.length}</div></div>
+                    <div class="report-box ${activeDailyCat==='PENDING'?'active-rep':''}" onclick="setDailyCat('PENDING')"><div class="report-box-lbl">Pending PDI</div><div class="report-box-val">${pendingPdiAll.length}</div></div>
+                    <div class="report-box ${activeDailyCat==='OUTWARD'?'active-rep':''}" onclick="setDailyCat('OUTWARD')"><div class="report-box-lbl">Dispatched</div><div class="report-box-val">${outwardToday.length}</div></div>
+                </div>
+
+                <div style="background:var(--primary-bg); padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:10px;">
+                    <div style="font-size:11px; font-weight:800; text-transform:uppercase; margin-bottom:4px;">Technician-wise PDI (${selectedDate}):</div>
+                    ${techSummaryHtml}
+                </div>
+
+                <div style="font-weight:800; margin-bottom:6px;">${currentObj.title} (${currentObj.list.length}):</div>
+                <div class="vehicle-list" style="max-height:180px; overflow-y:auto; margin-bottom:12px;">
+                    ${currentObj.list.length ? currentObj.list.map(v => `
+                        <div class="vehicle-item">
+                            <div class="v-info"><h4>${v.chassis}</h4><p><b>${v.model}</b> • ${v.location} ${v.inspector ? '• ' + v.inspector : ''}</p></div>
+                            <span class="badge badge-ok">${v.status === 'REVIEW_PENDING' ? 'Review Pending' : v.status}</span>
+                        </div>
+                    `).join('') : '<div style="font-size:12px; color:var(--slate); padding:10px; text-align:center;">No vehicles in this category.</div>'}
+                </div>
+
+                <div style="display:flex; gap:6px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'csv', 'Daily_Report_${selectedDate}')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'pdf', 'Daily_Report_${selectedDate}')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button class="btn btn-dark" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'image', 'Daily_Report_${selectedDate}')"><i class="fa-solid fa-image"></i> Image</button>
+                </div>
+            `;
+        }
+
+        function setMonthlyCat(cat) {
+            activeMonthlyCat = cat;
+            updateMonthlyReportView();
+        }
+
+        function updateMonthlyReportView() {
+            const mInput = document.getElementById('rep-monthly-val');
+            const resDiv = document.getElementById('rep-monthly-results');
+            if (!mInput || !resDiv) return;
+            const selectedMonth = mInput.value;
+
+            const inwardMonth = vehiclesDB.filter(v => parseIsoDate(v.inwardDate).slice(0, 7) === selectedMonth);
+            const pdiMonth = vehiclesDB.filter(v => parseIsoDate(v.pdiDate).slice(0, 7) === selectedMonth);
+            const deliveredMonth = vehiclesDB.filter(v => v.status === 'Outward' && (parseIsoDate(v.outwardDate).slice(0, 7) === selectedMonth || parseIsoDate(v.inwardDate).slice(0, 7) === selectedMonth));
+            const transferMonth = vehiclesDB.filter(v => v.status === 'Stock Transfer' && (parseIsoDate(v.outwardDate).slice(0, 7) === selectedMonth || parseIsoDate(v.inwardDate).slice(0, 7) === selectedMonth));
+
+            const techMap = {};
+            pdiMonth.forEach(v => {
+                const t = v.inspector || 'Unassigned';
+                techMap[t] = (techMap[t] || 0) + 1;
+            });
+            const techHtml = Object.keys(techMap).length
+                ? Object.keys(techMap).map(k => `<span class="badge badge-ok" style="margin-right:6px;">${k}: ${techMap[k]} PDI</span>`).join('')
+                : `<span style="color:var(--slate); font-size:12px;">No technician PDI records for ${selectedMonth}</span>`;
+
+            const catMap = {
+                'INWARD': { title: `Total Inwards (${selectedMonth})`, list: inwardMonth },
+                'PDI': { title: `PDI Completed (${selectedMonth})`, list: pdiMonth },
+                'DELIVERED': { title: `Delivered Vehicles (${selectedMonth})`, list: deliveredMonth },
+                'TRANSFER': { title: `Stock Transfers (${selectedMonth})`, list: transferMonth }
+            };
+            const currentObj = catMap[activeMonthlyCat] || catMap['INWARD'];
+            window._activeReportList = currentObj.list;
+            window._activeReportTitle = currentObj.title;
+
+            resDiv.innerHTML = `
+                <div style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; text-transform:uppercase;">Tap any category below to view &amp; download its list:</div>
+                <div class="report-grid">
+                    <div class="report-box ${activeMonthlyCat==='INWARD'?'active-rep':''}" onclick="setMonthlyCat('INWARD')"><div class="report-box-lbl">Total Inwards</div><div class="report-box-val">${inwardMonth.length}</div></div>
+                    <div class="report-box ${activeMonthlyCat==='PDI'?'active-rep':''}" onclick="setMonthlyCat('PDI')"><div class="report-box-lbl">PDI Completed</div><div class="report-box-val">${pdiMonth.length}</div></div>
+                    <div class="report-box ${activeMonthlyCat==='DELIVERED'?'active-rep':''}" onclick="setMonthlyCat('DELIVERED')"><div class="report-box-lbl">Delivered</div><div class="report-box-val">${deliveredMonth.length}</div></div>
+                    <div class="report-box ${activeMonthlyCat==='TRANSFER'?'active-rep':''}" onclick="setMonthlyCat('TRANSFER')"><div class="report-box-lbl">Stock Transfer</div><div class="report-box-val">${transferMonth.length}</div></div>
+                </div>
+
+                <div style="background:var(--primary-bg); padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:10px;">
+                    <div style="font-size:11px; font-weight:800; text-transform:uppercase; margin-bottom:4px;">Technician-wise PDI Summary (${selectedMonth}):</div>
+                    ${techHtml}
+                </div>
+
+                <div style="font-weight:800; margin-bottom:6px;">${currentObj.title} (${currentObj.list.length}):</div>
+                <div class="vehicle-list" style="max-height:180px; overflow-y:auto; margin-bottom:12px;">
+                    ${currentObj.list.length ? currentObj.list.map(v => `
+                        <div class="vehicle-item">
+                            <div class="v-info"><h4>${v.chassis}</h4><p><b>${v.model}</b> • ${v.location} ${v.inspector ? '• ' + v.inspector : ''}</p></div>
+                            <span class="badge badge-ok">${v.status}</span>
+                        </div>
+                    `).join('') : '<div style="font-size:12px; color:var(--slate); padding:10px; text-align:center;">No vehicles in this category.</div>'}
+                </div>
+
+                <div style="display:flex; gap:6px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'csv', 'Monthly_Report_${selectedMonth}')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'pdf', 'Monthly_Report_${selectedMonth}')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button class="btn btn-dark" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'image', 'Monthly_Report_${selectedMonth}')"><i class="fa-solid fa-image"></i> Image</button>
+                </div>
+            `;
+        }
+
+        function renderSpecialStatusReport(statusKey, labelTitle) {
+            const body = document.getElementById('report-content-body');
+            const list = vehiclesDB.filter(v => isPhysicalStock(v) && v.status === statusKey);
+            window._activeReportList = list;
+            window._activeReportTitle = labelTitle;
+
+            body.innerHTML = `
+                <div style="margin-bottom:10px;">Total ${labelTitle}: <b>${list.length}</b></div>
+                <div class="vehicle-list" style="max-height:260px; overflow-y:auto; margin-bottom:14px;">
+                    ${list.length ? list.map(v => {
+                        const enc = encodeURIComponent(v.chassis);
+                        const hasCloudPdf = Boolean(v.tgFileId || v.tgMsgId);
+                        return `
+                        <div class="vehicle-item">
+                            <div class="v-info" onclick="closeReportsModal(); openVehicleDetailsByEnc('${enc}');" style="cursor:pointer;">
+                                <h4>${v.chassis}</h4>
+                                <p><b>${v.model}</b> • ${v.location} • Tech: ${v.inspector || 'N/A'}</p>
+                                ${v.remarks ? `<p style="color:var(--danger); font-weight:700;">Reason: ${v.remarks}</p>` : ''}
+                            </div>
+                            <div style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end;">
+                                ${hasCloudPdf ? `<button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="openCloudPdfFromTelegram('${v.tgFileId}', '${v.tgMsgId}', '${v.chassis}')"><i class="fa-solid fa-file-pdf"></i> PDF</button>` : ''}
+                                <button class="btn btn-success" style="padding:5px 8px; font-size:11px;" onclick="quickUpdateVehicleStatus('${enc}', 'PDI OK'); openReportsModal('${statusKey==='HOLD'?'hold':'review'}');">Mark OK</button>
+                                ${statusKey === 'REVIEW_PENDING' ? `<button class="btn btn-danger" style="padding:5px 8px; font-size:11px;" onclick="quickUpdateVehicleStatus('${enc}', 'HOLD'); openReportsModal('review');">Hold</button>` : ''}
+                            </div>
+                        </div>`;
+                    }).join('') : `<div style="color:var(--slate); text-align:center; padding:16px;">No vehicles currently in ${labelTitle}.</div>`}
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'csv', 'Luxon_${statusKey}_Report')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'pdf', 'Luxon_${statusKey}_Report')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button class="btn btn-dark" style="flex:1;" onclick="exportVehicleTable(window._activeReportTitle, window._activeReportList, 'image', 'Luxon_${statusKey}_Report')"><i class="fa-solid fa-image"></i> Image</button>
+                </div>
+            `;
+        }
+
+        function openSettingsModal() {
+            document.getElementById('app-menu-dropdown').classList.remove('show');
+            document.getElementById('cfg-scripturl').value = botConfig.scriptUrl;
+            document.getElementById('cfg-token').value = botConfig.token;
+            document.getElementById('cfg-chatid').value = botConfig.chatId;
+            document.getElementById('settings-modal').style.display = 'flex';
+        }
+        function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+        function saveSettings() {
+            botConfig.scriptUrl = cleanStr(document.getElementById('cfg-scripturl').value);
+            botConfig.token = cleanStr(document.getElementById('cfg-token').value);
+            botConfig.chatId = cleanStr(document.getElementById('cfg-chatid').value);
+            try { localStorage.setItem('luxon_yms_bot_cfg', JSON.stringify(botConfig)); } catch(e) {}
+            closeSettingsModal();
+            syncWithGoogleSheet(false);
+            showToast('Settings saved & synced successfully!', 'success');
+        }
+
+        function closeReportsModal() { document.getElementById('reports-modal').style.display = 'none'; }
+
+        // BARCODE & CAMERA SCANNER
+        function generateBarcode(ctx) {
+            const chassis = ctx === 'inward' ? cleanChassis(document.getElementById('in-chassis').value) : currentPdiChassis;
+            if (!chassis) { alert('Select or enter a chassis number first.'); return; }
+            const boxId = ctx === 'inward' ? 'inward-barcode-box' : 'pdi-barcode-box';
+            const svgId = ctx === 'inward' ? 'inward-barcode-svg' : 'pdi-barcode-svg';
+            document.getElementById(boxId).style.display = 'block';
+            if (typeof JsBarcode !== 'undefined') {
+                JsBarcode("#" + svgId, chassis, { format: "CODE128", width: 2, height: 50, displayValue: true });
+            }
+        }
+
+        function downloadBarcode(svgId, name) {
+            const svg = document.getElementById(svgId);
+            const data = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement("canvas");
+            const img = new Image();
+            img.onload = function() {
+                canvas.width = img.width + 20; canvas.height = img.height + 20;
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage(img, 10, 10);
+                const a = document.createElement("a");
+                a.download = `Barcode_${cleanChassis(name) || 'Chassis'}.png`;
+                a.href = canvas.toDataURL("image/png");
+                a.click();
+            };
+            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(data)));
+        }
+
+        function toggleCameraScanner(mode) {
+            const readerId = mode === 'inward' ? 'inward-camera-reader' : (mode === 'pdi' ? 'pdi-camera-reader' : 'op-camera-reader');
+            const vp = document.getElementById(readerId);
+            if (activeScannerMode === mode && qrScanner) { stopScanner(); return; }
+            stopScanner();
+            vp.style.display = 'block';
+            activeScannerMode = mode;
+            if (typeof Html5Qrcode === 'undefined') { alert('Scanner library not loaded.'); vp.style.display = 'none'; return; }
+            qrScanner = new Html5Qrcode(readerId);
+            qrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 100 } },
+                (txt) => { handleScanResult(txt, mode); stopScanner(); }, () => {}
+            ).catch(() => { vp.style.display = 'none'; activeScannerMode = null; alert('Camera permission required.'); });
+        }
+
+        function stopScanner() {
+            ['inward-camera-reader', 'pdi-camera-reader', 'op-camera-reader'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.style.display = 'none';
+            });
+            if (qrScanner) { qrScanner.stop().then(() => { qrScanner.clear(); qrScanner = null; }).catch(() => { qrScanner = null; }); }
+            activeScannerMode = null;
+        }
+
+        function scanBarcodeFromFile(event, mode) {
+            const file = event.target.files[0]; if (!file) return;
+            const temp = new Html5Qrcode("inward-camera-reader");
+            temp.scanFile(file, true).then(txt => handleScanResult(txt, mode)).catch(() => alert('Could not read barcode from image.'));
+            event.target.value = '';
+        }
+
+        function handleScanResult(text, mode) {
+            let clean = cleanChassis(text);
+            const mat = clean.match(/MAT[A-Z0-9]{14}/);
+            let chassis = mat ? mat[0] : clean.split(/[\s|,;/]+/)[0];
+            if (mode === 'inward') {
+                document.getElementById('in-chassis').value = chassis;
+                saveDraft();
+                onInwardChassisInput();
+            } else if (mode === 'pdi') {
+                document.getElementById('pdi-search-input').value = chassis;
+                populatePdiMasterList();
+                selectPdiByChassis(chassis);
+            } else if (mode === 'op') {
+                document.getElementById('op-search').value = chassis;
+                renderOperationsList();
+                openOpEd(chassis);
+            }
+        }
+    </script>
+</body>
+</html>
