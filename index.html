@@ -187,7 +187,13 @@
         .badge-ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
         .badge-hold { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
         .badge-conf { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
-        .badge-out { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .badge-out { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .badge-transfer { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
+        .master-actions { display:flex; gap:6px; margin-top:7px; flex-wrap:wrap; }
+        html,body { max-width:100%; overflow-x:hidden; }
+        .app-layout,.main-content,.module-section,.card,.vehicle-item { min-width:0; max-width:100%; }
+        table { max-width:100%; }
+        @media(max-width:520px) { .filter-bar { flex-direction:column; } .filter-bar input,.filter-bar select { width:100%; min-width:0!important; } .vehicle-item { flex-wrap:wrap; } .v-info { min-width:0; overflow-wrap:anywhere; } .header-actions .btn { white-space:nowrap; } }
 
         /* Photo Grids & Uploads */
         .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 10px; }
@@ -315,8 +321,15 @@
                     <div class="menu-item" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Summary</div>
                     <div class="menu-item" onclick="openReportsModal('hold')"><i class="fa-solid fa-triangle-exclamation"></i> On Hold Vehicles</div>
                     <div class="menu-item" onclick="openReportsModal('review')"><i class="fa-solid fa-clock-rotate-left"></i> Hold Review Pending</div>
+                    <div class="menu-item" onclick="openReportsModal('inward')"><i class="fa-solid fa-truck-arrow-right"></i> Inward Report</div>
+                    <div class="menu-item" onclick="openReportsModal('pdi')"><i class="fa-solid fa-clipboard-check"></i> PDI Report</div>
+                    <div class="menu-item" onclick="openReportsModal('transfer')"><i class="fa-solid fa-right-left"></i> Stock Transfer Report</div>
+                    <div class="menu-item" onclick="openReportsModal('delivered')"><i class="fa-solid fa-circle-check"></i> Delivered Report</div>
                     <div class="menu-item" onclick="addNewLocationPrompt()"><i class="fa-solid fa-location-plus"></i> Add New Location</div>
                     <div class="menu-item" onclick="addNewInspectorPrompt()"><i class="fa-solid fa-user-plus"></i> Add Technician</div>
+                    <div class="menu-item" onclick="manageMasterNames('models')"><i class="fa-solid fa-car"></i> Manage Vehicle Models</div>
+                    <div class="menu-item" onclick="manageMasterNames('technicians')"><i class="fa-solid fa-users-gear"></i> Manage Technicians</div>
+                    <div class="menu-item" onclick="manageMasterNames('locations')"><i class="fa-solid fa-location-dot"></i> Manage Locations</div>
                     <div class="menu-item" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> System Settings</div>
                 </div>
             </div>
@@ -596,7 +609,8 @@
                         <div class="form-group">
                             <label>PDI Decision Status *</label>
                             <select id="pdi-decision" onchange="saveDraft(); toggleHoldUI()">
-                                <option value="PDI OK">PDI OK (Approved)</option>
+                                <option value="" selected disabled>-- Select PDI Decision --</option>
+                                <option value="PDI OK">PDI OK</option>
                                 <option value="HOLD">PDI Hold (Defect / Issue)</option>
                                 <option value="REVIEW_PENDING">Send to Review (Hold Review Pending)</option>
                             </select>
@@ -662,25 +676,14 @@
 
                         <div class="form-group" id="op-dest-box" style="display:none;">
                             <label>Delivery Showroom Destination *</label>
-                            <select id="op-ed-dest">
-                                <option value="Malappuram Showroom">Malappuram Showroom</option>
-                                <option value="Kottakkal Showroom">Kottakkal Showroom</option>
-                                <option value="Edappal Showroom">Edappal Showroom</option>
-                                <option value="Changanakkulam Showroom">Changanakkulam Showroom</option>
-                                <option value="Kondotty Showroom">Kondotty Showroom</option>
-                                <option value="Areekode Showroom">Areekode Showroom</option>
-                            </select>
+                            <select id="op-ed-dest"></select>
+                            <div class="master-actions"><button type="button" class="btn btn-outline" onclick="manageOperationList('dest')">Manage destinations</button></div>
                         </div>
 
                         <div class="form-group" id="op-region-box" style="display:none;">
                             <label>Stock Transfer Region / Hub *</label>
-                            <select id="op-ed-region">
-                                <option value="Ernakulam Hub">Ernakulam Hub</option>
-                                <option value="Kollam Hub">Kollam Hub</option>
-                                <option value="Trivandrum Hub">Trivandrum Hub</option>
-                                <option value="Pathanamthitta - Konni">Pathanamthitta - Konni</option>
-                                <option value="Dealer Yard">Dealer Yard</option>
-                            </select>
+                            <select id="op-ed-region"></select>
+                            <div class="master-actions"><button type="button" class="btn btn-outline" onclick="manageOperationList('region')">Manage transfer locations</button></div>
                         </div>
 
                         <button type="button" class="btn btn-primary btn-full" onclick="confirmOperationsDispatch()"><i class="fa-solid fa-check"></i> Update Operation &amp; Sync Sheet</button>
@@ -1207,6 +1210,7 @@
                 currentDashFilter = filterName;
             }
             renderDashboard();
+            requestAnimationFrame(() => document.getElementById('dash-vehicle-list')?.scrollIntoView({behavior:'smooth', block:'start'}));
         }
 
         function getDashboardFilteredVehicles() {
@@ -1329,7 +1333,8 @@
 
             container.innerHTML = list.map(v => {
                 const badgeClass = v.status === 'Pending PDI' ? 'badge-pending' :
-                                   v.status === 'PDI OK' ? 'badge-ok' :
+                                   v.status === 'PDI OK' || v.status === 'Outward' ? 'badge-ok' :
+                                   v.status === 'Stock Transfer' ? 'badge-transfer' :
                                    v.status === 'REVIEW_PENDING' ? 'badge-conf' :
                                    v.status === 'HOLD' ? 'badge-hold' : 'badge-out';
                 const statusLabel = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
@@ -1432,18 +1437,15 @@
             photoBuckets.pdi_form22 = [...(cached.pdi_form22 || [])];
             photoBuckets.pdi_battery = [...(cached.pdi_battery || [])];
 
-            if (v.status === 'HOLD' || v.status === 'REVIEW_PENDING') {
-                document.getElementById('pdi-decision').value = v.status;
-                document.getElementById('pdi-remarks').value = v.remarks || '';
-            } else {
-                document.getElementById('pdi-decision').value = 'PDI OK';
-                document.getElementById('pdi-remarks').value = '';
-            }
+            // Always require an explicit decision for this PDI session; never pre-fill a prior decision.
+            document.getElementById('pdi-decision').value = '';
+            document.getElementById('pdi-remarks').value = '';
 
             toggleHoldUI();
             populatePdiMasterList();
             renderAllGrids();
-            banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => document.getElementById('pdi-decision')?.scrollIntoView({behavior:'smooth', block:'center'}), 250);
         }
 
         function clearPdiSelection() {
@@ -2296,6 +2298,81 @@
                 openOpEd(chassis);
             }
         }
+
+        // Editable master lists. Existing saved names and vehicle data are preserved.
+        let modelCatalog = [];
+        try { modelCatalog = JSON.parse(localStorage.getItem('yms_model_catalog')) || []; } catch(e) { modelCatalog=[]; }
+        const operationDefaults = {
+            dest: ['Malappuram Showroom','Kottakkal Showroom','Edappal Showroom','Changanakkulam Showroom','Kondotty Showroom','Areekode Showroom'],
+            region: ['Ernakulam Hub','Kollam Hub','Trivandrum Hub','Pathanamthitta - Konni','Dealer Yard']
+        };
+        function getOperationList(kind) {
+            try { return JSON.parse(localStorage.getItem('yms_ops_'+kind)) || operationDefaults[kind].slice(); }
+            catch(e) { return operationDefaults[kind].slice(); }
+        }
+        function fillOperationLists() {
+            [['op-ed-dest','dest'],['op-ed-region','region']].forEach(([id,kind])=>{
+                const el=document.getElementById(id); if(!el)return;
+                const vals=getOperationList(kind); el.innerHTML=vals.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+            });
+        }
+        function manageOperationList(kind) {
+            const label=kind==='dest'?'Delivery destination':'Stock transfer location';
+            const action=(prompt(`${label}: type ADD, EDIT or REMOVE`,'ADD')||'').trim().toUpperCase();
+            const vals=getOperationList(kind);
+            if(action==='ADD') { const name=cleanStr(prompt('Enter new '+label.toLowerCase()+':')); if(name&&!vals.includes(name)) vals.push(name); }
+            else if(action==='EDIT'||action==='REMOVE') {
+                const old=prompt('Enter the exact existing name:\n'+vals.join('\n')); if(!old||!vals.includes(old))return;
+                if(action==='REMOVE') vals.splice(vals.indexOf(old),1);
+                else { const name=cleanStr(prompt('Enter replacement name:',old)); if(name) vals[vals.indexOf(old)]=name; }
+            } else return;
+            localStorage.setItem('yms_ops_'+kind,JSON.stringify([...new Set(vals)])); fillOperationLists();
+            showToast(label+' list updated.','success');
+        }
+        function manageMasterNames(kind) {
+            const isModel=kind==='models', isTech=kind==='technicians';
+            let vals=isModel?[...new Set([...(modelCatalog||[]),...vehiclesDB.map(v=>cleanStr(v.model)).filter(Boolean)])]:isTech?inspectorsList:locationsList;
+            const label=isModel?'Vehicle model':isTech?'Technician':'Location';
+            const action=(prompt(`${label}: type ADD, EDIT or REMOVE`,'ADD')||'').trim().toUpperCase();
+            if(action==='ADD') {
+                const name=cleanStr(prompt('Enter new '+label.toLowerCase()+':')); if(!name)return;
+                if(!vals.includes(name)) vals.push(name);
+            } else if(action==='EDIT'||action==='REMOVE') {
+                const old=prompt('Enter exact existing '+label.toLowerCase()+':\n'+vals.join('\n')); if(!old||!vals.includes(old))return;
+                if(action==='REMOVE') { if(vals.length<=1){alert('At least one item must remain.');return;} vals=vals.filter(x=>x!==old); }
+                else { const name=cleanStr(prompt('Enter new name:',old)); if(!name)return; vals=vals.map(x=>x===old?name:x); }
+            } else return;
+            if(isModel){modelCatalog=vals;localStorage.setItem('yms_model_catalog',JSON.stringify(vals));renderModelDatalist();}
+            else if(isTech){inspectorsList=vals;localStorage.setItem('luxon_yms_inspectors',JSON.stringify(vals));}
+            else {locationsList=vals;localStorage.setItem('luxon_yms_locs',JSON.stringify(vals));}
+            initDropdowns(); showToast(label+' list updated.','success');
+        }
+        function renderModelDatalist(){const dl=document.getElementById('tata-models-list');if(!dl)return;const vals=[...new Set([...(modelCatalog||[]),...vehiclesDB.map(v=>cleanStr(v.model)).filter(Boolean)])];dl.innerHTML=vals.map(v=>`<option value="${escapeHtml(v)}">`).join('');}
+        function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+        // Report shortcuts use the existing vehicle records and export engine.
+        function renderFilteredStatusReport(title, predicate) {
+            const list=vehiclesDB.filter(predicate); window._activeReportList=list; window._activeReportTitle=title;
+            const body=document.getElementById('report-content-body');
+            body.innerHTML=`<div class="report-box"><div class="report-box-lbl">${escapeHtml(title)}</div><div class="report-box-val">${list.length}</div></div><div class="vehicle-list" style="max-height:45vh;overflow:auto;margin:12px 0">${list.map(v=>`<div class="vehicle-item"><b>${escapeHtml(v.chassis)}</b><p>${escapeHtml(v.model)} • ${escapeHtml(v.location)} • ${escapeHtml(v.status)}</p></div>`).join('')||'<p>No matching vehicles.</p>'}</div><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-primary" onclick="exportVehicleTable(window._activeReportTitle,window._activeReportList,'csv','YMS_Report')">Excel / CSV</button><button class="btn btn-danger" onclick="exportVehicleTable(window._activeReportTitle,window._activeReportList,'pdf','YMS_Report')">PDF</button></div>`;
+        }
+        const _openReportsModalOriginal=openReportsModal;
+        openReportsModal=function(type){
+            if(['inward','pdi','transfer','delivered'].includes(type)){
+                document.getElementById('app-menu-dropdown')?.classList.remove('show');
+                document.getElementById('reports-modal').style.display='flex';
+                const title=document.getElementById('report-modal-title');
+                if(type==='inward'){title.textContent='Inward Report';renderFilteredStatusReport('Inward Vehicles',v=>!!v.inwardDate);}
+                if(type==='pdi'){title.textContent='PDI Report';renderFilteredStatusReport('PDI Completed',v=>!!v.pdiDate);}
+                if(type==='transfer'){title.textContent='Stock Transfer Report';renderFilteredStatusReport('Stock Transfers',v=>v.status==='Stock Transfer');}
+                if(type==='delivered'){title.textContent='Delivered Report';renderFilteredStatusReport('Delivered Vehicles',v=>v.status==='Outward');}
+                return;
+            }
+            return _openReportsModalOriginal(type);
+        };
+        // Ensure configurable operation destinations are ready after the existing startup routine.
+        document.addEventListener('DOMContentLoaded',()=>{fillOperationLists();renderModelDatalist();});
+        setTimeout(()=>{fillOperationLists();renderModelDatalist();},300);
+
     </script>
 </body>
 </html>
