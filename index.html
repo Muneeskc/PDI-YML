@@ -1,516 +1,601 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Luxon TATA - Yard Management System (YMS)</title>
+    <title>Luxon TATA - Enterprise Yard Management System (YMS)</title>
     <!-- Barcode Scanner, Generator, PDF & Icons -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #1e40af; --primary-light: #2563eb; --primary-bg: #eff6ff;
+            --primary: #2563eb; --primary-light: #3b82f6; --primary-dark: #1d4ed8; --primary-bg: #eff6ff;
             --success: #059669; --success-bg: #ecfdf5; --warning: #d97706; --warning-bg: #fffbeb;
-            --danger: #dc2626; --danger-bg: #fef2f2; --dark: #0f172a; --slate: #475569;
-            --light: #f1f5f9; --white: #ffffff; --border: #cbd5e1; --radius: 14px;
+            --danger: #dc2626; --danger-bg: #fef2f2; --dark: #0f172a; --slate: #64748b;
+            --light: #f8fafc; --white: #ffffff; --border: #e2e8f0; --radius: 14px;
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08); --card-bg: #ffffff;
+            --sidebar-width: 260px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--light); color: var(--dark); padding-bottom: 80px; }
+        [data-theme="dark"] {
+            --primary: #3b82f6; --primary-light: #60a5fa; --primary-dark: #2563eb; --primary-bg: #1e3a8a33;
+            --success: #10b981; --success-bg: #064e3b33; --warning: #f59e0b; --warning-bg: #78350f33;
+            --danger: #ef4444; --danger-bg: #7f1d1d33; --dark: #f8fafc; --slate: #94a3b8;
+            --light: #090d16; --white: #111827; --border: #1f2937; --radius: 14px;
+            --shadow: 0 4px 25px -2px rgba(0, 0, 0, 0.5); --card-bg: #111827;
+        }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+        body { background-color: var(--light); color: var(--dark); padding-bottom: 90px; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Toast Notifications */
+        .toast-container { position: fixed; bottom: 90px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: var(--dark); color: var(--white); padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3); pointer-events: auto; animation: slideUp 0.3s ease; display: flex; align-items: center; gap: 10px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* App Header */
         .app-header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            color: var(--white); padding: 12px 16px;
+            background: var(--card-bg); color: var(--dark); padding: 12px 20px;
             position: sticky; top: 0; z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
         }
-        .brand-box { display: flex; align-items: center; gap: 10px; }
-        .brand-icon { width: 38px; height: 38px; background: var(--primary-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; }
-        .brand-title { font-size: 16px; font-weight: 800; }
-        .brand-sub { font-size: 11px; color: #93c5fd; }
+        .brand-box { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        .brand-title { font-size: 17px; font-weight: 800; letter-spacing: -0.5px; }
+        .brand-sub { font-size: 11px; color: var(--slate); font-weight: 500; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .theme-toggle-btn { background: var(--primary-bg); color: var(--primary); border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+        .theme-toggle-btn:hover { background: var(--primary); color: white; }
 
         .menu-container { position: relative; }
-        .menu-btn { background: rgba(255,255,255,0.15); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .menu-dropdown { position: absolute; right: 0; top: 44px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 240px; display: none; z-index: 1000; overflow: hidden; border: 1px solid var(--border); }
-        .menu-dropdown.show { display: block; }
-        .menu-item { padding: 12px 16px; font-size: 13px; font-weight: 700; color: var(--dark); border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .menu-btn { background: var(--primary-bg); color: var(--primary); border: 1px solid var(--border); padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .menu-btn:hover { background: var(--primary); color: white; }
+        .menu-dropdown { position: absolute; right: 0; top: 48px; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); width: 240px; display: none; z-index: 1000; overflow: hidden; border: 1px solid var(--border); }
+        .menu-dropdown.show { display: block; animation: slideUp 0.2s ease; }
+        .menu-item { padding: 12px 16px; font-size: 13px; font-weight: 700; color: var(--dark); border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 10px; }
         .menu-item:hover { background: var(--primary-bg); color: var(--primary); }
 
+        /* App Layout Container with Sidebar */
+        .app-layout { display: flex; flex: 1; width: 100%; }
+
+        /* Desktop Sidebar (Hidden on mobile) */
+        .app-sidebar {
+            width: var(--sidebar-width); background: var(--card-bg); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 20px 14px; position: sticky; top: 67px; height: calc(100vh - 67px);
+            overflow-y: auto; z-index: 90;
+        }
+        .sidebar-section-title { font-size: 11px; font-weight: 800; color: var(--slate); text-transform: uppercase; letter-spacing: 0.5px; margin: 15px 10px 8px; }
+        .sidebar-link {
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px;
+            font-size: 13px; font-weight: 700; color: var(--slate); text-decoration: none; cursor: pointer; margin-bottom: 4px;
+        }
+        .sidebar-link:hover, .sidebar-link.active { background: var(--primary-bg); color: var(--primary); }
+        .sidebar-link i { width: 20px; font-size: 15px; }
+
+        /* Main Content Area */
+        .main-content { flex: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        /* Mobile Bottom Navigation Bar */
+        .mobile-bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
+            border-top: 1px solid var(--border); padding: 8px 12px; z-index: 100;
+            justify-content: space-around; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+        .bnav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none;
+            color: var(--slate); font-size: 11px; font-weight: 700; cursor: pointer; padding: 6px 12px; border-radius: 10px;
+        }
+        .bnav-item.active { color: var(--primary); background: var(--primary-bg); }
+        .bnav-item i { font-size: 18px; }
+
+        @media (max-width: 900px) {
+            .app-sidebar { display: none; }
+            .mobile-bottom-nav { display: flex; }
+            body { padding-bottom: 80px; }
+            .main-content { padding: 12px; }
+        }
+
+        /* Navigation Tabs (Top bar inside content) */
         .nav-tabs {
-            background: var(--white); display: flex; overflow-x: auto; gap: 6px; padding: 10px 12px;
-            border-bottom: 1px solid var(--border); position: sticky; top: 62px; z-index: 90;
+            background: var(--card-bg); display: flex; overflow-x: auto; gap: 8px; padding: 12px;
+            border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px;
+            box-shadow: var(--shadow);
         }
         .nav-tabs::-webkit-scrollbar { display: none; }
         .tab-btn {
-            border: 1px solid var(--border); background: var(--white); color: var(--slate);
-            padding: 9px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
-            display: flex; align-items: center; gap: 6px;
+            border: 1px solid var(--border); background: var(--card-bg); color: var(--slate);
+            padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
         }
-        .tab-btn.active { background: var(--primary-light); color: var(--white); border-color: var(--primary-light); }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 
-        .container { max-width: 960px; margin: 0 auto; padding: 14px; }
-        .module-section { display: none; }
+        .module-section { display: none; animation: fadeIn 0.3s ease; }
         .module-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: var(--white); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; }
-        .card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        /* Dashboard Stats Grid */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 16px; cursor: pointer; box-shadow: var(--shadow); position: relative; overflow: hidden;
+        }
+        .stat-card:hover { transform: translateY(-3px); border-color: var(--primary-light); box-shadow: 0 10px 25px -5px rgba(37,99,235,0.15); }
+        .stat-card.active-filter { border: 2px solid var(--primary); background: var(--primary-bg); }
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--slate); text-transform: uppercase; margin-bottom: 8px; }
+        .stat-val { font-size: 26px; font-weight: 800; color: var(--dark); letter-spacing: -1px; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-        @media(min-width: 650px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-        .stat-card { background: var(--white); padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0; text-align: center; cursor: pointer; transition: 0.15s; }
-        .stat-card.active-filter { border-color: var(--primary-light); background: var(--primary-bg); transform: translateY(-2px); }
-        .stat-label { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--slate); }
-        .stat-val { font-size: 24px; font-weight: 800; margin-top: 4px; }
+        /* Cards & Forms */
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: var(--dark); }
 
-        .scanner-container { border: 2px dashed var(--primary-light); background: var(--primary-bg); border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 14px; }
-        .camera-viewport { width: 100%; max-width: 380px; margin: 0 auto 10px auto; border-radius: 8px; overflow: hidden; background: #000; display: none; }
-        .scanner-btn-group { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .filter-bar input, .filter-bar select, .form-group input, .form-group select, .form-group textarea {
+            background: var(--card-bg); color: var(--dark); border: 1px solid var(--border);
+            padding: 11px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; outline: none; width: 100%;
+        }
+        .filter-bar input:focus, .filter-bar select:focus, .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg);
+        }
+        .filter-bar input { flex: 2; min-width: 200px; }
+        .filter-bar select { flex: 1; min-width: 140px; }
 
         .form-group { margin-bottom: 14px; }
-        .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 14px; }
-        @media(min-width: 550px) { .form-row { grid-template-columns: 1fr 1fr; } }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--slate); margin-bottom: 6px; text-transform: uppercase; }
 
-        label { display: block; font-size: 12px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 6px; }
-        input[type="text"], input[type="number"], select, textarea, input[type="password"], input[type="date"], input[type="month"] {
-            width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; background: #fff;
+        /* Buttons */
+        .btn {
+            border: none; padding: 11px 18px; border-radius: 10px; font-size: 13px; font-weight: 700;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
-        .mono-input { font-family: monospace; font-weight: 800; text-transform: uppercase; }
-
-        .btn { border: none; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
-        .btn-full { width: 100%; padding: 13px; font-size: 14px; }
-        .btn-primary { background: var(--primary-light); color: var(--white); }
-        .btn-success { background: var(--success); color: var(--white); }
-        .btn-warning { background: var(--warning); color: var(--white); }
-        .btn-danger { background: var(--danger); color: var(--white); }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #047857; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-outline { background: var(--card-bg); color: var(--slate); border: 1px solid var(--border); }
+        .btn-outline:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary-light); }
         .btn-dark { background: var(--dark); color: var(--white); }
-        .btn-outline { background: var(--white); color: var(--dark); border: 1px solid var(--border); }
+        .btn-full { width: 100%; }
 
-        .photo-section-card { border: 1.5px dashed #94a3b8; border-radius: 12px; padding: 12px; background: #f8fafc; margin-bottom: 12px; }
-        .photo-section-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-        .photo-section-title { font-size: 12px; font-weight: 800; color: var(--dark); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-        .btn-cam-mini { background: var(--primary-light); color: white; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-gal-mini { background: var(--white); color: var(--dark); border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        /* Vehicle List Items */
+        .vehicle-list { display: flex; flex-direction: column; gap: 10px; max-height: 520px; overflow-y: auto; padding-right: 4px; }
+        .vehicle-item {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+            display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .vehicle-item:hover { border-color: var(--primary-light); background: var(--primary-bg); }
+        .vehicle-item.selected-item { border: 2px solid var(--primary); background: var(--primary-bg); }
+        .v-info h4 { font-family: monospace; font-size: 15px; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+        .v-info p { font-size: 12px; color: var(--slate); margin-top: 3px; font-weight: 500; }
 
-        .multi-photo-grid { display: flex; flex-wrap: wrap; gap: 8px; min-height: 42px; align-items: center; }
-        .empty-photo-hint { font-size: 11px; color: #64748b; font-style: italic; }
-        .thumb-wrapper { position: relative; width: 72px; height: 72px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #fff; cursor: pointer; }
-        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .thumb-remove { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%; background: rgba(220,38,38,0.9); color: white; border: none; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        .badge { display: inline-block; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        /* Badges */
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
         .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
         .badge-ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
         .badge-hold { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
         .badge-conf { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
         .badge-out { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
-        .vehicle-list { display: flex; flex-direction: column; gap: 10px; }
-        .vehicle-item { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; background: var(--white); display: flex; justify-content: space-between; align-items: center; gap: 10px; transition: 0.15s; }
-        .vehicle-item.selected-item { border-color: var(--primary-light); background: #eff6ff; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
-        .v-info { flex: 1; cursor: pointer; }
-        .v-info h4 { font-family: monospace; font-size: 15px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .v-info p { font-size: 12px; color: var(--slate); margin-top: 3px; }
+        /* Photo Grids & Uploads */
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 10px; }
+        .thumb-wrapper { position: relative; width: 100%; height: 90px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-remove { position: absolute; top: 4px; right: 4px; background: rgba(220,38,38,0.9); color: white; border: none; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .empty-photo-hint { font-size: 12px; color: var(--slate); font-style: italic; padding: 8px 0; }
 
-        .selected-banner { background: #ecfdf5; border: 2px solid var(--success); border-radius: 12px; padding: 12px; margin-bottom: 14px; display: none; }
-        .alert-box { padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 12px; display: none; }
-        .alert-error { background: var(--danger-bg); color: var(--danger); border: 1px solid #fca5a5; }
-        .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #6ee7b7; }
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; }
+        .modal-card { background: var(--card-bg); width: 100%; max-width: 600px; border-radius: 20px; padding: 24px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); border: 1px solid var(--border); animation: slideUp 0.3s ease; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.7); z-index: 200; display: none; align-items: center; justify-content: center; padding: 14px; }
-        .modal-card { background: var(--white); width: 100%; max-width: 650px; border-radius: 16px; padding: 18px; max-height: 90vh; overflow-y: auto; }
+        /* Report Grids */
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 14px; }
+        .report-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+        .report-box:hover { border-color: var(--primary); background: var(--primary-bg); }
+        .report-box.active-rep { border: 2px solid var(--primary); background: var(--primary-bg); }
+        .report-box-lbl { font-size: 10px; font-weight: 700; color: var(--slate); text-transform: uppercase; margin-bottom: 4px; }
+        .report-box-val { font-size: 20px; font-weight: 800; color: var(--dark); }
 
-        .report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-        @media(min-width: 550px) { .report-grid { grid-template-columns: repeat(3, 1fr); } }
-        .report-box { background: var(--white); border: 2px solid #bfdbfe; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; }
-        .report-box.active-rep { background: var(--primary-bg); border-color: var(--primary-light); }
-        .report-box-val { font-size: 20px; font-weight: 800; color: var(--primary); margin-top: 2px; }
-        .report-box-lbl { font-size: 11px; font-weight: 800; color: var(--slate); text-transform: uppercase; }
-
-        .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; margin-bottom: 12px; }
-        .filter-bar input, .filter-bar select { flex: 1; min-width: 120px; padding: 8px 10px; font-size: 12px; }
+        .alert-box { padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; margin-bottom: 14px; display: none; }
+        .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
+        .alert-error { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
     </style>
 </head>
 <body>
 
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- App Header -->
     <header class="app-header">
         <div class="brand-box">
-            <div class="brand-icon"><i class="fa-solid fa-warehouse"></i></div>
+            <div class="brand-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
             <div>
-                <div class="brand-title">LUXON TATA YMS</div>
-                <div class="brand-sub" id="sync-status-text">Live Google Sheet &amp; Cloud PDF Sync</div>
+                <div class="brand-title">Luxon TATA YMS</div>
+                <div class="brand-sub" id="sync-status-text">Connected to Cloud Sync</div>
             </div>
         </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px; background:rgba(255,255,255,0.15); color:white; border:none;" onclick="syncWithGoogleSheet(false)">
-                <i class="fa-solid fa-rotate" id="sync-icon"></i> Sync
-            </button>
+        <div class="header-actions">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
+            <button class="btn btn-outline" style="padding: 8px 12px; font-size: 12px;" onclick="syncWithGoogleSheet(false)" title="Sync Sheet Now"><i class="fa-solid fa-rotate" id="sync-icon"></i> Sync</button>
             <div class="menu-container">
                 <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
                 <div class="menu-dropdown" id="app-menu-dropdown">
-                    <div class="menu-item" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Reports</div>
-                    <div class="menu-item" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Reports</div>
-                    <div class="menu-item" onclick="openReportsModal('hold')"><i class="fa-solid fa-triangle-exclamation"></i> Hold Report</div>
+                    <div class="menu-item" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Report</div>
+                    <div class="menu-item" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Summary</div>
+                    <div class="menu-item" onclick="openReportsModal('hold')"><i class="fa-solid fa-triangle-exclamation"></i> On Hold Vehicles</div>
                     <div class="menu-item" onclick="openReportsModal('review')"><i class="fa-solid fa-clock-rotate-left"></i> Hold Review Pending</div>
-                    <div class="menu-item" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> Settings</div>
+                    <div class="menu-item" onclick="addNewLocationPrompt()"><i class="fa-solid fa-location-plus"></i> Add New Location</div>
+                    <div class="menu-item" onclick="addNewInspectorPrompt()"><i class="fa-solid fa-user-plus"></i> Add Technician</div>
+                    <div class="menu-item" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> System Settings</div>
                 </div>
             </div>
         </div>
     </header>
 
-    <nav class="nav-tabs">
-        <button class="tab-btn active" id="tabbtn-dashboard" onclick="openModule('dashboard', true)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
-        <button class="tab-btn" id="tabbtn-inward" onclick="openModule('inward')"><i class="fa-solid fa-barcode"></i> 1. Inward</button>
-        <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> 2. PDI Checking</button>
-        <button class="tab-btn" id="tabbtn-operations" onclick="openModule('operations')"><i class="fa-solid fa-truck-arrow-right"></i> 3. Operations</button>
-    </nav>
+    <!-- App Layout Container -->
+    <div class="app-layout">
+        <!-- Desktop Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-section-title">Navigation</div>
+            <a class="sidebar-link active" id="sidebar-dashboard" onclick="openModule('dashboard', true)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a class="sidebar-link" id="sidebar-inward" onclick="openModule('inward')"><i class="fa-solid fa-truck-arrow-right"></i> Vehicle Inward</a>
+            <a class="sidebar-link" id="sidebar-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> PDI Inspection</a>
+            <a class="sidebar-link" id="sidebar-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrows-split-up-and-left"></i> Operations &amp; Outward</a>
 
-    <div class="container">
-        <!-- DASHBOARD -->
-        <section id="mod-dashboard" class="module-section active">
-            <div class="stats-grid">
-                <div class="stat-card" id="card-Physical" onclick="filterDashboardList('Physical')">
-                    <div class="stat-label">Physical Stock</div>
-                    <div class="stat-val" id="count-physical" style="color: var(--primary);">0</div>
-                </div>
-                <div class="stat-card" id="card-PendingPDI" onclick="filterDashboardList('Pending PDI')">
-                    <div class="stat-label">Pending PDI</div>
-                    <div class="stat-val" id="count-pending" style="color: var(--warning);">0</div>
-                </div>
-                <div class="stat-card" id="card-PDIOK" onclick="filterDashboardList('PDI OK')">
-                    <div class="stat-label">PDI Done</div>
-                    <div class="stat-val" id="count-pdiok" style="color: var(--success);">0</div>
-                </div>
-                <div class="stat-card" id="card-HOLD" onclick="filterDashboardList('HOLD')">
-                    <div class="stat-label">On Hold</div>
-                    <div class="stat-val" id="count-hold" style="color: var(--danger);">0</div>
-                </div>
-                <div class="stat-card" id="card-Display" onclick="filterDashboardList('Display')">
-                    <div class="stat-label">Display Cars</div>
-                    <div class="stat-val" id="count-display" style="color: #9333ea;">0</div>
-                </div>
-                <div class="stat-card" id="card-Aging" onclick="filterDashboardList('Aging')">
-                    <div class="stat-label">Aging &gt;90 Days</div>
-                    <div class="stat-val" id="count-aging" style="color: #ca8a04;">0</div>
-                </div>
-                <div class="stat-card" id="card-ReviewPending" onclick="filterDashboardList('ReviewPending')">
-                    <div class="stat-label">Hold Review Pending</div>
-                    <div class="stat-val" id="count-review" style="color: #0284c7;">0</div>
-                </div>
-            </div>
+            <div class="sidebar-section-title">Quick Reports</div>
+            <a class="sidebar-link" onclick="openReportsModal('daily')"><i class="fa-solid fa-calendar-day"></i> Daily Operations</a>
+            <a class="sidebar-link" onclick="openReportsModal('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Summary</a>
+            <a class="sidebar-link" onclick="openReportsModal('hold')"><i class="fa-solid fa-triangle-exclamation"></i> On Hold Stock</a>
 
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fa-solid fa-list-ul"></i> 
-                        <span id="dash-list-title">All Vehicles (Master Google Sheet Stock)</span>
+            <div class="sidebar-section-title">System</div>
+            <a class="sidebar-link" onclick="openSettingsModal()"><i class="fa-solid fa-gear"></i> Bot &amp; Sheet Settings</a>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs">
+                <button class="tab-btn active" id="tabbtn-dashboard" onclick="openModule('dashboard', true)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+                <button class="tab-btn" id="tabbtn-inward" onclick="openModule('inward')"><i class="fa-solid fa-truck-arrow-right"></i> 1. Inward</button>
+                <button class="tab-btn" id="tabbtn-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> 2. PDI Checking</button>
+                <button class="tab-btn" id="tabbtn-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrows-split-up-and-left"></i> 3. Operations</button>
+            </nav>
+
+            <!-- MODULE 1: DASHBOARD -->
+            <section id="mod-dashboard" class="module-section active">
+                <div class="stats-grid">
+                    <div class="stat-card" id="card-Physical" onclick="filterDashboardList('Physical')">
+                        <div class="stat-label">Physical Stock</div>
+                        <div class="stat-val" id="count-physical">0</div>
                     </div>
-                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                        <button class="btn btn-outline" id="btn-show-all" style="padding:6px 10px; font-size:11px; display:none;" onclick="filterDashboardList('ALL')">
-                            <i class="fa-solid fa-layer-group"></i> Show All Sheet Stock
-                        </button>
-                        <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
-                        <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('pdf')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-                        <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('image')"><i class="fa-solid fa-image"></i> Image</button>
+                    <div class="stat-card" id="card-PendingPDI" onclick="filterDashboardList('Pending PDI')">
+                        <div class="stat-label">Pending PDI</div>
+                        <div class="stat-val" id="count-pending" style="color: var(--warning);">0</div>
                     </div>
-                </div>
-
-                <div class="filter-bar">
-                    <input type="text" id="dash-search" placeholder="Search Chassis or Model..." oninput="renderDashboard()">
-                    <select id="dash-loc-filter" onchange="renderDashboard()">
-                        <option value="">All Locations</option>
-                    </select>
-                    <select id="dash-model-filter" onchange="renderDashboard()">
-                        <option value="">All Models</option>
-                    </select>
-                </div>
-
-                <div id="dash-vehicle-list" class="vehicle-list"></div>
-            </div>
-        </section>
-
-        <!-- 1. INWARD -->
-        <section id="mod-inward" class="module-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-barcode"></i> Vehicle Inward</div>
-                </div>
-
-                <div class="scanner-container">
-                    <div id="inward-camera-reader" class="camera-viewport"></div>
-                    <i class="fa-solid fa-qrcode" style="font-size:24px; color:var(--primary-light); margin-bottom:4px;"></i>
-                    <h4 style="font-size:13px;">Scan Barcode Sticker</h4>
-                    <div class="scanner-btn-group">
-                        <button type="button" class="btn btn-primary" onclick="toggleCameraScanner('inward')"><i class="fa-solid fa-camera"></i> Live Scan</button>
-                        <label class="btn btn-dark" style="margin:0; text-transform:none;"><i class="fa-solid fa-image"></i> Scan from Photo<input type="file" accept="image/*" style="display:none;" onchange="scanBarcodeFromFile(event, 'inward')"></label>
+                    <div class="stat-card" id="card-PDIOK" onclick="filterDashboardList('PDI OK')">
+                        <div class="stat-label">PDI Done (OK)</div>
+                        <div class="stat-val" id="count-pdiok" style="color: var(--success);">0</div>
+                    </div>
+                    <div class="stat-card" id="card-HOLD" onclick="filterDashboardList('HOLD')">
+                        <div class="stat-label">PDI Hold</div>
+                        <div class="stat-val" id="count-hold" style="color: var(--danger);">0</div>
+                    </div>
+                    <div class="stat-card" id="card-Display" onclick="filterDashboardList('Display')">
+                        <div class="stat-label">Display Cars</div>
+                        <div class="stat-val" id="count-display" style="color: #0284c7;">0</div>
+                    </div>
+                    <div class="stat-card" id="card-Aging" onclick="filterDashboardList('Aging')">
+                        <div class="stat-label">Aging (>90 Days)</div>
+                        <div class="stat-val" id="count-aging" style="color: #9333ea;">0</div>
+                    </div>
+                    <div class="stat-card" id="card-ReviewPending" onclick="filterDashboardList('ReviewPending')">
+                        <div class="stat-label">Hold Review Pending</div>
+                        <div class="stat-val" id="count-review" style="color: #0284c7;">0</div>
                     </div>
                 </div>
 
-                <div id="inward-status-alert" class="alert-box"></div>
-
-                <div class="form-group">
-                    <label>Chassis Number / VIN *</label>
-                    <div style="display:flex; gap:6px;">
-                        <input type="text" id="in-chassis" class="mono-input" placeholder="Scan or type chassis number..." oninput="saveDraft(); onInwardChassisInput();">
-                        <button type="button" class="btn btn-outline" onclick="generateBarcode('inward')" title="Generate Barcode"><i class="fa-solid fa-barcode"></i></button>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fa-solid fa-list-ul"></i> 
+                            <span id="dash-list-title">All Vehicles (Master Google Sheet Stock)</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn btn-outline" id="btn-show-all" style="padding:6px 10px; font-size:11px; display:none;" onclick="filterDashboardList('ALL')">
+                                <i class="fa-solid fa-layer-group"></i> Show All Sheet Stock
+                            </button>
+                            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('csv')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('pdf')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            <button class="btn btn-outline" style="padding:6px 10px; font-size:11px;" onclick="downloadCurrentDashboardList('image')"><i class="fa-solid fa-image"></i> Image</button>
+                        </div>
                     </div>
-                </div>
 
-                <div id="inward-barcode-box" style="display:none; text-align:center; background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:12px;">
-                    <svg id="inward-barcode-svg"></svg>
-                    <div><button class="btn btn-primary" style="font-size:11px; padding:4px 8px; margin-top:6px;" onclick="downloadBarcode('inward-barcode-svg', document.getElementById('in-chassis').value)">Download Barcode</button></div>
-                </div>
+                    <div class="filter-bar">
+                        <input type="text" id="dash-search" placeholder="Search Chassis, Model or Location..." oninput="renderDashboard()">
+                        <select id="dash-loc-filter" onchange="renderDashboard()">
+                            <option value="">All Locations</option>
+                        </select>
+                        <select id="dash-model-filter" onchange="renderDashboard()">
+                            <option value="">All Models</option>
+                        </select>
+                    </div>
 
-                <div class="form-row">
-                    <div>
+                    <div id="dash-vehicle-list" class="vehicle-list"></div>
+                </div>
+            </section>
+
+            <!-- MODULE 2: VEHICLE INWARD -->
+            <section id="mod-inward" class="module-section">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> New Vehicle Inward &amp; Barcode Scan</div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="toggleCameraScanner('inward')"><i class="fa-solid fa-camera"></i> Scan VIN / Barcode</button>
+                        <label class="btn btn-outline" style="flex:1; cursor:pointer; margin:0;">
+                            <i class="fa-solid fa-file-image"></i> Upload Barcode Image <input type="file" accept="image/*" style="display:none;" onchange="scanBarcodeFromFile(event, 'inward')">
+                        </label>
+                    </div>
+
+                    <div id="inward-camera-reader" style="width:100%; max-width:400px; margin:0 auto 14px; display:none; border-radius:12px; overflow:hidden;"></div>
+                    <div id="inward-status-alert" class="alert-box"></div>
+
+                    <div class="form-group">
+                        <label>VIN / Chassis Number *</label>
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" id="in-chassis" placeholder="e.g. MAT1234567890ABCD" oninput="saveDraft(); onInwardChassisInput()" style="text-transform:uppercase; font-family:monospace;">
+                            <button type="button" class="btn btn-dark" onclick="generateBarcode('inward')" title="Generate Barcode"><i class="fa-solid fa-barcode"></i></button>
+                        </div>
+                    </div>
+
+                    <div id="inward-barcode-box" style="text-align:center; margin-bottom:14px; display:none; background:#fff; padding:10px; border-radius:10px; border:1px solid var(--border);">
+                        <svg id="inward-barcode-svg"></svg>
+                        <div><button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11px; margin-top:6px;" onclick="downloadBarcode('inward-barcode-svg', document.getElementById('in-chassis').value)"><i class="fa-solid fa-download"></i> Download Barcode PNG</button></div>
+                    </div>
+
+                    <div class="form-group">
                         <label>Vehicle Model *</label>
-                        <input type="text" id="in-model" list="tata-models-list" placeholder="Enter vehicle name (e.g. Tata Punch)" oninput="saveDraft()">
+                        <input type="text" id="in-model" placeholder="e.g. Nexon EV Empowered Plus" list="tata-models-list" oninput="saveDraft()">
                         <datalist id="tata-models-list">
-                            <option value="Tata Punch"><option value="Tata Punch.ev"><option value="Tata Nexon"><option value="Tata Nexon.ev"><option value="Tata Curvv"><option value="Tata Curvv.ev"><option value="Tata Tiago"><option value="Tata Tiago.ev"><option value="Tata Tigor"><option value="Tata Altroz"><option value="Tata Harrier"><option value="Tata Safari">
+                            <option value="Nexon EV Empowered Plus">
+                            <option value="Punch Creative AMT">
+                            <option value="Harrier Fearless Plus">
+                            <option value="Safari Accomplished Plus">
+                            <option value="Tiago XZ+">
+                            <option value="Tigor XZ+">
+                            <option value="Punch EV Empowered">
+                            <option value="Nexon Creative Diesel">
                         </datalist>
                     </div>
-                    <div>
-                        <label>Yard Location *</label>
+
+                    <div class="form-group">
+                        <label>Yard / Display Location *</label>
                         <div style="display:flex; gap:6px;">
-                            <select id="in-location" onchange="saveDraft()" style="flex:1;"></select>
-                            <button type="button" class="btn btn-outline" onclick="addNewLocationPrompt()" title="Add New Location">+</button>
-                            <button type="button" class="btn btn-danger" onclick="removeSelectedLocation('in-location')" title="Remove Selected Location">-</button>
+                            <select id="in-location" style="flex:1;" onchange="saveDraft()"></select>
+                            <button type="button" class="btn btn-outline" onclick="removeSelectedLocation('in-location')" title="Remove Selected Location"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
-                </div>
 
-                <div class="photo-section-card">
-                    <div class="photo-section-header">
-                        <div class="photo-section-title"><i class="fa-solid fa-camera"></i> Inward Photos (Uploaded as PDF to Telegram Cloud)</div>
-                        <div class="photo-action-btns">
-                            <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'inward')"></label>
-                            <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'inward')"></label>
+                    <div class="form-group">
+                        <label>Inward Photos (Optional)</label>
+                        <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'inward')">
+                        <div id="grid-inward" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-full" id="btn-submit-inward" onclick="submitInward()"><i class="fa-solid fa-check"></i> Complete Inward</button>
+                </div>
+            </section>
+
+            <!-- MODULE 3: PDI CHECKING -->
+            <section id="mod-pdi" class="module-section">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> Pre-Delivery Inspection (PDI) Checking</div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="toggleCameraScanner('pdi')"><i class="fa-solid fa-camera"></i> Scan Chassis</button>
+                        <label class="btn btn-outline" style="flex:1; cursor:pointer; margin:0;">
+                            <i class="fa-solid fa-file-image"></i> Scan Barcode Image <input type="file" accept="image/*" style="display:none;" onchange="scanBarcodeFromFile(event, 'pdi')">
+                        </label>
+                    </div>
+
+                    <div id="pdi-camera-reader" style="width:100%; max-width:400px; margin:0 auto 12px; display:none; border-radius:12px; overflow:hidden;"></div>
+
+                    <div class="filter-bar">
+                        <input type="text" id="pdi-search-input" placeholder="Search Chassis or Model..." oninput="populatePdiMasterList()">
+                        <select id="pdi-dropdown-select" onchange="selectPdiByChassis(this.value)">
+                            <option value="">-- Select Vehicle from Dropdown --</option>
+                        </select>
+                    </div>
+
+                    <label style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; display:block; text-transform:uppercase;">Physical Stock Vehicles (Tap to Inspect):</label>
+                    <div id="pdi-master-list" class="vehicle-list" style="max-height:220px; margin-bottom:16px;"></div>
+
+                    <!-- SELECTED VEHICLE PDI FORM -->
+                    <div id="pdi-banner" style="display:none; background:var(--primary-bg); border:1.5px solid var(--primary); padding:16px; border-radius:12px; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <h3 id="pdi-b-chassis" style="font-family:monospace; color:var(--primary); font-size:18px; font-weight:800;"></h3>
+                                <p id="pdi-b-model" style="font-size:12px; color:var(--dark); margin-top:2px; font-weight:600;"></p>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button type="button" class="btn btn-dark" style="padding:5px 10px; font-size:11px;" onclick="generateBarcode('pdi')"><i class="fa-solid fa-barcode"></i> Barcode</button>
+                                <button type="button" class="btn btn-outline" style="padding:5px 10px; font-size:11px;" onclick="clearPdiSelection()">✕ Close</button>
+                            </div>
+                        </div>
+
+                        <div id="pdi-barcode-box" style="text-align:center; margin-top:10px; display:none; background:#fff; padding:10px; border-radius:8px;">
+                            <svg id="pdi-barcode-svg"></svg>
+                            <div><button type="button" class="btn btn-outline" style="padding:3px 8px; font-size:10px; margin-top:4px;" onclick="downloadBarcode('pdi-barcode-svg', currentPdiChassis)"><i class="fa-solid fa-download"></i> Download Barcode PNG</button></div>
                         </div>
                     </div>
-                    <div class="multi-photo-grid" id="grid-inward"><span class="empty-photo-hint">Photos taken here are sent as a PDF to Telegram &amp; linked to this vehicle in Dashboard.</span></div>
-                </div>
 
-                <button type="button" class="btn btn-primary btn-full" id="btn-submit-inward" onclick="submitInward()"><i class="fa-solid fa-check"></i> Complete Inward</button>
-            </div>
-        </section>
-
-        <!-- 2. PDI CHECKING -->
-        <section id="mod-pdi" class="module-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> PDI Checking</div>
-                </div>
-
-                <div class="scanner-container" style="padding:10px;">
-                    <div id="pdi-camera-reader" class="camera-viewport"></div>
-                    <div style="display:flex; gap:6px; align-items:center; margin-bottom:8px;">
-                        <input type="text" id="pdi-search-input" placeholder="Search chassis or model..." oninput="populatePdiMasterList()" style="flex:1;">
-                        <button type="button" class="btn btn-primary" onclick="toggleCameraScanner('pdi')"><i class="fa-solid fa-barcode"></i> Scan</button>
-                    </div>
-                    <select id="pdi-dropdown-select" onchange="selectPdiByChassis(this.value)">
-                        <option value="">-- Tap Here or Click Below to Select Vehicle --</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Tap a Vehicle Below to Select for PDI Checking:</label>
-                    <div id="pdi-master-list" class="vehicle-list" style="max-height:220px; overflow-y:auto; padding:4px;"></div>
-                </div>
-
-                <!-- SELECTED PDI VEHICLE BANNER -->
-                <div id="pdi-banner" class="selected-banner">
-                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                        <div>
-                            <div style="font-size:11px; font-weight:800; color:var(--success); text-transform:uppercase;">✓ Selected for PDI Checking</div>
-                            <div id="pdi-b-chassis" style="font-family:monospace; font-size:17px; font-weight:800; color:var(--dark);"></div>
-                            <div id="pdi-b-model" style="font-size:13px; font-weight:700; color:var(--slate);"></div>
+                    <div id="pdi-form-area">
+                        <div class="form-group">
+                            <label>Odometer Reading (km) *</label>
+                            <input type="number" id="pdi-speed" placeholder="e.g. 18" oninput="saveDraft()">
                         </div>
-                        <div style="display:flex; gap:6px;">
-                            <button type="button" class="btn btn-outline" style="font-size:11px; padding:6px 10px;" onclick="generateBarcode('pdi')"><i class="fa-solid fa-barcode"></i> Barcode</button>
-                            <button type="button" class="btn btn-outline" style="font-size:11px; padding:6px 10px;" onclick="openVehicleDetailsModal(currentPdiChassis)"><i class="fa-solid fa-file-pdf"></i> Details / PDF</button>
-                        </div>
-                    </div>
-                    <div id="pdi-barcode-box" style="margin-top:8px; display:none; text-align:center; background:#fff; padding:8px; border-radius:8px;"><svg id="pdi-barcode-svg"></svg></div>
-                </div>
 
-                <div id="pdi-form-area">
-                    <div class="form-row">
-                        <div>
-                            <label>Odometer Reading *</label>
-                            <input type="text" id="pdi-speed" placeholder="Enter odometer reading (km)" oninput="saveDraft()">
-                        </div>
-                        <div>
+                        <div class="form-group">
                             <label>Inspector / Technician Name *</label>
                             <div style="display:flex; gap:6px;">
-                                <select id="pdi-inspector-sel" onchange="saveDraft()" style="flex:1;"></select>
-                                <button type="button" class="btn btn-outline" onclick="addNewInspectorPrompt()" title="Add Technician">+</button>
-                                <button type="button" class="btn btn-danger" onclick="removeSelectedInspector('pdi-inspector-sel')" title="Remove Selected Technician">-</button>
+                                <select id="pdi-inspector-sel" style="flex:1;"></select>
+                                <button type="button" class="btn btn-outline" onclick="removeSelectedInspector('pdi-inspector-sel')" title="Remove Technician"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 1. Vehicle Photos -->
-                    <div class="photo-section-card">
-                        <div class="photo-section-header">
-                            <div class="photo-section-title"><i class="fa-solid fa-car"></i> 1. Vehicle Photos</div>
-                            <div class="photo-action-btns">
-                                <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
-                                <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_vehicle')"></label>
-                            </div>
+                        <!-- 5 PHOTO BUCKETS -->
+                        <div class="form-group">
+                            <label>1. PDI Check Sheet Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_checksheet')">
+                            <div id="grid-pdi_checksheet" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
                         </div>
-                        <div class="multi-photo-grid" id="grid-pdi_vehicle"><span class="empty-photo-hint">No photos added.</span></div>
-                    </div>
 
-                    <!-- 2. PDI Check Sheet Photos -->
-                    <div class="photo-section-card">
-                        <div class="photo-section-header">
-                            <div class="photo-section-title"><i class="fa-solid fa-file-lines"></i> 2. PDI Check Sheet Photos</div>
-                            <div class="photo-action-btns">
-                                <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_checksheet')"></label>
-                                <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_checksheet')"></label>
-                            </div>
+                        <div class="form-group">
+                            <label>2. Chassis Stencil / Print Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_chassis')">
+                            <div id="grid-pdi_chassis" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
                         </div>
-                        <div class="multi-photo-grid" id="grid-pdi_checksheet"><span class="empty-photo-hint">No check sheet photos added.</span></div>
-                    </div>
 
-                    <!-- 3. Chassis Stencil / Print -->
-                    <div class="photo-section-card">
-                        <div class="photo-section-header">
-                            <div class="photo-section-title"><i class="fa-solid fa-hashtag"></i> 3. Chassis Stencil / Print</div>
-                            <div class="photo-action-btns">
-                                <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
-                                <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_chassis')"></label>
-                            </div>
+                        <div class="form-group">
+                            <label>3. Form 22 / Documents Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_form22')">
+                            <div id="grid-pdi_form22" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
                         </div>
-                        <div class="multi-photo-grid" id="grid-pdi_chassis"><span class="empty-photo-hint">No chassis stencil photos added.</span></div>
-                    </div>
 
-                    <!-- 4. Form 22 -->
-                    <div class="photo-section-card">
-                        <div class="photo-section-header">
-                            <div class="photo-section-title"><i class="fa-solid fa-file-contract"></i> 4. Form 22</div>
-                            <div class="photo-action-btns">
-                                <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form22')"></label>
-                                <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_form22')"></label>
-                            </div>
+                        <div class="form-group">
+                            <label>4. Battery Voltage / Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_battery')">
+                            <div id="grid-pdi_battery" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
                         </div>
-                        <div class="multi-photo-grid" id="grid-pdi_form22"><span class="empty-photo-hint">No Form 22 photos added.</span></div>
-                    </div>
 
-                    <!-- 5. Battery Photo -->
-                    <div class="photo-section-card">
-                        <div class="photo-section-header">
-                            <div class="photo-section-title"><i class="fa-solid fa-car-battery"></i> 5. Battery Photo</div>
-                            <div class="photo-action-btns">
-                                <label class="btn-cam-mini"><i class="fa-solid fa-camera"></i> Camera<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
-                                <label class="btn-gal-mini"><i class="fa-solid fa-images"></i> Gallery<input type="file" accept="image/*" multiple style="display:none;" onchange="handleMultiPhoto(event, 'pdi_battery')"></label>
-                            </div>
+                        <div class="form-group">
+                            <label>5. Vehicle All-Round Photos</label>
+                            <input type="file" accept="image/*" multiple onchange="handleMultiPhoto(event, 'pdi_vehicle')">
+                            <div id="grid-pdi_vehicle" class="photo-grid"><span class="empty-photo-hint">No photos added.</span></div>
                         </div>
-                        <div class="multi-photo-grid" id="grid-pdi_battery"><span class="empty-photo-hint">No battery photos added.</span></div>
-                    </div>
 
-                    <div class="form-row">
-                        <div>
-                            <label>PDI Status *</label>
-                            <select id="pdi-decision" onchange="toggleHoldUI(); saveDraft();">
-                                <option value="PDI OK">PDI OK</option>
-                                <option value="HOLD">PDI Hold</option>
+                        <div class="form-group">
+                            <label>PDI Decision Status *</label>
+                            <select id="pdi-decision" onchange="saveDraft(); toggleHoldUI()">
+                                <option value="PDI OK">PDI OK (Approved)</option>
+                                <option value="HOLD">PDI Hold (Defect / Issue)</option>
                                 <option value="REVIEW_PENDING">Send to Review (Hold Review Pending)</option>
                             </select>
                         </div>
-                        <div id="pdi-remarks-box" style="display:none;">
-                            <label>Remarks / Hold Reason *</label>
-                            <input type="text" id="pdi-remarks" placeholder="Enter issue / reason for Hold or Review..." oninput="saveDraft()">
-                        </div>
-                    </div>
 
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button type="button" class="btn btn-outline" style="flex:1;" onclick="clearPdiSelection()"><i class="fa-solid fa-xmark"></i> Clear</button>
-                        <button type="button" class="btn btn-success" id="btn-submit-pdi" style="flex:2;" onclick="submitPdiAndShare()"><i class="fa-solid fa-paper-plane"></i> Submit PDI &amp; Sync PDF to Cloud</button>
+                        <div class="form-group" id="pdi-remarks-box" style="display:none;">
+                            <label style="color:var(--danger);">Hold Reason / Remarks (Mandatory for Hold/Review)</label>
+                            <textarea id="pdi-remarks" rows="3" placeholder="Specify reason for hold or review..." oninput="saveDraft()"></textarea>
+                        </div>
+
+                        <button type="button" class="btn btn-success btn-full" id="btn-submit-pdi" onclick="submitPdiAndShare()"><i class="fa-solid fa-paper-plane"></i> Submit PDI &amp; Sync PDF to Cloud</button>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- 3. OPERATIONS -->
-        <section id="mod-operations" class="module-section">
-            <div class="card">
-                <div class="card-header"><div class="card-title"><i class="fa-solid fa-truck-arrow-right"></i> Operations (Location, Delivery &amp; Stock Transfer)</div></div>
-                
-                <div class="scanner-container" style="padding:10px;">
-                    <div id="op-camera-reader" class="camera-viewport"></div>
-                    <div style="display:flex; gap:6px; margin-bottom:8px;">
-                        <input type="text" id="op-search" placeholder="Search physical stock chassis or model..." oninput="renderOperationsList()" style="flex:1;">
-                        <button type="button" class="btn btn-primary" onclick="toggleCameraScanner('op')"><i class="fa-solid fa-barcode"></i> Scan</button>
-                    </div>
-                    <select id="op-dropdown-select" onchange="openOpEd(this.value)">
-                        <option value="">-- Tap Here or Click Below to Select Physical Stock Vehicle --</option>
-                    </select>
-                </div>
-
-                <!-- SELECTED OPERATIONS EDITOR -->
-                <div id="op-editor" class="selected-banner" style="background:#eff6ff; border-color:var(--primary-light);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <div>
-                            <div style="font-size:11px; font-weight:800; color:var(--primary); text-transform:uppercase;">✓ Selected Vehicle for Operation</div>
-                            <div id="op-ed-chassis" style="font-family:monospace; font-size:17px; font-weight:800; color:var(--dark);"></div>
-                            <div id="op-ed-sub" style="font-size:12px; font-weight:700; color:var(--slate);"></div>
-                        </div>
-                        <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="document.getElementById('op-editor').style.display='none'; currentOpChassis=''; renderOperationsList();">✕ Close</button>
+            <!-- MODULE 4: OPERATIONS & OUTWARD -->
+            <section id="mod-operations" class="module-section">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-arrows-split-up-and-left"></i> Yard Operations, Stock Transfer &amp; Delivery Outward</div>
                     </div>
 
-                    <div class="form-row">
-                        <div>
-                            <label>Operation Type *</label>
-                            <select id="op-action-type" onchange="toggleOpActionUI()">
-                                <option value="LOCATION">Vehicle Current Location (Change Yard/Display)</option>
-                                <option value="DISPATCH">Final Check for Delivery (Outward)</option>
-                                <option value="TRANSFER">Stock Transfer (Regional)</option>
-                            </select>
-                        </div>
-                        <div id="op-loc-box">
-                            <label>Vehicle Current Location *</label>
-                            <div style="display:flex; gap:6px;">
-                                <select id="op-ed-newloc" style="flex:1;"></select>
-                                <button type="button" class="btn btn-outline" onclick="addNewLocationPrompt()" title="Add Location">+</button>
-                                <button type="button" class="btn btn-danger" onclick="removeSelectedLocation('op-ed-newloc')" title="Remove Selected Location">-</button>
+                    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="toggleCameraScanner('op')"><i class="fa-solid fa-camera"></i> Scan Chassis</button>
+                        <label class="btn btn-outline" style="flex:1; cursor:pointer; margin:0;">
+                            <i class="fa-solid fa-file-image"></i> Scan Barcode Image <input type="file" accept="image/*" style="display:none;" onchange="scanBarcodeFromFile(event, 'op')">
+                        </label>
+                    </div>
+
+                    <div id="op-camera-reader" style="width:100%; max-width:400px; margin:0 auto 12px; display:none; border-radius:12px; overflow:hidden;"></div>
+
+                    <div class="filter-bar">
+                        <input type="text" id="op-search" placeholder="Search Chassis or Model..." oninput="renderOperationsList()">
+                        <select id="op-dropdown-select" onchange="openOpEd(this.value)">
+                            <option value="">-- Select Physical Stock Vehicle --</option>
+                        </select>
+                    </div>
+
+                    <!-- OPERATION EDITOR BOX -->
+                    <div id="op-editor" style="display:none; background:var(--primary-bg); border:1.5px solid var(--primary); padding:16px; border-radius:12px; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div>
+                                <h3 id="op-ed-chassis" style="font-family:monospace; color:var(--primary); font-size:18px;"></h3>
+                                <p id="op-ed-sub" style="font-size:12px; color:var(--slate); margin-top:2px;"></p>
                             </div>
+                            <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="currentOpChassis=''; document.getElementById('op-editor').style.display='none'; renderOperationsList();">✕ Close</button>
                         </div>
-                        <div id="op-dest-box" style="display:none;">
-                            <label>Delivery Showroom / Location *</label>
-                            <select id="op-ed-dest">
-                                <option value="Malappuram">Malappuram</option>
-                                <option value="Kottakkal">Kottakkal</option>
-                                <option value="Edappal">Edappal</option>
-                                <option value="Changanakkulam">Changanakkulam</option>
-                                <option value="Kondotty">Kondotty</option>
-                                <option value="Areekode">Areekode</option>
+
+                        <div class="form-group">
+                            <label>Select Operation Type *</label>
+                            <select id="op-action-type" onchange="toggleOpActionUI()">
+                                <option value="LOCATION">Internal Yard / Display Location Change</option>
+                                <option value="DISPATCH">Delivery Dispatch (Outward to Showroom)</option>
+                                <option value="TRANSFER">Regional Stock Transfer</option>
                             </select>
                         </div>
-                        <div id="op-region-box" style="display:none;">
-                            <label>Stock Transfer Destination *</label>
+
+                        <div class="form-group" id="op-loc-box">
+                            <label>New Yard / Display Location *</label>
+                            <select id="op-ed-newloc"></select>
+                        </div>
+
+                        <div class="form-group" id="op-dest-box" style="display:none;">
+                            <label>Delivery Showroom Destination *</label>
+                            <select id="op-ed-dest">
+                                <option value="Malappuram Showroom">Malappuram Showroom</option>
+                                <option value="Kottakkal Showroom">Kottakkal Showroom</option>
+                                <option value="Edappal Showroom">Edappal Showroom</option>
+                                <option value="Changanakkulam Showroom">Changanakkulam Showroom</option>
+                                <option value="Kondotty Showroom">Kondotty Showroom</option>
+                                <option value="Areekode Showroom">Areekode Showroom</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="op-region-box" style="display:none;">
+                            <label>Stock Transfer Region / Hub *</label>
                             <select id="op-ed-region">
-                                <option value="Ernakulam">Ernakulam</option>
-                                <option value="Kollam">Kollam</option>
-                                <option value="Trivandrum">Trivandrum</option>
+                                <option value="Ernakulam Hub">Ernakulam Hub</option>
+                                <option value="Kollam Hub">Kollam Hub</option>
+                                <option value="Trivandrum Hub">Trivandrum Hub</option>
                                 <option value="Pathanamthitta - Konni">Pathanamthitta - Konni</option>
                                 <option value="Dealer Yard">Dealer Yard</option>
                             </select>
                         </div>
-                    </div>
-                    <button type="button" class="btn btn-primary btn-full" onclick="confirmOperationsDispatch()"><i class="fa-solid fa-check"></i> Update Operation &amp; Sync Sheet</button>
-                </div>
 
-                <label>Physical Stock Vehicles (Tap any vehicle to select):</label>
-                <div id="op-list" class="vehicle-list"></div>
-            </div>
-        </section>
+                        <button type="button" class="btn btn-primary btn-full" onclick="confirmOperationsDispatch()"><i class="fa-solid fa-check"></i> Update Operation &amp; Sync Sheet</button>
+                    </div>
+
+                    <label style="font-size:11px; font-weight:800; color:var(--slate); margin-bottom:6px; display:block; text-transform:uppercase;">Physical Stock Vehicles (Tap any vehicle to select):</label>
+                    <div id="op-list" class="vehicle-list" style="max-height:260px;"></div>
+                </div>
+            </section>
+        </main>
     </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav">
+        <button class="bnav-item active" id="bnav-dashboard" onclick="openModule('dashboard', true)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+        <button class="bnav-item" id="bnav-inward" onclick="openModule('inward')"><i class="fa-solid fa-truck-arrow-right"></i> Inward</button>
+        <button class="bnav-item" id="bnav-pdi" onclick="openModule('pdi')"><i class="fa-solid fa-clipboard-check"></i> PDI</button>
+        <button class="bnav-item" id="bnav-operations" onclick="openModule('operations')"><i class="fa-solid fa-arrows-split-up-and-left"></i> Operations</button>
+    </nav>
 
     <!-- VEHICLE DETAILS & HOLD REVIEW MODAL -->
     <div class="modal-overlay" id="vehicle-details-modal">
@@ -549,6 +634,38 @@
     </div>
 
     <script>
+        // Dark & Light Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const current = html.getAttribute('data-theme');
+            if (current === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                if (icon) icon.className = 'fa-solid fa-moon';
+                localStorage.setItem('luxon_yms_theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                if (icon) icon.className = 'fa-solid fa-sun';
+                localStorage.setItem('luxon_yms_theme', 'dark');
+            }
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info';
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         function cleanStr(val) {
             return String(val === null || val === undefined ? '' : val).replace(/[\r\n\t]+/g, ' ').trim();
         }
@@ -629,6 +746,7 @@
             if (!locationsList.includes(nl)) locationsList.push(nl);
             try { localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList)); } catch(e) {}
             initDropdowns();
+            showToast(`Location "${nl}" added successfully.`, 'success');
         }
 
         function removeSelectedLocation(selectId) {
@@ -640,6 +758,7 @@
                 locationsList = locationsList.filter(l => l !== target);
                 try { localStorage.setItem('luxon_yms_locs', JSON.stringify(locationsList)); } catch(e) {}
                 initDropdowns();
+                showToast(`Location "${target}" removed.`, 'info');
             }
         }
 
@@ -649,6 +768,7 @@
             if (!inspectorsList.includes(ni)) inspectorsList.push(ni);
             try { localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList)); } catch(e) {}
             initDropdowns();
+            showToast(`Technician "${ni}" added successfully.`, 'success');
         }
 
         function removeSelectedInspector(selectId) {
@@ -660,6 +780,7 @@
                 inspectorsList = inspectorsList.filter(i => i !== target);
                 try { localStorage.setItem('luxon_yms_inspectors', JSON.stringify(inspectorsList)); } catch(e) {}
                 initDropdowns();
+                showToast(`Technician "${target}" removed.`, 'info');
             }
         }
 
@@ -807,6 +928,12 @@
         }
 
         window.onload = function() {
+            // Restore saved theme
+            const savedTheme = localStorage.getItem('luxon_yms_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) themeIcon.className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
             vehiclesDB = vehiclesDB.map(v => {
                 const unpacked = unpackMetaFromRemarks(v.remarks);
                 return {
@@ -926,21 +1053,35 @@
                     renderDashboard();
                     if (document.getElementById('mod-pdi').classList.contains('active')) populatePdiMasterList();
                     if (document.getElementById('mod-operations').classList.contains('active')) renderOperationsList();
+                    if (!isBackground) showToast('Google Sheet synced successfully.', 'success');
                 })
                 .catch(err => {
                     if (icon) icon.classList.remove('fa-spin');
                     renderDashboard();
+                    if (!isBackground) showToast('Sync completed (Offline cache active).', 'info');
                 });
         }
 
         function openModule(name, resetDashToAll = false) {
             stopScanner();
             ['dashboard', 'inward', 'pdi', 'operations'].forEach(m => {
-                document.getElementById('mod-' + m).classList.remove('active');
-                document.getElementById('tabbtn-' + m).classList.remove('active');
+                const mod = document.getElementById('mod-' + m);
+                const tab = document.getElementById('tabbtn-' + m);
+                const side = document.getElementById('sidebar-' + m);
+                const bnav = document.getElementById('bnav-' + m);
+                if (mod) mod.classList.remove('active');
+                if (tab) tab.classList.remove('active');
+                if (side) side.classList.remove('active');
+                if (bnav) bnav.classList.remove('active');
             });
-            document.getElementById('mod-' + name).classList.add('active');
-            document.getElementById('tabbtn-' + name).classList.add('active');
+            const targetMod = document.getElementById('mod-' + name);
+            const targetTab = document.getElementById('tabbtn-' + name);
+            const targetSide = document.getElementById('sidebar-' + name);
+            const targetBnav = document.getElementById('bnav-' + name);
+            if (targetMod) targetMod.classList.add('active');
+            if (targetTab) targetTab.classList.add('active');
+            if (targetSide) targetSide.classList.add('active');
+            if (targetBnav) targetBnav.classList.add('active');
 
             if (name === 'dashboard') {
                 if (resetDashToAll) currentDashFilter = 'ALL';
@@ -1073,7 +1214,7 @@
 
                 return `
                 <div class="vehicle-item">
-                    <div class="v-info" onclick="openVehicleDetailsByEnc('${encChassis}')">
+                    <div class="v-info" onclick="openVehicleDetailsByEnc('${encChassis}')" style="cursor:pointer;">
                         <h4>
                             ${v.chassis}
                             ${hasCloudPdf ? `<span class="badge badge-conf" style="font-size:10px;"><i class="fa-brands fa-telegram"></i> PDF Ready</span>` : ''}
@@ -1285,7 +1426,7 @@
                         body: JSON.stringify({ action: 'LOCATION_HOLD_UPDATE', chassis: v.chassis, model: v.model, location: newLoc, status: v.status, remarks: packedRem })
                     }).catch(() => {});
                 }
-                alert(`Location updated to ${newLoc} for ${v.chassis}!`);
+                showToast(`Location updated to ${newLoc} for ${v.chassis}!`, 'success');
             } else if (act === 'DISPATCH') {
                 const dest = document.getElementById('op-ed-dest').value;
                 v.status = 'Outward';
@@ -1298,7 +1439,7 @@
                         body: JSON.stringify({ action: 'OUTWARD', outwardTime, outwardDate: todayDate, chassis: v.chassis, model: v.model, location: v.location, status: 'Outward', outwardDest: dest })
                     }).catch(() => {});
                 }
-                alert(`Delivery Dispatch confirmed to ${dest} for ${v.chassis}!`);
+                showToast(`Delivery Dispatch confirmed to ${dest} for ${v.chassis}!`, 'success');
             } else if (act === 'TRANSFER') {
                 const region = document.getElementById('op-ed-region').value;
                 v.status = 'Stock Transfer';
@@ -1313,218 +1454,13 @@
                         body: JSON.stringify({ action: 'OPERATIONS_UPDATE', outwardTime, outwardDate: todayDate, chassis: v.chassis, model: v.model, location: v.location, status: 'Stock Transfer', remarks: packedRem })
                     }).catch(() => {});
                 }
-                alert(`Stock Transfer confirmed to ${region} for ${v.chassis}!`);
+                showToast(`Stock Transfer confirmed to ${region} for ${v.chassis}!`, 'success');
             }
 
             currentOpChassis = '';
             document.getElementById('op-editor').style.display = 'none';
             renderOperationsList();
             renderDashboard();
-        }
-
-        // VEHICLE DETAILS & CROSS-DEVICE TELEGRAM CHECK SHEET MODAL
-        function openVehicleDetailsByEnc(enc) {
-            openVehicleDetailsModal(decodeURIComponent(enc));
-        }
-
-        function openVehicleDetailsModal(chassis) {
-            const target = cleanChassis(chassis);
-            const v = vehiclesDB.find(x => cleanChassis(x.chassis) === target);
-            if (!v) return;
-
-            const modal = document.getElementById('vehicle-details-modal');
-            const body = document.getElementById('vehicle-details-body');
-            modal.style.display = 'flex';
-
-            const cached = sessionPhotoCache[v.chassis] || {};
-            const allPhotos = [
-                ...(cached.inward || []).map(p => ({ label: 'Inward Photo', src: p })),
-                ...(cached.pdi_checksheet || []).map(p => ({ label: 'PDI Check Sheet', src: p })),
-                ...(cached.pdi_vehicle || []).map(p => ({ label: 'Vehicle Photo', src: p })),
-                ...(cached.pdi_chassis || []).map(p => ({ label: 'Chassis Stencil', src: p })),
-                ...(cached.pdi_form22 || []).map(p => ({ label: 'Form 22', src: p })),
-                ...(cached.pdi_battery || []).map(p => ({ label: 'Battery Photo', src: p }))
-            ];
-
-            const enc = encodeURIComponent(v.chassis);
-            const statusText = v.status === 'REVIEW_PENDING' ? 'Hold Review Pending' : v.status;
-            const tgUrl = getTelegramMessageUrl(v.tgMsgId);
-            const hasCloudPdf = Boolean(v.tgFileId || v.tgMsgId);
-
-            body.innerHTML = `
-                <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid var(--border); margin-bottom:12px;">
-                    <h3 style="font-family:monospace; color:var(--primary); font-size:18px;">${v.chassis}</h3>
-                    <p style="font-size:13px; margin-top:4px;"><b>Model:</b> ${v.model} | <b>Status:</b> ${statusText}</p>
-                    <p style="font-size:13px; margin-top:2px;"><b>Location:</b> ${v.location} | <b>Inspector:</b> ${v.inspector || 'N/A'}</p>
-                    <p style="font-size:12px; color:var(--slate); margin-top:2px;"><b>Inward Date:</b> ${v.inwardDate || 'N/A'} | <b>TML Invoice Date:</b> ${v.tmlInvoiceDate || 'N/A'}</p>
-                    ${v.speed ? `<p style="font-size:12px; margin-top:2px;"><b>Odometer:</b> ${v.speed} km</p>` : ''}
-                    ${v.remarks ? `<p style="font-size:13px; color:var(--danger); font-weight:700; margin-top:6px;">Remarks / Hold Reason: ${v.remarks}</p>` : ''}
-                </div>
-
-                <!-- CLOUD PDF ACCESS FOR ANY DEVICE -->
-                <div style="background:#ecfdf5; border:1.5px solid var(--success); padding:12px; border-radius:10px; margin-bottom:12px;">
-                    <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--success); margin-bottom:8px;">
-                        <i class="fa-brands fa-telegram"></i> Check Sheet &amp; Photos PDF (Accessible on All Devices):
-                    </div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        ${tgUrl ? `
-                            <a href="${tgUrl}" target="_blank" class="btn btn-primary" style="flex:1;">
-                                <i class="fa-brands fa-telegram"></i> Open Check Sheet PDF in Telegram
-                            </a>
-                        ` : ''}
-                        ${hasCloudPdf ? `
-                            <button type="button" class="btn btn-success" style="flex:1;" onclick="openCloudPdfFromTelegram('${v.tgFileId}', '${v.tgMsgId}', '${v.chassis}')">
-                                <i class="fa-solid fa-file-pdf"></i> Direct Cloud PDF Download
-                            </button>
-                        ` : `
-                            <div style="font-size:12px; color:var(--slate);">No Cloud PDF uploaded for this vehicle yet. Submit PDI with photos to generate &amp; link PDF to Telegram.</div>
-                        `}
-                    </div>
-                </div>
-
-                <!-- Manager / Review Action Buttons -->
-                <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:12px; border-radius:10px; margin-bottom:14px;">
-                    <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--primary); margin-bottom:8px;">Manager / Hold Review Actions:</div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button type="button" class="btn btn-success" style="flex:1;" onclick="quickUpdateVehicleStatus('${enc}', 'PDI OK')"><i class="fa-solid fa-check"></i> Approve (PDI OK)</button>
-                        <button type="button" class="btn btn-danger" style="flex:1;" onclick="quickUpdateVehicleStatus('${enc}', 'HOLD')"><i class="fa-solid fa-pause"></i> Confirm Hold</button>
-                        <button type="button" class="btn btn-primary" style="flex:1;" onclick="closeVehicleDetailsModal(); jumpToPdiByEnc('${enc}');"><i class="fa-solid fa-pen-to-square"></i> Edit in PDI</button>
-                    </div>
-                </div>
-
-                ${allPhotos.length ? `
-                <div style="margin-bottom:12px;">
-                    <label style="margin-bottom:8px;">Current Session Photos (${allPhotos.length})</label>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px;">
-                        ${allPhotos.map(item => `
-                            <div style="border:1px solid var(--border); border-radius:8px; padding:4px; text-align:center; background:#fff;">
-                                <img src="${item.src}" style="width:100%; height:95px; object-fit:cover; border-radius:6px;">
-                                <div style="font-size:10px; font-weight:700; margin-top:4px; color:var(--slate);">${item.label}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>` : ''}
-            `;
-        }
-
-        function closeVehicleDetailsModal() {
-            document.getElementById('vehicle-details-modal').style.display = 'none';
-        }
-
-        function quickUpdateVehicleStatus(encChassis, newStatus) {
-            const ch = decodeURIComponent(encChassis);
-            const v = vehiclesDB.find(x => cleanChassis(x.chassis) === cleanChassis(ch));
-            if (!v) return;
-
-            let rem = v.remarks || '';
-            if (newStatus === 'HOLD') {
-                const inputRem = prompt("Enter reason for PDI Hold:", rem);
-                if (inputRem === null) return;
-                rem = cleanStr(inputRem) || 'On Hold';
-            } else if (newStatus === 'PDI OK') {
-                rem = '';
-            }
-
-            const todayDate = new Date().toISOString().split('T')[0];
-            v.status = newStatus;
-            v.remarks = rem;
-            v.pdiDate = todayDate;
-            saveDB();
-
-            const packedRem = packMetaIntoRemarks(v.remarks, v.tgMsgId, v.tgFileId, v.inspector);
-            if (botConfig.scriptUrl) {
-                fetch(botConfig.scriptUrl, {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'PDI_UPDATE', pdiDate: todayDate,
-                        chassis: v.chassis, model: v.model, status: newStatus,
-                        location: v.location, inspector: v.inspector,
-                        remarks: packedRem, tgMsgId: v.tgMsgId, tgFileId: v.tgFileId
-                    })
-                }).catch(() => {});
-            }
-
-            closeVehicleDetailsModal();
-            renderDashboard();
-            alert(`Status updated to ${newStatus} for ${v.chassis}!`);
-        }
-
-        // BARCODE & CAMERA SCANNER
-        function generateBarcode(ctx) {
-            const chassis = ctx === 'inward' ? cleanChassis(document.getElementById('in-chassis').value) : currentPdiChassis;
-            if (!chassis) { alert('Select or enter a chassis number first.'); return; }
-            const boxId = ctx === 'inward' ? 'inward-barcode-box' : 'pdi-barcode-box';
-            const svgId = ctx === 'inward' ? 'inward-barcode-svg' : 'pdi-barcode-svg';
-            document.getElementById(boxId).style.display = 'block';
-            if (typeof JsBarcode !== 'undefined') {
-                JsBarcode("#" + svgId, chassis, { format: "CODE128", width: 2, height: 50, displayValue: true });
-            }
-        }
-
-        function downloadBarcode(svgId, name) {
-            const svg = document.getElementById(svgId);
-            const data = new XMLSerializer().serializeToString(svg);
-            const canvas = document.createElement("canvas");
-            const img = new Image();
-            img.onload = function() {
-                canvas.width = img.width + 20; canvas.height = img.height + 20;
-                const ctx = canvas.getContext("2d");
-                ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
-                ctx.drawImage(img, 10, 10);
-                const a = document.createElement("a");
-                a.download = `Barcode_${cleanChassis(name) || 'Chassis'}.png`;
-                a.href = canvas.toDataURL("image/png");
-                a.click();
-            };
-            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(data)));
-        }
-
-        function toggleCameraScanner(mode) {
-            const readerId = mode === 'inward' ? 'inward-camera-reader' : (mode === 'pdi' ? 'pdi-camera-reader' : 'op-camera-reader');
-            const vp = document.getElementById(readerId);
-            if (activeScannerMode === mode && qrScanner) { stopScanner(); return; }
-            stopScanner();
-            vp.style.display = 'block';
-            activeScannerMode = mode;
-            if (typeof Html5Qrcode === 'undefined') { alert('Scanner library not loaded.'); vp.style.display = 'none'; return; }
-            qrScanner = new Html5Qrcode(readerId);
-            qrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 100 } },
-                (txt) => { handleScanResult(txt, mode); stopScanner(); }, () => {}
-            ).catch(() => { vp.style.display = 'none'; activeScannerMode = null; alert('Camera permission required.'); });
-        }
-
-        function stopScanner() {
-            ['inward-camera-reader', 'pdi-camera-reader', 'op-camera-reader'].forEach(id => {
-                const el = document.getElementById(id); if (el) el.style.display = 'none';
-            });
-            if (qrScanner) { qrScanner.stop().then(() => { qrScanner.clear(); qrScanner = null; }).catch(() => { qrScanner = null; }); }
-            activeScannerMode = null;
-        }
-
-        function scanBarcodeFromFile(event, mode) {
-            const file = event.target.files[0]; if (!file) return;
-            const temp = new Html5Qrcode("inward-camera-reader");
-            temp.scanFile(file, true).then(txt => handleScanResult(txt, mode)).catch(() => alert('Could not read barcode from image.'));
-            event.target.value = '';
-        }
-
-        function handleScanResult(text, mode) {
-            let clean = cleanChassis(text);
-            const mat = clean.match(/MAT[A-Z0-9]{14}/);
-            let chassis = mat ? mat[0] : clean.split(/[\s|,;/]+/)[0];
-            if (mode === 'inward') {
-                document.getElementById('in-chassis').value = chassis;
-                saveDraft();
-                onInwardChassisInput();
-            } else if (mode === 'pdi') {
-                document.getElementById('pdi-search-input').value = chassis;
-                populatePdiMasterList();
-                selectPdiByChassis(chassis);
-            } else if (mode === 'op') {
-                document.getElementById('op-search').value = chassis;
-                renderOperationsList();
-                openOpEd(chassis);
-            }
         }
 
         // PHOTO COMPRESSION & BUCKETS
@@ -1647,7 +1583,7 @@
             document.getElementById('in-model').value = '';
             document.getElementById('inward-status-alert').style.display = 'none';
             photoBuckets.inward = []; renderGrid('inward');
-            alert(`Inward saved for ${chassis}!`);
+            showToast(`Inward saved for ${chassis}!`, 'success');
             openModule('dashboard', true);
         }
 
@@ -1715,7 +1651,7 @@
 
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit PDI & Sync PDF to Cloud';
-            alert(`PDI Submitted for ${v.chassis}! Check Sheet PDF is synced to Telegram & Google Sheet.`);
+            showToast(`PDI Submitted for ${v.chassis}! PDF synced to Cloud.`, 'success');
             clearPdiSelection();
             openModule('dashboard');
         }
@@ -2014,7 +1950,7 @@
                     <div class="report-box ${activeDailyCat==='OUTWARD'?'active-rep':''}" onclick="setDailyCat('OUTWARD')"><div class="report-box-lbl">Dispatched</div><div class="report-box-val">${outwardToday.length}</div></div>
                 </div>
 
-                <div style="background:#f8fafc; padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:10px;">
+                <div style="background:var(--primary-bg); padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:10px;">
                     <div style="font-size:11px; font-weight:800; text-transform:uppercase; margin-bottom:4px;">Technician-wise PDI (${selectedDate}):</div>
                     ${techSummaryHtml}
                 </div>
@@ -2081,7 +2017,7 @@
                     <div class="report-box ${activeMonthlyCat==='TRANSFER'?'active-rep':''}" onclick="setMonthlyCat('TRANSFER')"><div class="report-box-lbl">Stock Transfer</div><div class="report-box-val">${transferMonth.length}</div></div>
                 </div>
 
-                <div style="background:#f8fafc; padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:10px;">
+                <div style="background:var(--primary-bg); padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:10px;">
                     <div style="font-size:11px; font-weight:800; text-transform:uppercase; margin-bottom:4px;">Technician-wise PDI Summary (${selectedMonth}):</div>
                     ${techHtml}
                 </div>
@@ -2118,7 +2054,7 @@
                         const hasCloudPdf = Boolean(v.tgFileId || v.tgMsgId);
                         return `
                         <div class="vehicle-item">
-                            <div class="v-info" onclick="closeReportsModal(); openVehicleDetailsByEnc('${enc}');">
+                            <div class="v-info" onclick="closeReportsModal(); openVehicleDetailsByEnc('${enc}');" style="cursor:pointer;">
                                 <h4>${v.chassis}</h4>
                                 <p><b>${v.model}</b> • ${v.location} • Tech: ${v.inspector || 'N/A'}</p>
                                 ${v.remarks ? `<p style="color:var(--danger); font-weight:700;">Reason: ${v.remarks}</p>` : ''}
@@ -2154,10 +2090,88 @@
             try { localStorage.setItem('luxon_yms_bot_cfg', JSON.stringify(botConfig)); } catch(e) {}
             closeSettingsModal();
             syncWithGoogleSheet(false);
-            alert('Settings saved & synced!');
+            showToast('Settings saved & synced successfully!', 'success');
         }
 
         function closeReportsModal() { document.getElementById('reports-modal').style.display = 'none'; }
+
+        // BARCODE & CAMERA SCANNER
+        function generateBarcode(ctx) {
+            const chassis = ctx === 'inward' ? cleanChassis(document.getElementById('in-chassis').value) : currentPdiChassis;
+            if (!chassis) { alert('Select or enter a chassis number first.'); return; }
+            const boxId = ctx === 'inward' ? 'inward-barcode-box' : 'pdi-barcode-box';
+            const svgId = ctx === 'inward' ? 'inward-barcode-svg' : 'pdi-barcode-svg';
+            document.getElementById(boxId).style.display = 'block';
+            if (typeof JsBarcode !== 'undefined') {
+                JsBarcode("#" + svgId, chassis, { format: "CODE128", width: 2, height: 50, displayValue: true });
+            }
+        }
+
+        function downloadBarcode(svgId, name) {
+            const svg = document.getElementById(svgId);
+            const data = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement("canvas");
+            const img = new Image();
+            img.onload = function() {
+                canvas.width = img.width + 20; canvas.height = img.height + 20;
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage(img, 10, 10);
+                const a = document.createElement("a");
+                a.download = `Barcode_${cleanChassis(name) || 'Chassis'}.png`;
+                a.href = canvas.toDataURL("image/png");
+                a.click();
+            };
+            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(data)));
+        }
+
+        function toggleCameraScanner(mode) {
+            const readerId = mode === 'inward' ? 'inward-camera-reader' : (mode === 'pdi' ? 'pdi-camera-reader' : 'op-camera-reader');
+            const vp = document.getElementById(readerId);
+            if (activeScannerMode === mode && qrScanner) { stopScanner(); return; }
+            stopScanner();
+            vp.style.display = 'block';
+            activeScannerMode = mode;
+            if (typeof Html5Qrcode === 'undefined') { alert('Scanner library not loaded.'); vp.style.display = 'none'; return; }
+            qrScanner = new Html5Qrcode(readerId);
+            qrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 100 } },
+                (txt) => { handleScanResult(txt, mode); stopScanner(); }, () => {}
+            ).catch(() => { vp.style.display = 'none'; activeScannerMode = null; alert('Camera permission required.'); });
+        }
+
+        function stopScanner() {
+            ['inward-camera-reader', 'pdi-camera-reader', 'op-camera-reader'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.style.display = 'none';
+            });
+            if (qrScanner) { qrScanner.stop().then(() => { qrScanner.clear(); qrScanner = null; }).catch(() => { qrScanner = null; }); }
+            activeScannerMode = null;
+        }
+
+        function scanBarcodeFromFile(event, mode) {
+            const file = event.target.files[0]; if (!file) return;
+            const temp = new Html5Qrcode("inward-camera-reader");
+            temp.scanFile(file, true).then(txt => handleScanResult(txt, mode)).catch(() => alert('Could not read barcode from image.'));
+            event.target.value = '';
+        }
+
+        function handleScanResult(text, mode) {
+            let clean = cleanChassis(text);
+            const mat = clean.match(/MAT[A-Z0-9]{14}/);
+            let chassis = mat ? mat[0] : clean.split(/[\s|,;/]+/)[0];
+            if (mode === 'inward') {
+                document.getElementById('in-chassis').value = chassis;
+                saveDraft();
+                onInwardChassisInput();
+            } else if (mode === 'pdi') {
+                document.getElementById('pdi-search-input').value = chassis;
+                populatePdiMasterList();
+                selectPdiByChassis(chassis);
+            } else if (mode === 'op') {
+                document.getElementById('op-search').value = chassis;
+                renderOperationsList();
+                openOpEd(chassis);
+            }
+        }
     </script>
 </body>
 </html>
